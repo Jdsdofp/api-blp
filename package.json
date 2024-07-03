@@ -1,17 +1,18 @@
 {
-  "name": "api",
-  "version": "1.0.0",
+  "name": "api-blp",
+  "version": "1.0.1",
   "description": "Api do sistema blp de controle de documentações licenças a alvarás de lojas",
   "main": "server.js",
   "scripts": {
-    "test": "nodemon server.js"
+    "test": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [
     "api",
     "doc",
     "blp"
   ],
-  "author": "Jaderson Sousa Moreira",
+  "author": "Jaderson Sousa",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
@@ -21,5 +22,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jdsdofp/api-blp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jdsdofp/api-blp/issues"
+  },
+  "homepage": "https://github.com/Jdsdofp/api-blp#readme"
 }
