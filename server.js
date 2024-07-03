@@ -2,13 +2,13 @@ const express = require("express");
 const packgeName = require("./package.json");
 const settings = require("./settings_Server")
 const app = express();
-const Tipo_documento = require("./models/Tipo_Documento")
+const Comentariosdocumentos = require("./models/Comentarios_documentos");
 
 
 
 app.get('/', async (req, res)=>{
-    const tipo_documento = await Tipo_documento.findAll()
-    res.json({tipo_documento})
+    const comentarios_documentos = await Comentariosdocumentos.findAll()
+    res.json({comentarios_documentos})
 })
 
 

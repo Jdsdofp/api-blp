@@ -142,27 +142,91 @@ add column d_criador_id int not null;
 alter table documentos
 add foreign key (d_criador_id) references usuario(u_id);
 
-*/
-
 alter table documentos
 add column d_comentarios JSONB;
 
+alter table documentos
+alter column d_comentarios set default '[]';
+*/
 
 
 
 
 
+create table comentarios_documentos(
+	cd_id serial4 primary key not null,
+	cd_documento_id integer not null,
+	foreign key (cd_documento_id) references documentos(d_id),
+	cd_autor_id integer not null,
+	foreign key (cd_autor_id) references usuario(u_id),
+	cd_msg text,
+	cd_resposta JSONB,
+	criado_em TIMESTAMPTZ default now()
+);
+
+--FUNÇÃO PARA TRATAR COMENTARIOS DOS DOCUMENTOS
+/* 
+ Esse comentarios são de extrema importancia para ter registros
+ de como anda o processo por meio dos executores 
+ 
+ +++toda vez que for criado um comentario referente ao um determinado documento
+ no campo d_comentario sera adicionando o id do referido comentario
+ e na tabela comentarios_documentos
+ 
+  */
+
+create or replace function atualiza_d_comentarios()
+returns trigger as $$
+begin 
+	update documentos
+	set d_documento = (
+	
+	select jsonb_agg(cd_id)
+		from comentarios_documentos
+	where cd_documento_id = NEW.cd_documento_id
+	
+	)
+	where d_id = NEW.cd_documento_id;
+	
+	return NEW;
+end;
+
+$$ language plpgsql;
+
+---TRIGGER PARA INSERIR OS IDS NA TABELA DOCUMENTOS
+create trigger comentarios_inserir_trigger
+after insert on comentarios_documentos
+for each row
+execute function atualiza_d_comentarios();
 
 
 
+/*
+ Função que trata o delete dos ids na tabela documentos se algum comentario for excluso */
+
+create or replace function delete_d_comentarios()
+returns trigger as $$
+begin 
+	update documentos
+	set d_documento = (
+		
+		select jsonb_agg(cd_id)
+			from comentarios_documentos
+		where cd_documento_id = old.cd_documento_id
+	)
+	
+	where d_id = old.cd_documentos_id;
+
+	return old;
+end;
+
+$$ language plpgsql;
 
 
-
-
-
-
-
-
+create trigger comentarios_delete_trigger
+after delete on comentarios_documentos
+for each row 
+execute function delete_d_comentarios();
 
 
 
