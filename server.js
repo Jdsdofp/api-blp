@@ -2,13 +2,13 @@ const express = require("express");
 const packgeName = require("./package.json");
 const settings = require("./settings_Server")
 const app = express();
-const Filial =  require("./models/Filial")
+const Tipo_documento = require("./models/Tipo_Documento")
 
 
 
 app.get('/', async (req, res)=>{
-    const filiais = await Filial.findAll()
-    res.json({filiais})
+    const tipo_documento = await Tipo_documento.findAll()
+    res.json({tipo_documento})
 })
 
 
