@@ -1,6 +1,6 @@
 {
   "name": "api-blp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Api do sistema blp de controle de documentações licenças a alvarás de lojas",
   "main": "server.js",
   "scripts": {
