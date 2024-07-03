@@ -1,11 +1,12 @@
 {
   "name": "api-blp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Api do sistema blp de controle de documentações licenças a alvarás de lojas",
   "main": "server.js",
   "scripts": {
     "test": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "release": "standard-version"
   },
   "keywords": [
     "api",
@@ -21,7 +22,8 @@
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "standard-version": "^9.5.0"
   },
   "repository": {
     "type": "git",
