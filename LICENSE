@@ -1,0 +1,47 @@
+Private Use License
+
+Copyright (c) 2024, Jaderson Sousa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use
+the Software for internal, private use only, subject to the following conditions:
+
+1. The Software is private property and is provided for internal, private use only. It
+   is subject to constant updates and improvements. The Software may not be redistributed,
+   in whole or in part, in any form, or used for commercial purposes without explicit 
+   permission from the copyright holder.
+
+2. Modification of the Software is allowed for internal, private use only. The modified
+   versions of the Software may not be redistributed or used for commercial purposes.
+
+3. The above copyright notice and this permission notice shall be included in all copies
+   or substantial portions of the Software.
+
+4. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+5. The Software is in constant development and is subject to updates and changes. The 
+   copyright holder does not guarantee that the Software will remain unchanged or that
+   any specific features will be available indefinitely.
+
+6. The Software makes use of the following open-source third-party libraries, which are
+   licensed separately under their respective licenses:
+   - Express (https://expressjs.com/)
+   - pg (https://node-postgres.com/)
+   - pg-hstore (https://www.npmjs.com/package/pg-hstore)
+   - Sequelize (https://sequelize.org/)
+   - nodemon (https://nodemon.io/)
+   - standard-version (https://github.com/conventional-changelog/standard-version)
+
+   Users must comply with the licenses of these third-party libraries in addition to this 
+   Private Use License. The respective licenses for these libraries can be found in their 
+   documentation and repositories.
+
+By using this software, you agree to comply with these terms.
+
+For any other use cases not covered by this license, please contact the copyright holder
+for explicit permission.
