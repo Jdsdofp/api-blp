@@ -64,6 +64,11 @@ const Documento = sequelize.define('Documento',{
     d_comentarios: {
         type: DataTypes.JSONB,
         defaultValue: []
+    },
+
+    d_ativo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
 },{
     tableName: 'documentos',
