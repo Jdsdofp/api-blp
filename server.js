@@ -2,16 +2,19 @@ const express = require("express");
 const packgeName = require("./package.json");
 const settings = require("./settings_Server")
 const app = express();
-const usuarioRoute = require("./routes/rota_usuario");
+const usuarioRoute = require("./routes/rotaUsuario");
 
 
+// Use body-parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (req, res)=>{
     const data = new Date()
     res.send(data.toISOString())
 })
 
-app.use("/usuario", usuarioRoute)
+app.use("/", usuarioRoute)
 
 
 // SET DO SERVER

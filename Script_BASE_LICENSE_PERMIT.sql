@@ -121,12 +121,13 @@ create table documentos(
 	d_data_pedido date not null,
 	d_data_emissao date not null,
 	d_data_vencimento date not null,
-	d_tipo_doc_id int,
+	d_tipo_doc_id int not null,
 	foreign key (d_tipo_doc_id) references tipo_documento(td_id),
 	d_orgao_exp varchar not null,
 	d_anexo varchar,
 	d_criador_id int,
-	d_comentarios JSONB
+	d_comentarios JSONB default '[]',
+	d_ativo boolean default true
 );
 
 /*
@@ -147,8 +148,13 @@ add column d_comentarios JSONB;
 
 alter table documentos
 alter column d_comentarios set default '[]';
+
+alter table documentos
+alter column d_tipo_doc_id set not null;
 */
 
+alter table documentos
+add column d_ativo boolean default true;
 
 
 
@@ -227,28 +233,3 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

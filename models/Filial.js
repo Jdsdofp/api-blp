@@ -48,6 +48,11 @@ const Filial = sequelize.define('Usuario',{
             key: 'e_id'
         }
     },
+
+    f_ativo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    }
 }, {
     tableName: 'filial',
     timestamps: false

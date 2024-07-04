@@ -36,6 +36,11 @@ const Empresa = sequelize.define('Empresa', {
     criado_em: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
+    },
+
+    e_ativo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
 }, {
     tableName: 'empresa',

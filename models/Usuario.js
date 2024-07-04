@@ -30,7 +30,23 @@ const Usuario = sequelize.define('Usuario', {
     }
 },{
     tableName: 'usuario',
-    timestamps: false
+    timestamps: false,
+
+    defaultScope: {
+        attributes: {exclude: 'u_senha'}
+    },
+    scopes: {
+        withPassword: {
+            attributes: { }
+        }
+    },
+    instanceMethods: {
+        toJSON: function () {
+            let values = Object.assign({}, this.get());
+            delete values.u_senha;
+            return values;
+        }
+    }
 })
 
 
