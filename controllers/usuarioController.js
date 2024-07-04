@@ -10,7 +10,7 @@ module.exports.registrarUsuario = async (req, res) =>{
         const newUsuario = await Usuario.create({u_nome, u_email, u_senha: hashedSenha})
         //const usuarioComSenha = await Usuario.scope("withPassword").findAll()
         //const usuario = await Usuario.findAll()
-
+        console.log(newUsuario)
 
         res.status(201).json({message: "Usuario criado com sucesso"})
 
@@ -44,5 +44,14 @@ module.exports.loginUsuario = async(req, res)=>{
 
     } catch (error) {
         res.status(500).json({message: 'Erro ao autenticar usuário', error})
+    }
+}
+
+module.exports.listarUsuarios = async(req, res)=>{
+    try {
+        const usuario = await Usuario.findAll()
+        res.status(200).json(usuario)
+    } catch (error) {
+        res.status(400).json({message: "Houve um erro ao buscar usuarios"})        
     }
 }

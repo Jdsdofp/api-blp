@@ -9,11 +9,6 @@ const usuarioRoute = require("./routes/rotaUsuario");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', async (req, res)=>{
-    const data = new Date()
-    res.send(data.toISOString())
-})
-
 app.use("/", usuarioRoute)
 
 

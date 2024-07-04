@@ -16,7 +16,7 @@ const Usuario = sequelize.define('Usuario', {
 
     u_email: {
         type: DataTypes.STRING(180),
-        allowNull: false,
+        allowNull: true,
         unique: true
     },
 
@@ -28,7 +28,13 @@ const Usuario = sequelize.define('Usuario', {
     criado_em: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
+    },
+
+    u_ativo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
+
 },{
     tableName: 'usuario',
     timestamps: false,
@@ -47,7 +53,8 @@ const Usuario = sequelize.define('Usuario', {
             delete values.u_senha;
             return values;
         }
-    }
+    },
+
 })
 
 
