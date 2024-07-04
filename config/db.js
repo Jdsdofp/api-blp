@@ -20,7 +20,7 @@ const sequelize = new Sequelize(
             await sequelize.authenticate();
             console.log('BD conectado!')
         } catch (error) {
-            console.error('\nErro ao conectar ao DB\n', error)
+            console.error('\nErro ao conectar ao DB')
         }
     }
 )();

@@ -1,5 +1,6 @@
 const Usuario = require("../models/Usuario");
 const { hashSenha, generateToken, compareSenha } = require("../config/auth");
+const { msgErros } = require("../settings_Server");
 
 module.exports.registrarUsuario = async (req, res) =>{
     try {
@@ -11,11 +12,11 @@ module.exports.registrarUsuario = async (req, res) =>{
         //const usuario = await Usuario.findAll()
 
 
-        res.status(201).json({message: "Usuário criado com sucesso"})
+        res.status(201).json({message: "Usuario criado com sucesso"})
 
     } catch (error) {
-        res.status(500).json({message: `Erro ao registrar o usuario ${error}`})
-        console.log("Houve um erro aqui", error)
+        res.status(500).json({message: `Erro ao registrar o usuario ${msgErros(error.errors[0]["type"])}`})
+        
     }
 }
 
