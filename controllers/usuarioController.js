@@ -10,7 +10,7 @@ module.exports.registrarUsuario = async (req, res) =>{
         const newUsuario = await Usuario.create({u_nome, u_email, u_senha: hashedSenha})
         //const usuarioComSenha = await Usuario.scope("withPassword").findAll()
         //const usuario = await Usuario.findAll()
-        console.log(newUsuario)
+        
 
         res.status(201).json({message: "Usuario criado com sucesso"})
 

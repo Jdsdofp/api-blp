@@ -4,7 +4,7 @@ const usuarioRoute = express.Router()
 const authMiddleware = require("../config/authMiddleware");
 
 
-usuarioRoute.post('/registrar-usuario', registrarUsuario);
+usuarioRoute.post('/registrar-usuario', authMiddleware, registrarUsuario);
 usuarioRoute.post('/auth', loginUsuario);
 usuarioRoute.get('/listar-usuarios', authMiddleware, listarUsuarios);
 
