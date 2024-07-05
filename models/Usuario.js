@@ -33,6 +33,19 @@ const Usuario = sequelize.define('Usuario', {
     u_ativo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+    },
+
+    u_resetsenhatoken: {
+        type: DataTypes.STRING
+    },
+
+    u_resetsenhaexpires: {
+        type: DataTypes.STRING
+    },
+
+    u_senhatemporaria: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
 
 },{

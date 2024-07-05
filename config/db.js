@@ -1,7 +1,6 @@
 const { Sequelize } = require("sequelize");
 
 
-
 const sequelize = new Sequelize(
     'postgres',
     'postgres.nkxsocytllzusgpiydel',
@@ -18,7 +17,8 @@ const sequelize = new Sequelize(
     async ()=>{
         try {
             await sequelize.authenticate();
-            console.log('BD conectado!')
+            const status = 'BD conectado!'
+            console.warn(status)
         } catch (error) {
             console.error('\nErro ao conectar ao DB')
         }
