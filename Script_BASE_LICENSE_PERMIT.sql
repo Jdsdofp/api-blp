@@ -13,19 +13,26 @@ create table empresa(
 	e_cnpj char(20) not null,
 	e_cidade varchar(180) not null,
 	e_uf varchar(2) not null,
-	criado_em TIMESTAMP default NOW()
-)
+	criado_em TIMESTAMP default NOW(),
+	e_ativo boolean default true
+);
+
+---TRIGGER PARA FUNÇÃO atualiza_filial_ativo()
+create trigger trigger_atualiza_filial_ativo
+after update on empresa
+for each row 
+execute function atualiza_filial_ativo();
+
 
 
 /*
  * AQUI ALTEREI O TIMPO PARA TIMETZ
 alter table empresa
 alter column criado_em type TIMESTAMPTZ;
+
+alter table empresa
+add column e_ativo boolean default true;
 */
-
-
---CRIANDO A PRIMEIRA EMPRESA
-insert into empresa(e_nome,e_razao,e_cnpj,e_cidade,e_uf) values('Empreendimentos Farmaceuticos Globo Ltda', 'Drogaria Globo', '63503007000146', 'Teresina', 'PI');
 
 
 --CRIANDO A TABELA USUARIO
@@ -35,10 +42,13 @@ O usuário pode ter relação com varias tabelas desde a empresa quanto a filial
 create table usuario(
 	u_id serial4 primary key not null,
 	u_nome varchar(180) not null,
-	u_email varchar(180) not null,
+	u_email varchar(180) not null unique,
 	u_senha varchar not null,
-	criado_em TIMESTAMPTZ default now()
+	criado_em TIMESTAMPTZ default now(),
+	u_ativo boolean default true
 );
+
+
 
 /*
  
@@ -50,10 +60,13 @@ add column criado_em TIMESTAMPTZ;
 alter table usuario
 alter column criado_em set default now();
 
-*/
+alter table usuario
+add constraint unique_u_email UNIQUE(u_email);
 
---CRIANDO O PRIMEIRO USUARIO
-insert into usuario(u_nome,u_email,u_senha) values('adm', 'adm@email.com', '123456');
+alter table usuario
+add column u_ativo boolean default true;
+
+*/
 
 
 --CRIANDO A TABELA FILIAL
@@ -67,8 +80,40 @@ create table filial(
 	f_responsavel_id int,
 	foreign key (f_responsavel_id) references usuario(u_id),
 	f_empresa_id int not null,
-	foreign key (f_empresa_id) references empresa(e_id)
+	foreign key (f_empresa_id) references empresa(e_id),
+	f_ativo boolean default true,
+	f_endereco jsonb default '[]'
 );
+
+/*Campos que adicionei
+alter table filial
+add column f_endereco jsonb default '[]';
+
+
+
+*/
+
+
+---TRIGGER PARA FUNÇÃO atualiza_documentos_ativo()
+create trigger trigger_atualiza_documentos_ativo
+after update on filial
+for each row 
+execute function atualiza_documentos_ativo();
+
+
+--FUNÇÃO PARA A TRIGGER PARA DESATIVAR FILIAL....
+create or replace function atualiza_filial_ativo()
+returns trigger as $$
+begin
+	update filial 
+	set f_ativo = new.e_ativo
+	where f_empresa_id = new.e_id;
+	return new;
+end;
+$$ language plpgsql;
+
+
+
 /*
 
 
@@ -81,6 +126,9 @@ alter column criado_em set default now();
 
 alter table filial
 alter column f_responsavel_id set not null;
+
+alter table filial
+add column f_ativo boolean default true;
 */
 
 
@@ -99,15 +147,17 @@ create table condicionates(
 --CRIAÇÃO DA TABELA TIPO DOCUMENTOS
 create table tipo_documento(
 	td_id serial4 primary key not null,
-	td_desc varchar unique not null
+	td_desc varchar unique not null,
+	criado_em TIMESTAMPTZ default now()
 );
 
+/*
 alter table tipo_documento
 add column criado_em TIMESTAMPTZ;
 
 alter table tipo_documento
 alter column criado_em set default now(); 
-
+*/
 
 
 --CRIAÇÃO DA TABELA DOCUMENTOS
@@ -130,6 +180,19 @@ create table documentos(
 	d_ativo boolean default true
 );
 
+--FUNÇÃO PARA A TRIGGER PARA DESATIVAR DOCUMENTOS....
+create or replace function atualiza_documentos_ativo()
+returns trigger as $$
+begin
+	update documentos
+	set d_ativo = new.f_ativo
+	where d_filial_id = new.f_id;
+	return new;
+end;
+$$ language plpgsql;
+
+select * from filial;
+
 /*
 alter table documentos
 add column criado_em TIMESTAMPTZ;
@@ -151,12 +214,10 @@ alter column d_comentarios set default '[]';
 
 alter table documentos
 alter column d_tipo_doc_id set not null;
-*/
 
 alter table documentos
 add column d_ativo boolean default true;
-
-
+*/
 
 
 create table comentarios_documentos(
@@ -169,6 +230,7 @@ create table comentarios_documentos(
 	cd_resposta JSONB,
 	criado_em TIMESTAMPTZ default now()
 );
+
 
 --FUNÇÃO PARA TRATAR COMENTARIOS DOS DOCUMENTOS
 /* 
