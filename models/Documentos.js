@@ -69,6 +69,11 @@ const Documento = sequelize.define('Documento',{
     d_ativo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+    },
+    
+    d_num_protocolo: {
+        type: DataTypes.STRING,
+        unique: true
     }
 },{
     tableName: 'documentos',

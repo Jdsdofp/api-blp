@@ -45,17 +45,14 @@ create table usuario(
 	u_email varchar(180) not null unique,
 	u_senha varchar not null,
 	criado_em TIMESTAMPTZ default now(),
-	u_ativo boolean default true,
-	u_resetSenhaToken varchar,
-	u_resetSenhaExpires varchar,
-	u_senhaTemporaria boolean default true
+	u_ativo boolean default true
 );
 
 
-<<<<<<< HEAD
-=======
+alter table usuario
+add column 
 
->>>>>>> d0c6b4e51b817e6b85f861c19478f55a27b5b1ab
+
 /*
  
 AQUI FIZ A ALTERAÇÃO DAS COLUNAS 
@@ -72,18 +69,6 @@ add constraint unique_u_email UNIQUE(u_email);
 alter table usuario
 add column u_ativo boolean default true;
 
-alter table usuario
-add column u_resetSenhaToken varchar;
-
-alter table usuario
-add column u_resetSenhaExpires varchar;
-
-alter table usuario
-add column u_senhaTemporaria boolean;
-
-alter table usuario 
-alter column u_senhaTemporaria set default true;
-
 */
 
 
@@ -99,17 +84,9 @@ create table filial(
 	foreign key (f_responsavel_id) references usuario(u_id),
 	f_empresa_id int not null,
 	foreign key (f_empresa_id) references empresa(e_id),
-	f_ativo boolean default true,
-	f_endereco jsonb default '[]'
+	f_ativo boolean default true
 );
 
-/*Campos que adicionei
-alter table filial
-add column f_endereco jsonb default '[]';
-
-
-
-*/
 
 
 ---TRIGGER PARA FUNÇÃO atualiza_documentos_ativo()
@@ -195,7 +172,8 @@ create table documentos(
 	d_anexo varchar,
 	d_criador_id int,
 	d_comentarios JSONB default '[]',
-	d_ativo boolean default true
+	d_ativo boolean default true,
+	d_num_protocolo varchar unique
 );
 
 --FUNÇÃO PARA A TRIGGER PARA DESATIVAR DOCUMENTOS....
@@ -209,7 +187,7 @@ begin
 end;
 $$ language plpgsql;
 
-select * from filial;
+
 
 /*
 alter table documentos
@@ -235,6 +213,9 @@ alter column d_tipo_doc_id set not null;
 
 alter table documentos
 add column d_ativo boolean default true;
+
+alter table documentos
+add column d_num_protocolo varchar unique;
 */
 
 
@@ -265,7 +246,7 @@ create or replace function atualiza_d_comentarios()
 returns trigger as $$
 begin 
 	update documentos
-	set d_comentarios = (
+	set d_documento = (
 	
 	select jsonb_agg(cd_id)
 		from comentarios_documentos
@@ -294,14 +275,14 @@ create or replace function delete_d_comentarios()
 returns trigger as $$
 begin 
 	update documentos
-	set d_comentarios = (
+	set d_documento = (
 		
 		select jsonb_agg(cd_id)
 			from comentarios_documentos
 		where cd_documento_id = old.cd_documento_id
 	)
 	
-	where d_id = old.cd_documento_id;
+	where d_id = old.cd_documentos_id;
 
 	return old;
 end;
@@ -313,3 +294,6 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
+
+
+
