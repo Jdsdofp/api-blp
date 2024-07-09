@@ -52,6 +52,10 @@ create table usuario(
 );
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0c6b4e51b817e6b85f861c19478f55a27b5b1ab
 /*
  
 AQUI FIZ A ALTERAÇÃO DAS COLUNAS 
@@ -95,9 +99,17 @@ create table filial(
 	foreign key (f_responsavel_id) references usuario(u_id),
 	f_empresa_id int not null,
 	foreign key (f_empresa_id) references empresa(e_id),
-	f_ativo boolean default true
+	f_ativo boolean default true,
+	f_endereco jsonb default '[]'
 );
 
+/*Campos que adicionei
+alter table filial
+add column f_endereco jsonb default '[]';
+
+
+
+*/
 
 
 ---TRIGGER PARA FUNÇÃO atualiza_documentos_ativo()
@@ -301,7 +313,3 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
-
-
-
-

@@ -52,6 +52,11 @@ const Filial = sequelize.define('Usuario',{
     f_ativo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+    },
+
+    f_endereco: {
+        type: DataTypes.JSONB,
+        defaultValue: []
     }
 }, {
     tableName: 'filial',
