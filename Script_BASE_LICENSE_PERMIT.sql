@@ -48,11 +48,6 @@ create table usuario(
 	u_ativo boolean default true
 );
 
-
-alter table usuario
-add column 
-
-
 /*
  
 AQUI FIZ A ALTERAÇÃO DAS COLUNAS 
