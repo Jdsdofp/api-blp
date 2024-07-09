@@ -45,12 +45,11 @@ create table usuario(
 	u_email varchar(180) not null unique,
 	u_senha varchar not null,
 	criado_em TIMESTAMPTZ default now(),
-	u_ativo boolean default true
+	u_ativo boolean default true,
+	u_resetSenhaToken varchar,
+	u_resetSenhaExpires varchar,
+	u_senhaTemporaria boolean default true
 );
-
-
-alter table usuario
-add column 
 
 
 /*
@@ -68,6 +67,18 @@ add constraint unique_u_email UNIQUE(u_email);
 
 alter table usuario
 add column u_ativo boolean default true;
+
+alter table usuario
+add column u_resetSenhaToken varchar;
+
+alter table usuario
+add column u_resetSenhaExpires varchar;
+
+alter table usuario
+add column u_senhaTemporaria boolean;
+
+alter table usuario 
+alter column u_senhaTemporaria set default true;
 
 */
 
@@ -242,7 +253,7 @@ create or replace function atualiza_d_comentarios()
 returns trigger as $$
 begin 
 	update documentos
-	set d_documento = (
+	set d_comentarios = (
 	
 	select jsonb_agg(cd_id)
 		from comentarios_documentos
@@ -271,14 +282,14 @@ create or replace function delete_d_comentarios()
 returns trigger as $$
 begin 
 	update documentos
-	set d_documento = (
+	set d_comentarios = (
 		
 		select jsonb_agg(cd_id)
 			from comentarios_documentos
 		where cd_documento_id = old.cd_documento_id
 	)
 	
-	where d_id = old.cd_documentos_id;
+	where d_id = old.cd_documento_id;
 
 	return old;
 end;
