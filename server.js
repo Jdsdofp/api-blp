@@ -3,13 +3,15 @@ const packgeName = require("./package.json");
 const {settingsServer} = require("./settings_Server");
 const app = express();
 const usuarioRoute = require("./routes/rotaUsuario");
+const empresaRoute = require("./routes/rotaEmpresa");
 
 
 // Use body-parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", usuarioRoute);
+app.use("/user", usuarioRoute);
+app.use("/company", empresaRoute);
 
 
 // SET DO SERVER

@@ -14,7 +14,9 @@ create table empresa(
 	e_cidade varchar(180) not null,
 	e_uf varchar(2) not null,
 	criado_em TIMESTAMP default NOW(),
-	e_ativo boolean default true
+	e_ativo boolean default true,
+	e_criador_id integer,
+	foreign key (e_criador_id) references usuario(u_id)
 );
 
 ---TRIGGER PARA FUNÇÃO atualiza_filial_ativo()
@@ -24,7 +26,6 @@ for each row
 execute function atualiza_filial_ativo();
 
 
-
 /*
  * AQUI ALTEREI O TIMPO PARA TIMETZ
 alter table empresa
@@ -32,6 +33,15 @@ alter column criado_em type TIMESTAMPTZ;
 
 alter table empresa
 add column e_ativo boolean default true;
+
+alter table empresa
+add column e_criador_id integer;
+
+alter table empresa
+add foreign key (e_criador_id) references usuario(u_id);
+
+alter table empresa
+add constraint unique_e_cnpj UNIQUE(e_cnpj);
 */
 
 
@@ -47,6 +57,8 @@ create table usuario(
 	criado_em TIMESTAMPTZ default now(),
 	u_ativo boolean default true
 );
+
+
 
 /*
  
@@ -289,6 +301,3 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
-
-
-

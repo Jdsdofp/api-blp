@@ -4,10 +4,10 @@ function settingsServer(pkg, PORT){
        return result
 }   
 
-function msgErros(err){
+function msgErrosUnico(err){
     
-    if(String(err).includes("unique")) return "Email ja cadastrado"
+    if(String(err).includes("unique")) return "ja cadastrado (a)"
     
 }
 
-module.exports = {settingsServer, msgErros};
+module.exports = {settingsServer, msgErrosUnico};

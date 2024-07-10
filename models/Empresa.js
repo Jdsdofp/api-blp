@@ -20,7 +20,8 @@ const Empresa = sequelize.define('Empresa', {
 
     e_cnpj: {
         type: DataTypes.CHAR(20),
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
 
     e_cidade: {
@@ -41,6 +42,10 @@ const Empresa = sequelize.define('Empresa', {
     e_ativo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+    },
+
+    e_criador_id: {
+        type: DataTypes.INTEGER
     }
 }, {
     tableName: 'empresa',
