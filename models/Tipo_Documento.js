@@ -11,8 +11,20 @@ const Tipo_documento = sequelize.define('Tipo_documento', {
 
         td_desc: {
             type: DataTypes.STRING,
-            unique: true,
-            allowNull: false 
+            allowNull: false,
+            unique: {
+                name: 'tipo_documento_td_desc_key',
+                msg: 'Ja existe um tipo de documento cadastrado com esse mesmo nome'
+            },
+            validate: {
+                notEmpty: {
+                    msg: 'Campo (Descricao tipo documento) nao pode ficar vazio'
+                },
+
+                notNull: {
+                    msg: 'Campo (Descricao tipo documento) é obrigatorio'
+                },
+            }
         },
 
         criado_em: {

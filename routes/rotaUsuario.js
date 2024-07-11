@@ -9,6 +9,6 @@ usuarioRoute.post('/auth', loginUsuario);
 usuarioRoute.get('/listar-usuarios', authMiddleware, listarUsuarios);
 usuarioRoute.get('/:u_id/listar-usuario', authMiddleware, listarUsuario);
 usuarioRoute.post('/reset-senha-inicial', authMiddleware, resetSenhaInicial);
-usuarioRoute.put('/:u_id/editar-usuarios', authMiddleware, editarUsuarios)
+usuarioRoute.put('/:u_id/editar-usuarios', authMiddleware, editarUsuarios);
 
 module.exports = usuarioRoute;

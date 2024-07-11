@@ -10,7 +10,7 @@ create table empresa(
 	e_id serial4 primary key not null,
 	e_nome varchar(255) not null,
 	e_razao varchar(255) not null,
-	e_cnpj char(20) not null,
+	e_cnpj char(14) not null,
 	e_cidade varchar(180) not null,
 	e_uf varchar(2) not null,
 	criado_em TIMESTAMP default NOW(),

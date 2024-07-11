@@ -10,18 +10,47 @@ const Empresa = sequelize.define('Empresa', {
     },
     e_nome: {
         type: DataTypes.STRING(255),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notNull: {
+                msg: 'Campo (nome empresa) é obrigatorio'
+            },
+
+            notEmpty: {
+                msg: 'Campo (nome empresa) nao pode ficar vazio'
+            }
+        }
     },
 
     e_razao: {
         type: DataTypes.STRING(255),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notNull: {
+                msg: 'Campo (razao social) é obrigatorio'
+            },
+
+            notEmpty: {
+                msg: 'Campo (razao social) nao pode ficar vazio'
+            }
+        }
     },
 
     e_cnpj: {
-        type: DataTypes.CHAR(20),
+        type: DataTypes.CHAR(14),
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+            len: {
+                args: [1, 14],
+                msg: 'O (CNPJ) nao pode ser maior ou menor que 14 caracteres'
+            },
+
+            min: {
+                args: 1,
+                msg: 'Valor invalido'
+            }
+        }
     },
 
     e_cidade: {
