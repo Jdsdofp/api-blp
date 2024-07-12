@@ -1,0 +1,329 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "BLP_API",
+    "collectionId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+    "dateExported": "2024-07-12T18:28:37.220Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "311e0144-3287-4a7a-9818-88ac3b7dc1a4",
+            "name": "usuarios",
+            "containerId": "",
+            "created": "2024-07-10T17:23:48.372Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "34610308-4fcd-4ada-8bbf-651a3ea49246",
+            "name": "empresa",
+            "containerId": "",
+            "created": "2024-07-10T20:03:07.411Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "33f3823b-516d-450f-87f4-e9b33b12c360",
+            "name": "tipoDocumento",
+            "containerId": "",
+            "created": "2024-07-11T19:34:26.350Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "98528311-2ad6-41d4-b5b6-cd4babba2248",
+            "name": "documentos",
+            "containerId": "",
+            "created": "2024-07-12T12:21:59.401Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "2f6b85d2-30a3-4b6e-b5f6-075438a3eed9",
+            "name": "filial",
+            "containerId": "",
+            "created": "2024-07-12T12:47:11.348Z",
+            "sortNum": 50000
+        },
+        {
+            "_id": "3f356f6c-83c8-4489-b50c-21d863906319",
+            "name": "comentariosDocumento",
+            "containerId": "",
+            "created": "2024-07-12T17:48:03.137Z",
+            "sortNum": 70000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "83ad66cb-3384-4fc9-96d6-5c1f5cef002d",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "311e0144-3287-4a7a-9818-88ac3b7dc1a4",
+            "name": "Login",
+            "url": "{{host}}/user/auth",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-07-10T17:23:55.260Z",
+            "modified": "2024-07-10T18:09:06.177Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"u_email\": \"adm@email.com\",\n  \"u_senha\": \"960012\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "a47c491c-a554-491c-82db-9d05be4878ea",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "311e0144-3287-4a7a-9818-88ac3b7dc1a4",
+            "name": "ResetSenha",
+            "url": "{{host}}/user/reset-senha-inicial",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-07-10T18:11:29.758Z",
+            "modified": "2024-07-10T18:14:05.613Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"userId\": 44, \n  \"u_senha\": \"960012\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNjM0OTQ2LCJleHAiOjE3MjA3MjEzNDZ9.3zZoCSVi-_9KjG4J14HDsQU3I3Xp_apM2Opu1z1YoC8"
+            }
+        },
+        {
+            "_id": "d99135d8-cc2b-43d1-9d69-c1020b147919",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "311e0144-3287-4a7a-9818-88ac3b7dc1a4",
+            "name": "RegistrarUsuario",
+            "url": "{{host}}/user/registrar-usuario",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-07-10T18:15:06.413Z",
+            "modified": "2024-07-10T18:17:18.643Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"u_nome\": \"adm3\", \n  \"u_email\": \"adm3@email.com\", \n  \"u_senha\": \"adm@2024\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNjM0OTQ2LCJleHAiOjE3MjA3MjEzNDZ9.3zZoCSVi-_9KjG4J14HDsQU3I3Xp_apM2Opu1z1YoC8"
+            }
+        },
+        {
+            "_id": "fb6c96ee-13a5-4c2e-9359-375acb7f4196",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "311e0144-3287-4a7a-9818-88ac3b7dc1a4",
+            "name": "ListarUsuario",
+            "url": "{{host}}/user/2/listar-usuario",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2024-07-10T19:01:22.909Z",
+            "modified": "2024-07-10T19:47:44.263Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNjM0OTQ2LCJleHAiOjE3MjA3MjEzNDZ9.3zZoCSVi-_9KjG4J14HDsQU3I3Xp_apM2Opu1z1YoC8"
+            },
+            "docs": "var response = tc.response.json;\n \nvar html = `\n    <style>\n      body {\n        font-size: 13px;\n        font-family: \"HelveticaNeue\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n      }\n \n      table {\n        width: 100%;\n        box-sizing: border-box;\n        border-collapse: collapse;\n        border-spacing: 0;\n      }\n \n      td,\n      th {\n        padding: 0;\n      }\n \n      th, td {\n        padding: 4px 6px;\n        text-align: left;\n        border-bottom: 1px solid #E1E1E1;\n      }\n \n      th:first-child,\n      td:first-child {\n        padding-left: 0;\n      }\n \n      th:last-child,\n      td:last-child {\n        padding-right: 0;\n      }\n \n     /* for dark mode use .vscode-dark to override */\n     .vscode-dark th, .vscode-dark td {\n        border-bottom: 1px solid #555;\n      }\n  \n  </style>\n \n    <div id=\"container\"></div>\n    \n    <script>\n         // get the container element\n         let container = document.getElementById(\"container\");\n         \n         var cols = Object.keys(chart_data[0]);\n \n          var headerRow = '<tr>';\n          var bodyRows = '';\n      \n          cols.map(function(col) {\n              headerRow += '<th>' + col + '</th>';\n          });\n      \n          headerRow += '</tr>';\n      \n          chart_data.map(function(row) {\n              bodyRows += '<tr>';\n      \n              cols.map(function(colName) {\n                  bodyRows += '<td>' + row[colName] + '</td>';\n              })\n      \n              bodyRows += '</tr>';\n          });\n      \n          var tabledata=  '<table>' + headerRow + bodyRows + '</table>';\n         container.innerHTML = tabledata; // set table html\n      \n   </script>`\n   \n   tc.chartHTML(html, response);"
+        },
+        {
+            "_id": "35aaf223-8d9a-4290-9854-000fcb0bf7b3",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "311e0144-3287-4a7a-9818-88ac3b7dc1a4",
+            "name": "ListarUsuarios",
+            "url": "{{host}}/user/listar-usuarios",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2024-07-10T20:01:17.721Z",
+            "modified": "2024-07-10T20:01:53.326Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNjM0OTQ2LCJleHAiOjE3MjA3MjEzNDZ9.3zZoCSVi-_9KjG4J14HDsQU3I3Xp_apM2Opu1z1YoC8"
+            },
+            "docs": "var response = tc.response.json;\n \nvar html = `\n    <style>\n      body {\n        font-size: 13px;\n        font-family: \"HelveticaNeue\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n      }\n \n      table {\n        width: 100%;\n        box-sizing: border-box;\n        border-collapse: collapse;\n        border-spacing: 0;\n      }\n \n      td,\n      th {\n        padding: 0;\n      }\n \n      th, td {\n        padding: 4px 6px;\n        text-align: left;\n        border-bottom: 1px solid #E1E1E1;\n      }\n \n      th:first-child,\n      td:first-child {\n        padding-left: 0;\n      }\n \n      th:last-child,\n      td:last-child {\n        padding-right: 0;\n      }\n \n     /* for dark mode use .vscode-dark to override */\n     .vscode-dark th, .vscode-dark td {\n        border-bottom: 1px solid #555;\n      }\n  \n  </style>\n \n    <div id=\"container\"></div>\n    \n    <script>\n         // get the container element\n         let container = document.getElementById(\"container\");\n         \n         var cols = Object.keys(chart_data[0]);\n \n          var headerRow = '<tr>';\n          var bodyRows = '';\n      \n          cols.map(function(col) {\n              headerRow += '<th>' + col + '</th>';\n          });\n      \n          headerRow += '</tr>';\n      \n          chart_data.map(function(row) {\n              bodyRows += '<tr>';\n      \n              cols.map(function(colName) {\n                  bodyRows += '<td>' + row[colName] + '</td>';\n              })\n      \n              bodyRows += '</tr>';\n          });\n      \n          var tabledata=  '<table>' + headerRow + bodyRows + '</table>';\n         container.innerHTML = tabledata; // set table html\n      \n   </script>`\n   \n   tc.chartHTML(html, response);"
+        },
+        {
+            "_id": "e437ecff-4bba-43dd-9468-f986748bea81",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "34610308-4fcd-4ada-8bbf-651a3ea49246",
+            "name": "ListarEmpresas",
+            "url": "{{host}}/company/listar-empresas",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2024-07-10T20:03:26.308Z",
+            "modified": "2024-07-10T20:03:56.627Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNjM0OTQ2LCJleHAiOjE3MjA3MjEzNDZ9.3zZoCSVi-_9KjG4J14HDsQU3I3Xp_apM2Opu1z1YoC8"
+            }
+        },
+        {
+            "_id": "278392f3-6fb8-4e2b-ad4a-876a32a7985b",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "34610308-4fcd-4ada-8bbf-651a3ea49246",
+            "name": "RegistrarEmpresa",
+            "url": "{{host}}/company/registrar-empresa",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2024-07-10T20:07:46.889Z",
+            "modified": "2024-07-11T19:16:18.197Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"e_nome\": \"Nazaria Distribuidora de Produtos Farmaceuticos Ltda\",\n  \"e_razao\": \"Nazaria Distribuidora\",\n  \"e_cnpj\": \"07224991000135\",\n  \"e_cidade\": \"Fortaleza\",\n  \"e_uf\": \"CE\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNzI1MzYyLCJleHAiOjE3MjA4MTE3NjJ9.BVDspwDXORnmrlb0qNlSanSBHCqvtqEKY4qlWmJ7tuk"
+            }
+        },
+        {
+            "_id": "bf2b1294-7c8c-47ae-9dd8-b469cc202506",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "34610308-4fcd-4ada-8bbf-651a3ea49246",
+            "name": "EditarEmpresa",
+            "url": "{{host}}/company/10/editar-empresa",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2024-07-11T13:39:35.303Z",
+            "modified": "2024-07-11T17:44:56.539Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"e_nome\": \"Nazaria Distribuidora de Produtos Farmaceuticos Ltda\",\n  \"e_razao\": \"Nazaria Fortaleza\",\n  \"e_cnpj\": \"07224991000135\",\n  \"e_cidade\": \"Fortaleza\",\n  \"e_uf\": \"CE\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNjM0OTQ2LCJleHAiOjE3MjA3MjEzNDZ9.3zZoCSVi-_9KjG4J14HDsQU3I3Xp_apM2Opu1z1YoC8"
+            }
+        },
+        {
+            "_id": "6a5b27f0-4f54-45e8-9677-ea5eec79b2b4",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "33f3823b-516d-450f-87f4-e9b33b12c360",
+            "name": "registrarTipoDocumento",
+            "url": "{{host}}/type-document/registrar-tipo-documento",
+            "method": "POST",
+            "sortNum": 110000,
+            "created": "2024-07-11T19:34:40.144Z",
+            "modified": "2024-07-12T11:57:13.291Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n   \"td_desc\": 10000000\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNzI1MzYyLCJleHAiOjE3MjA4MTE3NjJ9.BVDspwDXORnmrlb0qNlSanSBHCqvtqEKY4qlWmJ7tuk"
+            }
+        },
+        {
+            "_id": "2a088c52-ffa9-45f9-8a27-e911a7ebeb54",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "33f3823b-516d-450f-87f4-e9b33b12c360",
+            "name": "listarTipoDocumentos",
+            "url": "{{host}}/type-document/listar-tipo-documentos",
+            "method": "GET",
+            "sortNum": 120000,
+            "created": "2024-07-12T12:03:02.581Z",
+            "modified": "2024-07-12T12:03:49.608Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwNzI1MzYyLCJleHAiOjE3MjA4MTE3NjJ9.BVDspwDXORnmrlb0qNlSanSBHCqvtqEKY4qlWmJ7tuk"
+            }
+        },
+        {
+            "_id": "67c7e35b-4d59-48c6-99b1-e2dd387ead76",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "98528311-2ad6-41d4-b5b6-cd4babba2248",
+            "name": "registrarDocumentos",
+            "url": "{{host}}/document/registrar-documento",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2024-07-12T12:22:12.393Z",
+            "modified": "2024-07-12T17:31:59.790Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"d_filial_id\": 4,\n    \"d_data_pedido\": \"12/04/2024\",\n    \"d_data_emissao\": \"12/06/2024\",\n    \"d_data_vencimento\": \"12/04/2025\",\n    \"d_tipo_doc_id\": 3,\n    \"d_orgao_exp\": \"SEMURB\",\n    \"d_anexo\": \"\",\n    \"d_num_protocolo\": \"A20240013\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwODA0MzE1LCJleHAiOjE3MjA4OTA3MTV9.ab9zM_IxJyIDwSdFOQ1sGtd8KLKbCzK9ySTv2xrnGd0"
+            }
+        },
+        {
+            "_id": "6ec94b9b-5f6b-436f-a62a-5a8b41ef6e50",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "2f6b85d2-30a3-4b6e-b5f6-075438a3eed9",
+            "name": "registrarFilial",
+            "url": "{{host}}/branch/registrar-filial",
+            "method": "POST",
+            "sortNum": 140000,
+            "created": "2024-07-12T12:47:23.849Z",
+            "modified": "2024-07-12T16:14:32.978Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"f_nome\": \"Globo Kennedy ll\",\n    \"f_cnpj\": \"63503007010469\",\n    \"f_cidade\": \"Teresina\",\n    \"f_uf\": \"PI\",\n    \"f_responsavel_id\": 2,\n    \"f_empresa_id\": 4,\n    \"f_endereco\": {\n      \"rua\": \"Av. Presidente Kennedy\",\n      \"num\": 1041,\n      \"bairro\": \"Bairro São Cristóvão\",\n      \"cep\": \"64.052-800\"\n    }\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "fc3a28b4-e4d6-486a-a4e2-02eb263dcfe7",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "2f6b85d2-30a3-4b6e-b5f6-075438a3eed9",
+            "name": "listarFiliais",
+            "url": "{{host}}/branch/listar-filiais",
+            "method": "GET",
+            "sortNum": 150000,
+            "created": "2024-07-12T16:20:55.924Z",
+            "modified": "2024-07-12T16:21:16.330Z",
+            "headers": []
+        },
+        {
+            "_id": "eba1d0d3-b211-4fc0-8aae-e9ce2d29cfe9",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "98528311-2ad6-41d4-b5b6-cd4babba2248",
+            "name": "listarDocumentos",
+            "url": "{{host}}/document/listar-documentos",
+            "method": "GET",
+            "sortNum": 160000,
+            "created": "2024-07-12T17:39:30.316Z",
+            "modified": "2024-07-12T17:40:34.741Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwODA0MzE1LCJleHAiOjE3MjA4OTA3MTV9.ab9zM_IxJyIDwSdFOQ1sGtd8KLKbCzK9ySTv2xrnGd0"
+            }
+        },
+        {
+            "_id": "487c7b3b-b400-4ced-b17b-364023f92908",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "3f356f6c-83c8-4489-b50c-21d863906319",
+            "name": "registrarComentario",
+            "url": "{{host}}/comment-document/5/registar-comentario",
+            "method": "POST",
+            "sortNum": 180000,
+            "created": "2024-07-12T17:51:21.903Z",
+            "modified": "2024-07-12T18:25:45.817Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"cd_msg\": \"Este documento ja esta atualizado?\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwODA0MzE1LCJleHAiOjE3MjA4OTA3MTV9.ab9zM_IxJyIDwSdFOQ1sGtd8KLKbCzK9ySTv2xrnGd0"
+            }
+        }
+    ],
+    "ref": "LAjEaoQYyLxTZYctTfSxhL-HOlZLZjqk9QCMifgZp-OTr7lFuaIu0I6m0bTkXxPM0q_ceJq-GQgdrSuLHdfI4w"
+}

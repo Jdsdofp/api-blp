@@ -13,22 +13,66 @@ const Filial = sequelize.define('Usuario',{
 
     f_nome: {
         type: DataTypes.STRING(255),
-        allowNull: false
+        allowNull: false,
+        unique: {
+            name: 'unique_f_nome',
+            msg: 'Ja existe uma filial cadastrada com esse NOME'
+        },
+        validate: {
+            notNull: {
+                msg: 'Campo (nome filial) é obrigatorio'
+            },
+            notEmpty: {
+                msg: 'Campo (nome filial) nao pode ficar vazio'
+            }
+        }
     },
 
     f_cnpj: {
-        type: DataTypes.CHAR(20),
-        allowNull: false
+        type: DataTypes.CHAR(14),
+        allowNull: false,
+        unique: {
+            name: 'unique_f_cnpj',
+            msg: 'Ja existe uma filial cadastrada com esse CNPJ'
+        },
+        validate: {
+            len: {
+                args: [1, 14],
+                msg: 'O (CNPJ) nao pode ser maior que 14 caracteres'
+            },
+
+            notNull: {
+                msg: 'Campo (CNPJ) é obrigatorio'
+            }
+        }
     },
 
     f_cidade: {
         type: DataTypes.STRING(180),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Campo (Cidade) nao pode ficar vazio'
+            },
+
+            notNull: {
+                msg: 'Campo (Cidade) é obrigatorio'
+            }
+        }
     },
 
     f_uf: {
         type: DataTypes.STRING(2),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            len: {
+                args: [1,2],
+                msg: 'A (UF) so pode ser composta por 2 caracteres'
+            },
+            notEmpty: {
+                msg: 'Campo (UF) nao pode ficar vazio'
+            }
+        }
     },
 
     f_responsavel_id: {

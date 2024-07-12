@@ -83,8 +83,8 @@ add column u_ativo boolean default true;
 
 create table filial(
 	f_id serial4 primary key not null,
-	f_nome varchar(255) not null,
-	f_cnpj char(20) not null,
+	f_nome varchar(255) unique not null,
+	f_cnpj char(14) unique not null,
 	f_cidade varchar(180) not null,
 	f_uf varchar(2) not null,
 	f_responsavel_id int,
@@ -93,6 +93,7 @@ create table filial(
 	foreign key (f_empresa_id) references empresa(e_id),
 	f_ativo boolean default true
 );
+
 
 
 
@@ -131,6 +132,15 @@ alter column f_responsavel_id set not null;
 
 alter table filial
 add column f_ativo boolean default true;
+
+alter table filial
+alter column f_cnpj char(14) not null;
+
+alter table filial
+add constraint unique_f_cnpj UNIQUE(f_cnpj);
+
+alter table filial
+add constraint unique_f_nome UNIQUE(f_nome);
 */
 
 
@@ -301,3 +311,11 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
+
+
+
+/*
+ OBS: para que possa ser emitido o alvará de funcionanmento em agluns casos é necessario que os demais alvaras estejam emitidos
+ caso contrario não será possivel a emissão do alvara de funcionamento....
+
+*/
