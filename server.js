@@ -7,8 +7,8 @@ const empresaRoute = require("./routes/rotaEmpresa");
 const tipoDocumentoRoute =require("./routes/rotaTipoDocumento");
 const documentoRoute = require("./routes/rotaDocumento");
 const fililRoute = require("./routes/rotaFilial");
-const comentarioDocumentoRoute = require("./routes/rotaComentarioDocumento")
-
+const comentarioDocumentoRoute = require("./routes/rotaComentarioDocumento");
+const condicionanteRoute = require("./routes/rotaCondicionantes");
 
 // Use body-parser middleware
 app.use(express.json());
@@ -20,6 +20,7 @@ app.use("/type-document", tipoDocumentoRoute);
 app.use("/branch", fililRoute);
 app.use("/document", documentoRoute);
 app.use("/comment-document", comentarioDocumentoRoute);
+app.use("/condition", condicionanteRoute)
 
 // SET DO SERVER
 const PORT = 8080 ||process.env;

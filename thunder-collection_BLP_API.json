@@ -2,7 +2,7 @@
     "clientName": "Thunder Client",
     "collectionName": "BLP_API",
     "collectionId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
-    "dateExported": "2024-07-12T18:28:37.220Z",
+    "dateExported": "2024-07-12T20:30:33.082Z",
     "version": "1.2",
     "folders": [
         {
@@ -46,6 +46,13 @@
             "containerId": "",
             "created": "2024-07-12T17:48:03.137Z",
             "sortNum": 70000
+        },
+        {
+            "_id": "112b9fd5-c0b7-401d-8f1c-b8a1f773fc76",
+            "name": "condicionante",
+            "containerId": "",
+            "created": "2024-07-12T20:22:07.740Z",
+            "sortNum": 80000
         }
     ],
     "requests": [
@@ -323,7 +330,28 @@
                 "type": "bearer",
                 "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwODA0MzE1LCJleHAiOjE3MjA4OTA3MTV9.ab9zM_IxJyIDwSdFOQ1sGtd8KLKbCzK9ySTv2xrnGd0"
             }
+        },
+        {
+            "_id": "6e2dcc11-b578-4615-92e0-adda79f33572",
+            "colId": "cb4746f5-e335-4fa7-a976-904a9241ab47",
+            "containerId": "112b9fd5-c0b7-401d-8f1c-b8a1f773fc76",
+            "name": "registrarCondicionante",
+            "url": "{{host}}/condition/registrar-condicionante",
+            "method": "POST",
+            "sortNum": 190000,
+            "created": "2024-07-12T20:22:24.261Z",
+            "modified": "2024-07-12T20:29:45.164Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"c_tipo\": \"Alvara Corpo de Bombeiro\",\n    \"c_condicao\": {\n      \"msg\": \"So podera ser emitido\"\n    }  \n} ",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1AZW1haWwuY29tIiwiaWF0IjoxNzIwODE1OTI0LCJleHAiOjE3MjA5MDIzMjR9.rit95LQh8MO1a7viZpYddU7g6SbXf0uJQqJh5cyu0d0"
+            }
         }
     ],
-    "ref": "LAjEaoQYyLxTZYctTfSxhL-HOlZLZjqk9QCMifgZp-OTr7lFuaIu0I6m0bTkXxPM0q_ceJq-GQgdrSuLHdfI4w"
+    "ref": "LAjEaoQYyLxTZYctTfSxhLP5uyJCZgna4KmBgZZLh89Aiwk9QNnPvYdZ_GgG-qnB-PVxRvcbT-7p_0JiMdawqQ"
 }
