@@ -35,7 +35,8 @@ const Comentariosdocumentos = sequelize.define('Comentariosdocumentos', {
     },
 
     cd_resposta: {
-        type: DataTypes.JSONB
+        type: DataTypes.JSONB,
+        default: []
     },
 
     criado_em: {
