@@ -62,7 +62,9 @@ module.exports.registrarRespostaComentario = async (req, res) => {
             updatedRespostas = [];
         }
 
-        updatedRespostas.push({ autorId: autor.u_id, autor: autor.u_nome, msg, data: obterDataAtualFormatada()});
+        let model = { autorId: autor.u_id, autor: autor.u_nome, msg, data: obterDataAtualFormatada()}
+
+        updatedRespostas.push(model);
 
         await Comentariosdocumentos.update(
             { cd_resposta: updatedRespostas },
@@ -71,7 +73,7 @@ module.exports.registrarRespostaComentario = async (req, res) => {
 
         const updatedComentarioDocumento = await Comentariosdocumentos.findOne({ where: { cd_id } });
 
-        res.status(200).json(updatedComentarioDocumento);
+        res.status(200).json(model);
     } catch (error) {
         console.error('Error updating comentarioDocumento:', error);
         res.status(400).json({ error: error.message });

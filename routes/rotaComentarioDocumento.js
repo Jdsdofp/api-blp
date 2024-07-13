@@ -5,7 +5,7 @@ const authMiddleware = require("../config/authMiddleware");
 
 comentarioDocumentoRoute.post('/:cd_documento_id/registar-comentario', authMiddleware, registarComentarioDocumento);
 comentarioDocumentoRoute.get('/:cd_documento_id/listar-comentario-documento', authMiddleware, listarComentarios);
-comentarioDocumentoRoute.put('/:cd_id/registrar-resposta-comentario', authMiddleware, registrarRespostaComentario)
+comentarioDocumentoRoute.patch('/:cd_id/registrar-resposta-comentario', authMiddleware, registrarRespostaComentario)
 
 
 module.exports = comentarioDocumentoRoute;

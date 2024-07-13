@@ -18,12 +18,18 @@ function obterDataAtualFormatada() {
     const mes = String(data.getMonth() + 1).padStart(2, '0'); // O mês começa do zero, por isso adicionamos 1
     const ano = data.getFullYear();
 
-    // Formata a data no formato dd/mm/aaaa
-    return `${dia}/${mes}/${ano}`;
+    // Obtém hora e minutos
+    const horas = String(data.getHours()).padStart(2, '0');
+    const minutos = String(data.getMinutes()).padStart(2, '0');
+
+    // Formata a data e hora no formato dd/mm/aaaa hh:mm
+    return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 }
 
 // Exemplo de uso:
-const dataAtualFormatada = obterDataAtualFormatada();
+const dataHoraAtualFormatada = obterDataAtualFormatada();
+console.log(dataHoraAtualFormatada);  // Exemplo de saída: 13/07/2024 15:30
+
 
 
 
