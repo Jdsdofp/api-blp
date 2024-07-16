@@ -38,6 +38,15 @@ const Usuario = sequelize.define('Usuario', {
     u_senhatemporaria: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+    },
+    u_empresas_ids: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
+        defaultValue: []
+    },
+
+    u_filiais_ids: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
+        defaultValue: []
     }
 
 },{

@@ -14,7 +14,11 @@ module.exports = {
     },
 
     generateToken: (user) => {
-        return jwt.sign({ id: user.u_id, email: user.u_email }, secret, { expiresIn: '24h' });
+        return jwt.sign({
+            id: user.u_id,
+            empresas_ids: user.u_empresas_ids,
+            filiais_ids: user.u_filiais_ids
+        }, secret, { expiresIn: '24h' });
     },
 
     verifyToken: (token) => {

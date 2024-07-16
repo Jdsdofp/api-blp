@@ -21,42 +21,46 @@ module.exports.registrarUsuario = async(req, res) =>{
 }
 
 
-//BLOCO DE USUARIO E SENHA
-module.exports.loginUsuario = async(req, res)=>{
+module.exports.loginUsuario = async (req, res) => {
     try {
         const { u_email, u_senha } = req.body;
         
-        
-        const user = await Usuario.scope('withPassword').findOne({where: {u_email}});
-        
-        if(!user.u_ativo){
-            return res.status(301).json({message: 'Usuario desativado'})
+        const user = await Usuario.scope('withPassword').findOne({ where: { u_email } });
+
+        if (!user) {
+            return res.status(401).json({ message: 'Email ou senha incorretos' });
         }
-        
-        if(!user){
-            return res.status(401).json({message: 'Email ou senha incorretos'});
+
+        if (!user.u_ativo) {
+            return res.status(301).json({ message: 'Usuário desativado' });
         }
 
         const isMatch = await compareSenha(u_senha, user.u_senha);
 
-        
-        if(!isMatch){
-            return res.status(401).json({message: 'Email ou senha incorretos'});
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Email ou senha incorretos' });
         }
-        
 
-        
-        
+        // Carregar os arrays de IDs das empresas e filiais
+        const { u_empresas_ids, u_filiais_ids } = await Usuario.findOne({
+            attributes: ['u_empresas_ids', 'u_filiais_ids'],
+            where: { u_id: user.u_id }
+        });
+
+        // Adicionar as IDs ao objeto usuário
+        user.u_empresas_ids = u_empresas_ids || [];
+        user.u_filiais_ids = u_filiais_ids || [];
+
         const token = generateToken(user);
-        
-        if(user.u_senhatemporaria){
-            return res.status(200).json({message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, token});
+
+        if (user.u_senhatemporaria) {
+            return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, token });
         }
 
-        res.json({message: 'Autenticado com sucesso', token});
+        res.json({ message: 'Autenticado com sucesso', token });
 
     } catch (error) {
-        res.status(500).json({message: 'Erro ao autenticar usuário', error})
+        res.status(500).json({ message: 'Erro ao autenticar usuário', error });
     }
 }
 
