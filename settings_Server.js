@@ -28,7 +28,6 @@ function obterDataAtualFormatada() {
 
 // Exemplo de uso:
 const dataHoraAtualFormatada = obterDataAtualFormatada();
-console.log(dataHoraAtualFormatada);  // Exemplo de saída: 13/07/2024 15:30
 
 
 

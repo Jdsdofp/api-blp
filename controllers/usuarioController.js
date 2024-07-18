@@ -1,6 +1,9 @@
 const Usuario = require("../models/Usuario");
+const Empresa = require('../models/Empresa');
+const Filial = require("../models/Filial")
 const { hashSenha, generateToken, compareSenha, verifyToken } = require("../config/auth");
 const { msgErrosUnico } = require("../settings_Server");
+const { Sequelize } = require("sequelize");
 
 module.exports.registrarUsuario = async(req, res) =>{
     try {
@@ -148,3 +151,142 @@ module.exports.editarUsuarios = async(req, res)=>{
     }
 }
 
+module.exports.atribuirEmpresaUsuario = async (req, res) => {
+    try {
+        const { u_id } = req.params;
+        const { u_empresas_ids } = req.body;
+
+        if (!u_empresas_ids || u_empresas_ids.length < 1) {
+            return res.status(404).json({ message: 'Informe um valor para atribuir a empresa' });
+        }
+
+        const empresas = await Empresa.findAll({ where: { e_id: { [Sequelize.Op.in]: u_empresas_ids } } });
+        const e_ids = empresas.map(emp => emp.dataValues.e_id);
+
+        if (e_ids.length < 1) {
+            return res.status(403).json({ message: 'Empresa não encontrada' });
+        }
+
+        const usuario = await Usuario.findOne({ where: { u_id } });
+
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+
+        if (!usuario.u_ativo) {
+            return res.status(401).json({ message: 'Usuário desativado' });
+        }
+
+        const empresaJaAtribuida = u_empresas_ids.some(id => usuario.u_empresas_ids.includes(id));
+
+        if (empresaJaAtribuida) {
+            return res.status(403).json({ message: 'Empresa já atribuída a este usuário' });
+        }
+
+        // Atribuir empresas ao usuário
+        usuario.u_empresas_ids = [...usuario.u_empresas_ids, ...e_ids];
+
+        // Buscar todas as filiais das empresas atribuídas
+        const filiais = await Filial.findAll({ where: { f_empresa_id: { [Sequelize.Op.in]: e_ids } } });
+        const f_ids = filiais.map(filial => filial.dataValues.f_id);
+
+        // Atribuir filiais ao usuário
+        usuario.u_filiais_ids = [...usuario.u_filiais_ids, ...f_ids];
+
+        await usuario.save();
+
+        res.status(200).json(usuario);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
+
+module.exports.retiraEmpresaUsuario = async (req, res) => {
+    try {
+        const { u_id } = req.params;
+        const { u_empresas_ids } = req.body;
+
+        if (!u_empresas_ids || u_empresas_ids.length < 1) {
+            return res.status(404).json({ message: 'Informe um valor para retirar a empresa' });
+        }
+
+        // Buscar todas as empresas que estão sendo removidas
+        const empresas = await Empresa.findAll({ where: { e_id: { [Sequelize.Op.in]: u_empresas_ids } } });
+        const e_ids = empresas.map(emp => emp.e_id);
+
+        if (e_ids.length < 1) {
+            return res.status(403).json({ message: 'Empresa não encontrada' });
+        }
+
+        const usuario = await Usuario.findByPk(u_id);
+
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+
+        if (!usuario.u_ativo) {
+            return res.status(401).json({ message: 'Usuário desativado' });
+        }
+
+        // Remover empresas atribuídas ao usuário
+        usuario.u_empresas_ids = usuario.u_empresas_ids.filter(id => !e_ids.includes(id));
+
+        // Buscar todas as filiais das empresas que estão sendo removidas
+        const filiaisRemover = await Filial.findAll({ where: { f_empresa_id: { [Sequelize.Op.in]: e_ids } } });
+        const f_idsRemover = filiaisRemover.map(filial => filial.f_id);
+
+        // Remover filiais associadas às empresas removidas do usuário
+        usuario.u_filiais_ids = usuario.u_filiais_ids.filter(id => !f_idsRemover.includes(id));
+
+        await usuario.save();
+
+        // Obter o usuário atualizado sem incluir as filiais
+        const usuarioAtualizado = await Usuario.findByPk(u_id);
+
+        res.status(200).json(usuarioAtualizado);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
+module.exports.listarEmpresasEFiliaisUsuario = async (req, res) => {
+    try {
+        const { u_id } = req.params;
+
+        // Buscar o usuário
+        const usuario = await Usuario.findOne({ where: { u_id } });
+
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+
+        // Buscar as empresas atribuídas ao usuário
+        const empresas = await Empresa.findAll({
+            where: {
+                e_id: {
+                    [Sequelize.Op.in]: usuario.u_empresas_ids
+                }
+            }
+        });
+
+        // Buscar as filiais atribuídas ao usuário
+        const filiais = await Filial.findAll({
+            where: {
+                f_id: {
+                    [Sequelize.Op.in]: usuario.u_filiais_ids
+                }
+            }
+        });
+
+        // Retornar as empresas e filiais
+        res.status(200).json({
+            empresas,
+            filiais
+        });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};

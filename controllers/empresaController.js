@@ -43,8 +43,11 @@ module.exports.registrarEmpresa = async (req, res)=>{
 module.exports.editarEmpresa = async (req, res)=>{
     try {
 
-
         const {e_id} =  req.params;
+        const {id} = req.user;
+        const usuario = await Usuario.findOne({where: {u_id: id}})
+        if(!e_id.includes(usuario.u_empresas_ids)) return res.status(404).json({message: 'Voce ainda nao tem acesso a empresa'})
+
         const {
             e_nome,
             e_razao,
@@ -55,7 +58,7 @@ module.exports.editarEmpresa = async (req, res)=>{
         
         
         const empresa = await Empresa.findByPk(e_id)
-        console.log(empresa)
+       
         empresa.update({e_nome: e_nome, e_razao: e_razao, e_cnpj: e_cnpj, e_cidade: e_cidade, e_uf: e_uf})
         .then(()=>{res.status(200).json(empresa)})
         .catch((e)=>{
