@@ -27,7 +27,7 @@ module.exports.registrarUsuario = async(req, res) =>{
 module.exports.loginUsuario = async (req, res) => {
     try {
         const { u_email, u_senha } = req.body;
-        
+
         const user = await Usuario.scope('withPassword').findOne({ where: { u_email } });
 
         if (!user) {
@@ -60,7 +60,17 @@ module.exports.loginUsuario = async (req, res) => {
             return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, token });
         }
 
-        res.json({ message: 'Autenticado com sucesso', token });
+        modelUser = {
+            id: user.u_id,
+            nome: user.u_nome,
+            email: user.u_email,
+            empresa: user.u_empresas_ids,
+            filial: user.u_filiais_ids,
+            criado_em: user.criado_em,
+            p_acesso: user.u_senhatemporaria
+        }
+
+        res.json({ message: 'Autenticado com sucesso', modelUser, token });
 
     } catch (error) {
         res.status(500).json({ message: 'Erro ao autenticar usuário', error });

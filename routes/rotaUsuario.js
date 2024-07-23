@@ -5,7 +5,7 @@ const authMiddleware = require("../config/authMiddleware");
 
 
 usuarioRoute.post('/registrar-usuario', authMiddleware, registrarUsuario);
-usuarioRoute.post('/auth', loginUsuario);
+usuarioRoute.post('/login', loginUsuario);
 usuarioRoute.get('/listar-usuarios', authMiddleware, listarUsuarios);
 usuarioRoute.get('/:u_id/listar-usuario', authMiddleware, listarUsuario);
 usuarioRoute.post('/reset-senha-inicial', authMiddleware, resetSenhaInicial);

@@ -5,7 +5,7 @@ const authMiddleware = require("../config/authMiddleware")
 
 
 fililRoute.post('/registrar-filial', authMiddleware, registrarFilial);
-fililRoute.get('/listar-filiais', authMiddleware, listarFiliais);
+fililRoute.get('/listar-filiais', listarFiliais);
 
 
 module.exports = fililRoute;

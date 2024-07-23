@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const packgeName = require("./package.json");
 const {settingsServer} = require("./settings_Server");
 const app = express();
@@ -9,6 +10,17 @@ const documentoRoute = require("./routes/rotaDocumento");
 const fililRoute = require("./routes/rotaFilial");
 const comentarioDocumentoRoute = require("./routes/rotaComentarioDocumento");
 const condicionanteRoute = require("./routes/rotaCondicionantes");
+
+
+// Configurar CORS
+const corsOptions = {
+    origin: 'http://localhost:5173', // Substitua pelo domínio do seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  };
+  
+  app.use(cors(corsOptions));
+
 
 // Use body-parser middleware
 app.use(express.json());
