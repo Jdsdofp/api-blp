@@ -57,7 +57,7 @@ module.exports.loginUsuario = async (req, res) => {
         const token = generateToken(user);
 
         if (user.u_senhatemporaria) {
-            return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, token });
+            return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, status: user.u_senhatemporaria, token });
         }
 
         modelUser = {
