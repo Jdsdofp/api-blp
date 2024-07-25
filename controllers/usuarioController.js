@@ -83,6 +83,12 @@ module.exports.resetSenhaInicial = async(req, res)=>{
     try {
         const { userId, u_senha } = req.body;
         
+        const {id} = req.user;
+
+        const verificaStatusSenha = await Usuario.findByPk(id)
+        if(!verificaStatusSenha.u_senhatemporaria) return res.status(403).json({message: 'Não é possivel alterar, ja há alteração de senha!'})
+
+
         // Verifica se o usuário existe
         const user = await Usuario.scope("withPassword").findByPk(userId);
 
@@ -105,7 +111,7 @@ module.exports.resetSenhaInicial = async(req, res)=>{
             u_senhatemporaria: false
         });
 
-        res.status(200).json({ message: 'Senha redefinida com sucesso' });
+        res.status(200).json({ message: 'Senha redefinida com sucesso'});
     } catch (error) {
         res.status(500).json({ message: 'Erro ao redefinir senha', error });
     }

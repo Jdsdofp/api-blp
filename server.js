@@ -14,7 +14,8 @@ const condicionanteRoute = require("./routes/rotaCondicionantes");
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'http://10.11.3.42:5173'
+    'http://10.11.3.42:5173',
+    '*'
   ];
   
   const corsOptions = {
