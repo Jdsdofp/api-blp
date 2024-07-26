@@ -2,8 +2,9 @@ const Usuario = require("../models/Usuario");
 const Empresa = require('../models/Empresa');
 const Filial = require("../models/Filial")
 const { hashSenha, generateToken, compareSenha, verifyToken } = require("../config/auth");
-const { msgErrosUnico } = require("../settings_Server");
+const { msgErrosUnico, obterDataAtualFormatada } = require("../settings_Server");
 const { Sequelize } = require("sequelize");
+const { addHours } = require("date-fns");
 
 module.exports.registrarUsuario = async(req, res) =>{
     try {
@@ -20,6 +21,17 @@ module.exports.registrarUsuario = async(req, res) =>{
     } catch (error) {
         res.status(500).json({message: `Erro ao registrar o usuario ${msgErrosUnico(error.errors[0]["type"])}`})
         
+    }
+}
+
+
+//AUTH... fazendo a checagem do token do usuario, vai que o amostradin que entrar sem permissão
+module.exports.checandoToken = async (req, res)=>{
+    try {
+        res.status(200).json(true)
+
+    } catch (error) {
+        res.status(400).json({error})
     }
 }
 
@@ -60,6 +72,11 @@ module.exports.loginUsuario = async (req, res) => {
             return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, status: user.u_senhatemporaria, token });
         }
 
+        var dataExp = verifyToken(token)
+    
+        const sessaoLogin = new Date(dataExp.exp * 1000);
+        const dataHoraFmt = addHours(new Date(dataExp.exp * 1000), -3);
+        console.log(dataHoraFmt)
         modelUser = {
             id: user.u_id,
             nome: user.u_nome,
@@ -67,11 +84,13 @@ module.exports.loginUsuario = async (req, res) => {
             empresa: user.u_empresas_ids,
             filial: user.u_filiais_ids,
             criado_em: user.criado_em,
-            p_acesso: user.u_senhatemporaria
+            p_acesso: user.u_senhatemporaria,
+            sessaoExp: dataHoraFmt
         }
-
-        res.json({ message: 'Autenticado com sucesso', modelUser, token });
-
+        
+        res.json({ message: 'Autenticado com sucesso', modelUser, token});
+        
+        
     } catch (error) {
         res.status(500).json({ message: 'Erro ao autenticar usuário', error });
     }
@@ -167,6 +186,7 @@ module.exports.editarUsuarios = async(req, res)=>{
     }
 }
 
+
 module.exports.atribuirEmpresaUsuario = async (req, res) => {
     try {
         const { u_id } = req.params;
@@ -216,7 +236,6 @@ module.exports.atribuirEmpresaUsuario = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
-
 
 
 module.exports.retiraEmpresaUsuario = async (req, res) => {

@@ -9,7 +9,8 @@ module.exports = (req, res, next) => {
 
     try {
         const decoded = verifyToken(token);
-        req.user = decoded;
+        req.user = decoded;;
+
         next();
     } catch (error) {
         res.status(401).json({ message: 'Token inválido' });
