@@ -4,7 +4,7 @@ const Filial = require("../models/Filial")
 const { hashSenha, generateToken, compareSenha, verifyToken } = require("../config/auth");
 const { msgErrosUnico, obterDataAtualFormatada } = require("../settings_Server");
 const { Sequelize } = require("sequelize");
-const { addHours } = require("date-fns");
+const { addHours, format } = require("date-fns");
 
 module.exports.registrarUsuario = async(req, res) =>{
     try {
@@ -75,8 +75,9 @@ module.exports.loginUsuario = async (req, res) => {
         var dataExp = verifyToken(token)
     
         const sessaoLogin = new Date(dataExp.exp * 1000);
-        const dataHoraFmt = addHours(new Date(dataExp.exp * 1000), -3);
-        console.log(dataHoraFmt)
+        const dataFinalFmt = format(sessaoLogin, 'dd/MM/yyyy HH:mm:ss')
+        
+
         modelUser = {
             id: user.u_id,
             nome: user.u_nome,
@@ -85,7 +86,7 @@ module.exports.loginUsuario = async (req, res) => {
             filial: user.u_filiais_ids,
             criado_em: user.criado_em,
             p_acesso: user.u_senhatemporaria,
-            sessaoExp: dataHoraFmt
+            sessaoExp: dataFinalFmt
         }
         
         res.json({ message: 'Autenticado com sucesso', modelUser, token});
