@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const secret = 'MrfXZfqeq9i53M2sLvLPoXJNcONHHZ--ydrH95P-fVA';
+const secrt_refresh = 'weu2rgnvyrngbg4nveovsdxvcdws1dve';
 
 module.exports = {
     hashSenha: async (password) => {
@@ -23,5 +24,13 @@ module.exports = {
 
     verifyToken: (token) => {
         return jwt.verify(token, secret);
+    },
+
+    generateRefreshToken: (user) => {
+        return jwt.sign({ id: user.u_id }, secrt_refresh, { expiresIn: '24h' });
+    },
+
+    verifyRefreshToken: (refreshToken) => {
+        return jwt.verify(refreshToken, secrt_refresh);
     }
 };

@@ -12,25 +12,21 @@ const comentarioDocumentoRoute = require("./routes/rotaComentarioDocumento");
 const condicionanteRoute = require("./routes/rotaCondicionantes");
 
 
-const allowedOrigins = [
-    'http://localhost:5173',
-    'http://10.11.3.42:5173',
-    '*'
-  ];
-  
-  const corsOptions = {
-    origin: (origin, callback) => {
-      if (allowedOrigins.includes(origin) || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  };
-  
-  app.use(cors(corsOptions));
+const allowedOrigins = ['http://localhost:5173'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token']
+};
+
+app.use(cors(corsOptions));
 
 
 // Use body-parser middleware

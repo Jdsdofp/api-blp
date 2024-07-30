@@ -1,25 +1,25 @@
 const Usuario = require("../models/Usuario");
 const Empresa = require('../models/Empresa');
 const Filial = require("../models/Filial")
-const { hashSenha, generateToken, compareSenha, verifyToken } = require("../config/auth");
-const { msgErrosUnico, obterDataAtualFormatada } = require("../settings_Server");
+const { hashSenha, generateToken, compareSenha, verifyToken, generateRefreshToken, verifyRefreshToken } = require("../config/auth");
+const { msgErrosUnico } = require("../settings_Server");
 const { Sequelize } = require("sequelize");
-const { addHours, format } = require("date-fns");
+const { format } = require("date-fns");
 
 module.exports.registrarUsuario = async(req, res) =>{
     try {
         const {u_nome, u_email, u_senha } = req.body;
         
         const hashedSenha = await hashSenha(u_senha);
-        const newUsuario = await Usuario.create({u_nome, u_email, u_senha: hashedSenha})
+        const newUsuario = await Usuario.create({u_nome, u_email, u_senha: hashedSenha});
         //const usuarioComSenha = await Usuario.scope("withPassword").findAll()
         //const usuario = await Usuario.findAll()
         
 
-        res.status(201).json({message: "Usuario criado com sucesso"})
+        res.status(201).json({message: "Usuario criado com sucesso"});
 
     } catch (error) {
-        res.status(500).json({message: `Erro ao registrar o usuario ${msgErrosUnico(error.errors[0]["type"])}`})
+        res.status(500).json({message: `Erro ao registrar o usuario ${msgErrosUnico(error.errors[0]["type"])}`});
         
     }
 }
@@ -40,6 +40,10 @@ module.exports.loginUsuario = async (req, res) => {
     try {
         const { u_email, u_senha } = req.body;
 
+        if (!u_email || !u_senha) {
+            return res.status(400).json({ message: 'Email e senha são obrigatórios' });
+        }
+
         const user = await Usuario.scope('withPassword').findOne({ where: { u_email } });
 
         if (!user) {
@@ -47,7 +51,7 @@ module.exports.loginUsuario = async (req, res) => {
         }
 
         if (!user.u_ativo) {
-            return res.status(301).json({ message: 'Usuário desativado' });
+            return res.status(403).json({ message: 'Usuário desativado' });
         }
 
         const isMatch = await compareSenha(u_senha, user.u_senha);
@@ -56,29 +60,29 @@ module.exports.loginUsuario = async (req, res) => {
             return res.status(401).json({ message: 'Email ou senha incorretos' });
         }
 
-        // Carregar os arrays de IDs das empresas e filiais
         const { u_empresas_ids, u_filiais_ids } = await Usuario.findOne({
             attributes: ['u_empresas_ids', 'u_filiais_ids'],
             where: { u_id: user.u_id }
         });
 
-        // Adicionar as IDs ao objeto usuário
         user.u_empresas_ids = u_empresas_ids || [];
         user.u_filiais_ids = u_filiais_ids || [];
 
         const token = generateToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        // Salve o refresh token no banco de dados
+        await user.update({ u_refreshtoken: refreshToken });
 
         if (user.u_senhatemporaria) {
-            return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, status: user.u_senhatemporaria, token });
+            return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, status: user.u_senhatemporaria, token, refreshToken });
         }
 
-        var dataExp = verifyToken(token)
-    
+        const dataExp = verifyToken(token);
         const sessaoLogin = new Date(dataExp.exp * 1000);
-        const dataFinalFmt = format(sessaoLogin, 'dd/MM/yyyy HH:mm:ss')
-        
+        const dataFinalFmt = format(sessaoLogin, 'dd/MM/yyyy HH:mm:ss');
 
-        modelUser = {
+        const modelUser = {
             id: user.u_id,
             nome: user.u_nome,
             email: user.u_email,
@@ -87,55 +91,61 @@ module.exports.loginUsuario = async (req, res) => {
             criado_em: user.criado_em,
             p_acesso: user.u_senhatemporaria,
             sessaoExp: dataFinalFmt
-        }
-        
-        res.json({ message: 'Autenticado com sucesso', modelUser, token});
-        
-        
+        };
+
+        res.json({ message: 'Autenticado com sucesso', modelUser, token, refreshToken });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao autenticar usuário', error });
+        res.status(500).json({ message: 'Erro ao autenticar usuário', error: error.message });
     }
-}
+};
 
 
-module.exports.resetSenhaInicial = async(req, res)=>{
-    
+
+
+module.exports.resetSenhaInicial = async (req, res) => {
     try {
         const { userId, u_senha } = req.body;
+        const refreshToken = req.header('x-refresh-token');
         
-        const {id} = req.user;
+        if (!userId || !u_senha || !refreshToken) {
+            return res.status(400).json({ message: 'ID do usuário, nova senha e refresh token são obrigatórios' });
+        }
 
-        const verificaStatusSenha = await Usuario.findByPk(id)
-        if(!verificaStatusSenha.u_senhatemporaria) return res.status(403).json({message: 'Não é possivel alterar, ja há alteração de senha!'})
-
-
-        // Verifica se o usuário existe
-        const user = await Usuario.scope("withPassword").findByPk(userId);
+        const decoded = verifyRefreshToken(refreshToken);
+        if (!decoded || decoded.id !== userId) {
+            return res.status(401).json({ message: 'Refresh token inválido' });
+        }
+        
+        const user = await Usuario.scope('withPassword').findByPk(userId);
 
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
         }
-        
 
+        if (!user.u_senhatemporaria) {
+            return res.status(403).json({ message: 'Não é possível alterar, a senha já foi alterada anteriormente' });
+        }
 
-        // Criptografa a nova senha
         const hashedPassword = await hashSenha(u_senha);
 
-        //Parametro que impede o usuario de usar a senha temporaria fornecida pelo o ADM que o cadastrou....
-        const compararSenhas = await compareSenha(u_senha, user.u_senha)
-        if(compararSenhas) return res.status(401).json({message: 'Senha ja em utilizacao, por favor defina uma nova senha!'})
+        const compararSenhas = await compareSenha(u_senha, user.u_senha);
+        if (compararSenhas) {
+            return res.status(401).json({ message: 'Senha já em utilização, por favor defina uma nova senha!' });
+        }
 
-        // Atualiza a senha e define senhaTemporaria como false
         await user.update({
             u_senha: hashedPassword,
-            u_senhatemporaria: false
+            u_senhatemporaria: false,
+            u_refreshtoken: null // Invalide o refresh token atual
         });
 
-        res.status(200).json({ message: 'Senha redefinida com sucesso'});
+        res.status(200).json({ message: 'Senha redefinida com sucesso' });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao redefinir senha', error });
+        res.status(500).json({ message: 'Erro ao redefinir senha', error: error.message });
     }
-}
+};
+
+
 
 
 module.exports.listarUsuarios = async(req, res)=>{

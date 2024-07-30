@@ -47,6 +47,10 @@ const Usuario = sequelize.define('Usuario', {
     u_filiais_ids: {
         type: DataTypes.ARRAY(DataTypes.INTEGER),
         defaultValue: []
+    },
+    u_refreshtoken: {
+        type: DataTypes.STRING,
+        allowNull: true,
     }
 
 },{
