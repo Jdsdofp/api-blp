@@ -100,23 +100,57 @@ module.exports.loginUsuario = async (req, res) => {
 };
 
 
+module.exports.verifyRefreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.header('x-refresh-token');
+        console.log('Received refreshToken:', refreshToken);
+
+        if (!refreshToken) {
+            return res.status(400).json({ message: 'Refresh token é obrigatório' });
+        }   
+        var refresh = "P_zcnl9eKthYatQfCIz5KS4_ngQSp_uYlhzWEC4pm6M"
+        const user = await Usuario.findOne({
+            where: { u_refreshtoken: refresh }
+        });
+        console.log('User found:', user);
+
+        // Adiciona log para comparação
+        if (user) {
+            console.log('Stored refreshToken:', user.u_refreshtoken);
+            console.log('Comparison result:', user.u_refreshtoken === refreshToken);
+        }
+
+        if (!user || user.u_refreshtoken !== refreshToken) {
+            return res.status(401).json({ message: 'Refresh token inválido' });
+        }
+
+        res.status(200).json({ message: 'Refresh token válido' });
+    } catch (error) {
+        console.error('Error verifying refresh token:', error);
+        res.status(401).json({ message: 'Refresh token inválido', error: error.message });
+    }
+};
+
+
+
+
 
 
 module.exports.resetSenhaInicial = async (req, res) => {
     try {
-        const { userId, u_senha } = req.body;
+        const { u_userId, u_senha } = req.body;
         const refreshToken = req.header('x-refresh-token');
-        
-        if (!userId || !u_senha || !refreshToken) {
+        console.log(req.body)
+        if (!u_userId || !u_senha || !refreshToken) {
             return res.status(400).json({ message: 'ID do usuário, nova senha e refresh token são obrigatórios' });
         }
 
         const decoded = verifyRefreshToken(refreshToken);
-        if (!decoded || decoded.id !== userId) {
+        if (!decoded || decoded.id !== u_userId) {
             return res.status(401).json({ message: 'Refresh token inválido' });
         }
         
-        const user = await Usuario.scope('withPassword').findByPk(userId);
+        const user = await Usuario.scope('withPassword').findByPk(u_userId);
 
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
@@ -139,7 +173,24 @@ module.exports.resetSenhaInicial = async (req, res) => {
             u_refreshtoken: null // Invalide o refresh token atual
         });
 
-        res.status(200).json({ message: 'Senha redefinida com sucesso' });
+        const token = generateToken(user);
+
+        const dataExp = verifyToken(token);
+        const sessaoLogin = new Date(dataExp.exp * 1000);
+        const dataFinalFmt = format(sessaoLogin, 'dd/MM/yyyy HH:mm:ss');
+
+        const modelUser = {
+            id: user.u_id,
+            nome: user.u_nome,
+            email: user.u_email,
+            empresa: user.u_empresas_ids,
+            filial: user.u_filiais_ids,
+            criado_em: user.criado_em,
+            p_acesso: user.u_senhatemporaria,
+            sessaoExp: dataFinalFmt
+        };
+
+        res.status(200).json({ message: 'Senha redefinida com sucesso', modelUser, token });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao redefinir senha', error: error.message });
     }
