@@ -73,9 +73,8 @@ module.exports.loginUsuario = async (req, res) => {
         const refreshToken = generateRefreshToken(user);
 
         // Salve o refresh token no banco de dados
-        await user.update({ u_refreshtoken: refreshToken });
-
         if (user.u_senhatemporaria) {
+            await user.update({ u_refreshtoken: refreshToken });    
             return res.status(200).json({ message: 'Primeiro login detectado. Por favor, redefina sua senha', userId: user.u_id, status: user.u_senhatemporaria, token, refreshToken });
         }
 
@@ -150,8 +149,8 @@ module.exports.resetSenhaInicial = async (req, res) => {
         }
 
         const hashedPassword = await hashSenha(u_senha);
-
         const compararSenhas = await compareSenha(u_senha, user.u_senha);
+
         if (compararSenhas) {
             return res.status(401).json({ message: 'Senha já em utilização, por favor defina uma nova senha!' });
         }
@@ -161,6 +160,7 @@ module.exports.resetSenhaInicial = async (req, res) => {
             u_senhatemporaria: false,
             u_refreshtoken: null // Invalide o refresh token atual
         });
+
 
         const token = generateToken(user);
 
