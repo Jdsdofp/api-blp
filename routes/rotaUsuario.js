@@ -9,7 +9,7 @@ usuarioRoute.post('/login', loginUsuario);
 usuarioRoute.get('/auth', authMiddleware, checandoToken);
 usuarioRoute.get('/listar-usuarios', authMiddleware, listarUsuarios);
 usuarioRoute.get('/:u_id/listar-usuario', authMiddleware, listarUsuario);
-usuarioRoute.post('/verify-refresh-token', verifyRefreshToken);
+usuarioRoute.get('/verify-refresh-token', verifyRefreshToken);
 usuarioRoute.post('/reset-senha-inicial', authMiddleware, resetSenhaInicial);
 usuarioRoute.put('/:u_id/editar-usuarios', authMiddleware, editarUsuarios);
 usuarioRoute.patch('/:u_id/atribuir-empresa-usuario', authMiddleware, atribuirEmpresaUsuario);

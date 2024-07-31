@@ -49,7 +49,7 @@ const Usuario = sequelize.define('Usuario', {
         defaultValue: []
     },
     u_refreshtoken: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(519),
         allowNull: true,
     }
 

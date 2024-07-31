@@ -6,6 +6,7 @@ const { msgErrosUnico } = require("../settings_Server");
 const { Sequelize } = require("sequelize");
 const { format } = require("date-fns");
 
+
 module.exports.registrarUsuario = async(req, res) =>{
     try {
         const {u_nome, u_email, u_senha } = req.body;
@@ -103,28 +104,20 @@ module.exports.loginUsuario = async (req, res) => {
 module.exports.verifyRefreshToken = async (req, res) => {
     try {
         const refreshToken = req.header('x-refresh-token');
-        console.log('Received refreshToken:', refreshToken);
 
         if (!refreshToken) {
             return res.status(400).json({ message: 'Refresh token é obrigatório' });
         }   
-        var refresh = "P_zcnl9eKthYatQfCIz5KS4_ngQSp_uYlhzWEC4pm6M"
+        
         const user = await Usuario.findOne({
-            where: { u_refreshtoken: refresh }
+            where: { u_refreshtoken: refreshToken }
         });
-        console.log('User found:', user);
-
-        // Adiciona log para comparação
-        if (user) {
-            console.log('Stored refreshToken:', user.u_refreshtoken);
-            console.log('Comparison result:', user.u_refreshtoken === refreshToken);
-        }
 
         if (!user || user.u_refreshtoken !== refreshToken) {
-            return res.status(401).json({ message: 'Refresh token inválido' });
+            return res.status(401).json({ message: 'Refresh token inválido', href: '/login' });
         }
 
-        res.status(200).json({ message: 'Refresh token válido' });
+        res.status(200).json(true);
     } catch (error) {
         console.error('Error verifying refresh token:', error);
         res.status(401).json({ message: 'Refresh token inválido', error: error.message });
@@ -132,15 +125,11 @@ module.exports.verifyRefreshToken = async (req, res) => {
 };
 
 
-
-
-
-
 module.exports.resetSenhaInicial = async (req, res) => {
     try {
         const { u_userId, u_senha } = req.body;
         const refreshToken = req.header('x-refresh-token');
-        console.log(req.body)
+        
         if (!u_userId || !u_senha || !refreshToken) {
             return res.status(400).json({ message: 'ID do usuário, nova senha e refresh token são obrigatórios' });
         }
@@ -195,8 +184,6 @@ module.exports.resetSenhaInicial = async (req, res) => {
         res.status(500).json({ message: 'Erro ao redefinir senha', error: error.message });
     }
 };
-
-
 
 
 module.exports.listarUsuarios = async(req, res)=>{
