@@ -135,10 +135,5 @@ const Filial = sequelize.define('Filial', {
     }
 });
 
-Empresa.hasMany(Filial, { foreignKey: 'f_empresa_id' });
-Filial.belongsTo(Empresa, { foreignKey: 'f_empresa_id' });
-
-Usuario.hasMany(Filial, { foreignKey: 'f_responsavel_id' });
-Filial.belongsTo(Usuario, { foreignKey: 'f_responsavel_id' });
 
 module.exports = Filial;

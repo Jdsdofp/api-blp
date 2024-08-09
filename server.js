@@ -10,6 +10,8 @@ const documentoRoute = require("./routes/rotaDocumento");
 const fililRoute = require("./routes/rotaFilial");
 const comentarioDocumentoRoute = require("./routes/rotaComentarioDocumento");
 const condicionanteRoute = require("./routes/rotaCondicionantes");
+const { Empresa, Filial, Usuario } = require('./config/actions');
+
 
 
 const allowedOrigins = ['http://localhost:5173'];

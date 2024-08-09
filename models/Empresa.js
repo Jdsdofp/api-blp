@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
+const Filial = require("./Filial");
 
 
 const Empresa = sequelize.define('Empresa', {
@@ -80,5 +81,6 @@ const Empresa = sequelize.define('Empresa', {
     tableName: 'empresa',
     timestamps: false
 });
+
 
 module.exports = Empresa;
