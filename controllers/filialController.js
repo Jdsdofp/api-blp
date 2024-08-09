@@ -32,3 +32,15 @@ module.exports.listarFiliais = async (req, res)=>{
         res.status(400).json(error)
     }
 }
+
+module.exports.listarFilial = async (req, res) =>{
+    try {
+        const {e_id} = req.params;
+        console.log(e_id)
+        const filial = await Filial.findAll({where: {f_empresa_id: e_id }})
+
+        res.status(200).json(filial)
+    } catch (error) {
+        console.log(error)
+    }
+}
