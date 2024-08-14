@@ -7,23 +7,52 @@ const { Sequelize } = require("sequelize");
 const { format } = require("date-fns");
 
 
-module.exports.registrarUsuario = async(req, res) =>{
+module.exports.registrarUsuario = async (req, res) => {
     try {
-        const {u_nome, u_email, u_senha } = req.body;
-        
-        const hashedSenha = await hashSenha(u_senha);
-        const newUsuario = await Usuario.create({u_nome, u_email, u_senha: hashedSenha});
-        //const usuarioComSenha = await Usuario.scope("withPassword").findAll()
-        //const usuario = await Usuario.findAll()
-        
+        const { u_nome, u_email, u_senha, u_empresas_ids, u_filiais_ids, u_senhatemporaria } = req.body;
+        console.log("req: ", req.body)
+        // Validação de Empresas
+        if (u_empresas_ids && u_empresas_ids.length > 0) {
+            const empresas = await Empresa.findAll({ where: { e_id: { [Sequelize.Op.in]: u_empresas_ids } } });
+            const e_ids = empresas.map(emp => emp.dataValues.e_id);
 
-        res.status(201).json({message: "Usuario criado com sucesso"});
+            // Verifica se todas as empresas enviadas estão cadastradas
+            if (e_ids.length !== u_empresas_ids.length) {
+                return res.status(404).json({ message: 'Uma ou mais empresas não foram encontradas' });
+            }
+
+            // Validação de Filiais
+            if (u_filiais_ids && u_filiais_ids.length > 0) {
+                const filiais = await Filial.findAll({ where: { f_id: { [Sequelize.Op.in]: u_filiais_ids }, f_empresa_id: { [Sequelize.Op.in]: e_ids } } });
+                const f_ids = filiais.map(filial => filial.dataValues.f_id);
+
+                // Verifica se todas as filiais enviadas pertencem às empresas atribuídas
+                if (f_ids.length !== u_filiais_ids.length) {
+                    return res.status(404).json({ message: 'Empresa divergente com filiais envidas!' });
+                }
+            }
+        }
+
+        // Criar e salvar o usuário apenas após as validações
+        const hashedSenha = await hashSenha(u_senha);
+        const newUsuario = await Usuario.create({ u_nome, u_email, u_senhatemporaria: u_senhatemporaria, u_senha: hashedSenha });
+
+        if (u_empresas_ids && u_empresas_ids.length > 0) {
+            newUsuario.u_empresas_ids = [...u_empresas_ids];
+
+            if (u_filiais_ids && u_filiais_ids.length > 0) {
+                newUsuario.u_filiais_ids = [...u_filiais_ids];
+            }
+
+            await newUsuario.save();
+        }
+
+        res.status(201).json({ message: "Usuario criado com sucesso", usuario: newUsuario });
 
     } catch (error) {
-        res.status(500).json({message: `Erro ao registrar o usuario ${msgErrosUnico(error.errors[0]["type"])}`});
-        
+        res.status(500).json({ message: `Erro ao registrar o usuario: ${msgErrosUnico(error.errors[0]["type"])}` });
     }
-}
+};
 
 
 //AUTH... fazendo a checagem do token do usuario, vai que o amostradin que entrar sem permissão
