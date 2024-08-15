@@ -229,6 +229,7 @@ module.exports.listarUsuario = async(req, res)=>{
     try {
         const { u_id } = req.params;
 
+        console.log("a list", u_id)
         const usuario = await Usuario.findOne({where: {u_id}})
         
         const { u_nome, u_email, u_ativo, criado_em} = usuario;

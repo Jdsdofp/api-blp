@@ -37,7 +37,6 @@ module.exports.listarFiliais = async (req, res)=>{
 module.exports.listarFilial = async (req, res) =>{
     try {
         const {e_id} = req.params;
-        
         const filial = await Filial.findAll({where: {f_empresa_id: e_id }})
 
 
