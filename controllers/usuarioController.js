@@ -231,14 +231,32 @@ module.exports.listarUsuario = async(req, res)=>{
 
         const usuario = await Usuario.findOne({where: {u_id: id}})
         
-        const {u_id, u_nome, u_email, u_ativo, criado_em} = usuario;
+        const {u_id, u_nome, u_email, u_ativo, criado_em, u_empresas_ids, u_filiais_ids } = usuario;
+
+        //lista as empresas
+        const empresas = await Empresa.findAll({
+            where: {
+                e_id: {
+                    [Sequelize.Op.in]: usuario.u_empresas_ids
+                }
+            }})
         
+        
+        //lista de filial
+        const filiais = await Filial.findAll({
+            where: {
+                f_id: {
+            [Sequelize.Op.in]: usuario.u_filiais_ids
+            }
+        }})
+        
+        console.log(empresas, filiais)
         const modelUsuario = {
-           u_id, u_nome, u_email, u_ativo, criado_em
+           u_id, u_nome, u_email, u_ativo, criado_em, 
+           empresas, 
+           filiais
         }
 
-
-        console.log(modelUsuario)
         
         res.status(200).json(modelUsuario)
     } catch (error) {
