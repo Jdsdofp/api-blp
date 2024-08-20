@@ -8,7 +8,7 @@ usuarioRoute.post('/registrar-usuario', authMiddleware, registrarUsuario);
 usuarioRoute.post('/login', loginUsuario);
 usuarioRoute.get('/auth', authMiddleware, checandoToken);
 usuarioRoute.get('/listar-usuarios', authMiddleware, listarUsuarios);
-usuarioRoute.get('/:u_id/listar-usuario', authMiddleware, listarUsuario);
+usuarioRoute.get('/:id/listar-usuario', authMiddleware, listarUsuario);
 usuarioRoute.get('/verify-refresh-token', verifyRefreshToken);
 usuarioRoute.post('/reset-senha-inicial', authMiddleware, resetSenhaInicial);
 usuarioRoute.put('/:u_id/editar-usuarios', authMiddleware, editarUsuarios);

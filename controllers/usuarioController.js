@@ -227,16 +227,19 @@ module.exports.listarUsuarios = async(req, res)=>{
 
 module.exports.listarUsuario = async(req, res)=>{
     try {
-        const { u_id } = req.params;
+        const { id } = req.params;
 
-        console.log("a list", u_id)
-        const usuario = await Usuario.findOne({where: {u_id}})
+        const usuario = await Usuario.findOne({where: {u_id: id}})
         
-        const { u_nome, u_email, u_ativo, criado_em} = usuario;
+        const {u_id, u_nome, u_email, u_ativo, criado_em} = usuario;
+        
         const modelUsuario = {
            u_id, u_nome, u_email, u_ativo, criado_em
         }
 
+
+        console.log(modelUsuario)
+        
         res.status(200).json(modelUsuario)
     } catch (error) {
         res.status(400).json({message: "Houve um erro ao buscar usuarios"})        
