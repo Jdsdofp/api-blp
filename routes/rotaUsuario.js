@@ -1,5 +1,5 @@
 const express = require("express");
-const { registrarUsuario, loginUsuario, listarUsuarios, resetSenhaInicial, editarUsuarios, listarUsuario, atribuirEmpresaUsuario, retiraEmpresaUsuario, listarEmpresasEFiliaisUsuario, checandoToken, verifyRefreshToken } = require("../controllers/usuarioController");
+const { registrarUsuario, loginUsuario, listarUsuarios, resetSenhaInicial, editarUsuarios, listarUsuario, atribuirEmpresaUsuario, retiraEmpresaUsuario, listarEmpresasEFiliaisUsuario, checandoToken, verifyRefreshToken, deleteUsuario } = require("../controllers/usuarioController");
 const usuarioRoute = express.Router()
 const authMiddleware = require("../config/authMiddleware");
 
