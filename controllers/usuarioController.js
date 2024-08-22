@@ -272,26 +272,36 @@ module.exports.listarUsuario = async(req, res)=>{
 }
 
 
-module.exports.editarUsuarios = async(req, res)=>{
+module.exports.editarUsuarios = async (req, res) => {
     try {
-
         const { u_id } = req.params;
-        const {u_nome, u_email, u_ativo } = req.body;
+        const { u_nome, u_email, u_ativo, u_empresas_ids, u_filiais_ids } = req.body;
         const usuarioLogado = req.user.id;
 
-        const usuario = await Usuario.findByPk(u_id)
-        if(usuario == null) return res.status(404).json({message: "Usuario nao encontrado"})
-        
-        if(usuarioLogado == usuario.u_id && u_ativo == false) return res.status(400).json({message: 'Voce nao tem permissao para se desativar, veja com adm!'})
-            
-        
-        usuario.update({u_nome: u_nome, u_email: u_email, u_ativo: u_ativo})
+        const usuario = await Usuario.findByPk(u_id);
+        if (!usuario) return res.status(404).json({ message: "Usuário não encontrado" });
 
-        res.status(200).json(usuario)
+        if (usuarioLogado == usuario.u_id && u_ativo == false) {
+            return res.status(400).json({ message: 'Você não tem permissão para se desativar, consulte o administrador!' });
+        }
+
+        // Atualizar dados básicos do usuário
+        usuario.u_nome = u_nome || usuario.u_nome;
+        usuario.u_email = u_email || usuario.u_email;
+        usuario.u_ativo = typeof u_ativo !== 'undefined' ? u_ativo : usuario.u_ativo;
+
+        // Atualizar empresas e filiais diretamente com os valores enviados pelo frontend
+        usuario.u_empresas_ids = u_empresas_ids || usuario.u_empresas_ids;
+        usuario.u_filiais_ids = u_filiais_ids || usuario.u_filiais_ids;
+
+        await usuario.save();
+
+        res.status(200).json(usuario);
     } catch (error) {
-        res.status(404).json({error: `Erro ao editar o usuario: ${error}`})
+        res.status(400).json({ error: `Erro ao editar o usuário: ${error.message}` });
     }
-}
+};
+
 
 
 module.exports.atribuirEmpresaUsuario = async (req, res) => {
