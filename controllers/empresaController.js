@@ -5,19 +5,29 @@ const Usuario = require("../models/Usuario");
 
 
 
-module.exports.listarEmpresas = async (req, res)=>{
+module.exports.listarEmpresas = async (req, res) => {
     try {
-        const {id} = req.user;
-        const usuario = await Usuario.findOne({where: {u_id: id}})
-        if(usuario.u_empresas_ids.length == 0) return res.status(404).json({message: 'Voce ainda nao tem acesso a empresa'})
-            
-        const empresa =  await Empresa.findAll({where: {e_id: usuario.u_empresas_ids}});
+        const { id } = req.user;
+        const usuario = await Usuario.findOne({ where: { u_id: id } });
+
         
-        res.status(200).json(empresa)
+        if (usuario.u_perfil === 'admin') {
+            const todasEmpresas = await Empresa.findAll();
+            return res.status(200).json(todasEmpresas);
+        }
+
+        if (!usuario.u_empresas_ids || usuario.u_empresas_ids.length === 0) {
+            return res.status(404).json({ message: 'Você ainda não tem acesso a nenhuma empresa' });
+        }
+
+        const empresas = await Empresa.findAll({ where: { e_id: usuario.u_empresas_ids } });
+        return res.status(200).json(empresas);
     } catch (error) {
-        console.log(error)
+        console.error(error);
+        return res.status(500).json({ error: 'Erro ao listar empresas' });
     }
-}
+};
+
 
 
 module.exports.registrarEmpresa = async (req, res)=>{

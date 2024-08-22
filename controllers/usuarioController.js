@@ -277,6 +277,8 @@ module.exports.editarUsuarios = async (req, res) => {
         const { u_id } = req.params;
         const { u_nome, u_email, u_ativo, u_empresas_ids, u_filiais_ids } = req.body;
         const usuarioLogado = req.user.id;
+        
+        
 
         const usuario = await Usuario.findByPk(u_id);
         if (!usuario) return res.status(404).json({ message: "Usuário não encontrado" });
@@ -296,9 +298,49 @@ module.exports.editarUsuarios = async (req, res) => {
 
         await usuario.save();
 
-        res.status(200).json(usuario);
+        res.status(200).json({message: `Usuário #${usuario.u_id} atualizado com sucesso!`, usuario});
     } catch (error) {
+        console.log(error)
         res.status(400).json({ error: `Erro ao editar o usuário: ${error.message}` });
+
+    }
+};
+
+
+module.exports.deleteUsuario = async (req, res) => {
+    try {
+        const { u_id } = req.params;
+        const usuarioLogado = req.user.id;
+
+        // Verifique se o ID foi fornecido
+        if (!u_id) {
+            return res.status(400).json({ message: "ID do usuário não fornecido." });
+        }
+
+        // Verifique se o usuário existe
+        const usuario = await Usuario.findByPk(u_id);
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuário não encontrado." });
+        }
+
+        // Verifique se o usuário logado está tentando excluir a si mesmo
+        if (usuario.u_id === usuarioLogado) {
+            return res.status(403).json({ message: "Você não pode excluir sua própria conta." });
+        }
+
+        // Verifique se o usuário possui relações com empresas ou filiais
+        if (usuario.u_empresas_ids.length > 0 || usuario.u_filiais_ids.length > 0) {
+            return res.status(400).json({ message: "Não é possível excluir o usuário. Ele possui empresas ou filiais atribuídas." });
+        }
+
+        // Exclua o usuário
+        await usuario.destroy();
+
+        // Retorne uma resposta de sucesso
+        return res.status(200).json({ message: "Usuário excluído com sucesso." });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Erro ao excluir o usuário." });
     }
 };
 

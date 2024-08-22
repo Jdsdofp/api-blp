@@ -51,7 +51,11 @@ const Usuario = sequelize.define('Usuario', {
     u_refreshtoken: {
         type: DataTypes.STRING(519),
         allowNull: true,
+    },
+    u_perfil: {
+            type: DataTypes.STRING
     }
+    
 
 },{
     tableName: 'usuario',
