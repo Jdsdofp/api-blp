@@ -312,6 +312,7 @@ module.exports.deleteUsuario = async (req, res) => {
         const { u_id } = req.params;
         const usuarioLogado = req.user.id;
 
+
         // Verifique se o ID foi fornecido
         if (!u_id) {
             return res.status(400).json({ message: "ID do usuário não fornecido." });

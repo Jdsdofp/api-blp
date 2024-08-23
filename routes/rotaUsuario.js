@@ -15,6 +15,6 @@ usuarioRoute.put('/:u_id/editar-usuarios', authMiddleware, editarUsuarios);
 usuarioRoute.patch('/:u_id/atribuir-empresa-usuario', authMiddleware, atribuirEmpresaUsuario);
 usuarioRoute.put('/:u_id/retira-empresa-usuario', authMiddleware, retiraEmpresaUsuario);
 usuarioRoute.get('/:u_id/listar-empresa-filial-usuario',authMiddleware, listarEmpresasEFiliaisUsuario);
-usuarioRoute.delete('/:u_id/deletar-usuario', deleteUsuario)
+usuarioRoute.delete('/:u_id/deletar-usuario', authMiddleware, deleteUsuario)
 
 module.exports = usuarioRoute;
