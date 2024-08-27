@@ -40,7 +40,10 @@ const Empresa = sequelize.define('Empresa', {
     e_cnpj: {
         type: DataTypes.CHAR(14),
         allowNull: false,
-        unique: true,
+        unique: {
+            name: 'unique_e_cnpj',
+            msg: 'Ja existe uma empresa cadastrada com esse CNPJ'
+        },
         validate: {
             len: {
                 args: [1, 14],
