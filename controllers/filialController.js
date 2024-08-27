@@ -42,6 +42,11 @@ module.exports.listarFiliais = async (req, res) => {
                         model: Empresa, // Modelo relacionado
                         as: 'empresa', // Alias da associação, se definido
                         attributes: ['e_id', 'e_nome'] // Campos desejados da empresa
+                    },
+                    {
+                        model: Usuario, // Inclui o modelo Usuario para mostrar o nome do responsável
+                        as: 'responsavel', // Alias da associação com o usuário, se definido
+                        attributes: ['u_nome'] // Inclui apenas o nome do usuário
                     }
                 ]
             });
@@ -63,6 +68,11 @@ module.exports.listarFiliais = async (req, res) => {
                     where: {
                         e_id: usuario.u_empresas_ids // Filtra pelas empresas que o usuário tem acesso
                     }
+                },
+                {
+                    model: Usuario, // Inclui o modelo Usuario para mostrar o nome do responsável
+                    as: 'responsavel', // Alias da associação com o usuário, se definido
+                    attributes: ['u_nome'] // Inclui apenas o nome do usuário
                 }
             ]
         });
