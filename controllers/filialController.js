@@ -1,5 +1,6 @@
 const Empresa = require("../models/Empresa");
 const Filial = require("../models/Filial");
+const Usuario = require("../models/Usuario");
 
 module.exports.registrarFilial = async(req, res)=>{
     try {
@@ -24,15 +25,60 @@ module.exports.registrarFilial = async(req, res)=>{
     }
 }
 
-module.exports.listarFiliais = async (req, res)=>{
+module.exports.listarFiliais = async (req, res) => {
     try {
-        const filial = await Filial.findAll()
+        const { id } = req.user; // ID do usuário obtido do token ou da sessão
+        const usuario = await Usuario.findOne({ where: { u_id: id } });
 
-        res.status(200).json(filial)
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+
+        if (usuario.u_perfil === 'admin') {
+            // Se o usuário for administrador, ele tem acesso a todas as filiais
+            const todasFiliais = await Filial.findAll({
+                include: [
+                    {
+                        model: Empresa, // Modelo relacionado
+                        as: 'empresa', // Alias da associação, se definido
+                        attributes: ['e_id', 'e_nome'] // Campos desejados da empresa
+                    }
+                ]
+            });
+            return res.status(200).json(todasFiliais);
+        }
+
+        if (!usuario.u_empresas_ids || usuario.u_empresas_ids.length === 0) {
+            // Se o usuário não tem acesso a nenhuma empresa
+            return res.status(404).json({ message: 'Você ainda não tem acesso a nenhuma empresa' });
+        }
+
+        // Filtra as filiais pelas empresas associadas ao usuário
+        const filiais = await Filial.findAll({
+            include: [
+                {
+                    model: Empresa,
+                    as: 'empresa',
+                    attributes: ['e_id', 'e_nome'],
+                    where: {
+                        e_id: usuario.u_empresas_ids // Filtra pelas empresas que o usuário tem acesso
+                    }
+                }
+            ]
+        });
+
+        if (filiais.length === 0) {
+            return res.status(404).json({ message: 'Nenhuma filial encontrada com os IDs de empresas fornecidos' });
+        }
+
+        res.status(200).json(filiais);
     } catch (error) {
-        res.status(400).json(error)
+        console.error(error);
+        res.status(500).json({ error: 'Erro ao listar filiais' });
     }
-}
+};
+
+
 
 module.exports.listarFilial = async (req, res) =>{
     try {
