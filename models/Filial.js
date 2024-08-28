@@ -90,6 +90,9 @@ const Filial = sequelize.define('Filial', {
     f_endereco: {
         type: DataTypes.JSONB,
         defaultValue: []
+    },
+    f_codigo: {
+        type: DataTypes.INTEGER
     }
 }, {
     tableName: 'filial',
