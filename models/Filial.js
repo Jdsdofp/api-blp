@@ -96,7 +96,14 @@ const Filial = sequelize.define('Filial', {
     },
     f_location: {
         type: DataTypes.GEOGRAPHY('POINT', 4326)
+    },
+    f_insc_municipal: {
+        type: DataTypes.STRING
+    },
+    f_insc_estadual: {
+        type: DataTypes.STRING
     }
+
 }, {
     tableName: 'filial',
     timestamps: false,
