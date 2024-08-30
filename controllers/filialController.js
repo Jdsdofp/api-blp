@@ -14,12 +14,13 @@ module.exports.registrarFilial = async(req, res)=>{
             f_endereco,
             f_codigo,
             f_latitude,
-            f_logitude,
+            f_longitude,
             f_insc_municipal,
             f_insc_estadual
         } = req.body;
+        
+        
         const cnpj = f_cnpj.replace(/[^\d]/g, "")
-        console.log(req.body)
         if(f_uf.length <=1 ) return res.status(401).json({message: 'Campo (UF) não pode ser menor que 2 caracteres'})
         if(cnpj.length < 14 ) return res.status(401).json({message: 'CNPJ invalido'})
         
@@ -32,7 +33,7 @@ module.exports.registrarFilial = async(req, res)=>{
                 f_empresa_id: f_empresa_id, 
                 f_endereco: f_endereco, 
                 f_codigo: f_codigo, 
-                f_location: {type: 'Point', coordinates: [f_logitude, f_latitude]}, 
+                f_location: {type: 'Point', coordinates: [f_longitude, f_latitude]}, 
                 f_insc_municipal: f_insc_municipal, 
                 f_insc_estadual: f_insc_estadual
             })
@@ -67,7 +68,8 @@ module.exports.listarFiliais = async (req, res) => {
                         as: 'responsavel',
                         attributes: ['u_nome']
                     }
-                ]
+                ],
+                order: [['f_id', 'ASC']]
             });
             return res.status(200).json(todasFiliais);
         }

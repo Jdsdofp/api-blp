@@ -217,7 +217,7 @@ module.exports.resetSenhaInicial = async (req, res) => {
 
 module.exports.listarUsuarios = async(req, res)=>{
     try {
-        const usuario = await Usuario.findAll()
+        const usuario = await Usuario.findAll({order: [['u_id', 'ASC']]})
         res.status(200).json(usuario)
     } catch (error) {
         res.status(400).json({message: "Houve um erro ao buscar usuarios"})        
