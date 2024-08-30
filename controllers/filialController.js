@@ -11,7 +11,8 @@ module.exports.registrarFilial = async(req, res)=>{
             f_cidade,
             f_uf,
             f_empresa_id,
-            f_endereco,
+            f_endereco_bairro,
+            f_endereco_complemento,
             f_codigo,
             f_latitude,
             f_longitude,
@@ -19,6 +20,8 @@ module.exports.registrarFilial = async(req, res)=>{
             f_insc_estadual
         } = req.body;
         
+
+
         
         const cnpj = f_cnpj.replace(/[^\d]/g, "")
         if(f_uf.length <=1 ) return res.status(401).json({message: 'Campo (UF) não pode ser menor que 2 caracteres'})
@@ -31,14 +34,18 @@ module.exports.registrarFilial = async(req, res)=>{
                 f_uf: f_uf, 
                 f_responsavel_id: id, 
                 f_empresa_id: f_empresa_id, 
-                f_endereco: f_endereco, 
+                f_endereco: [{
+                    f_endereco_bairro,
+                    f_endereco_complemento
+                }], 
                 f_codigo: f_codigo, 
                 f_location: {type: 'Point', coordinates: [f_longitude, f_latitude]}, 
                 f_insc_municipal: f_insc_municipal, 
                 f_insc_estadual: f_insc_estadual
             })
 
-        res.status(200).json(filial)
+
+        res.status(200).json({message: `Filial #${filial.f_codigo} criada com sucesso!`})
     } catch (error) {
         console.log('Erro aqui no cadastro Filial:', error)
         res.status(400).json({message: error.errors[0].message})        
