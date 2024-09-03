@@ -9,7 +9,7 @@ module.exports.registrarTipoDocumento = async (req, res)=>{
 
         const tipo_documento = await Tipo_documento.create({td_desc: td_desc})
 
-        res.status(200).json({tipo_documento})
+        res.status(200).json({message: `Tipo de Documento ${tipo_documento.td_id} cadastrado com sucesso!`, tipo_documento})
     } catch (error) {
         res.status(404).json({message: error["errors"][0].message})
     }

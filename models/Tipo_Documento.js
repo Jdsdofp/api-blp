@@ -30,6 +30,11 @@ const Tipo_documento = sequelize.define('Tipo_documento', {
         criado_em: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
+        },
+
+        td_ativo: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
         }
 
 }, {

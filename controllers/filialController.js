@@ -2,6 +2,7 @@ const Empresa = require("../models/Empresa");
 const Filial = require("../models/Filial");
 const Usuario = require("../models/Usuario");
 
+
 module.exports.registrarFilial = async(req, res)=>{
     const {id} = req.user;
     try {
@@ -116,8 +117,6 @@ module.exports.listarFiliais = async (req, res) => {
     }
 };
 
-
-
 module.exports.listarFilial = async (req, res) =>{
     try {
         const {e_id} = req.params;
@@ -129,7 +128,6 @@ module.exports.listarFilial = async (req, res) =>{
         res.status(400).json({error: "Informe uma empresa"})
     }
 }
-
 
 module.exports.listarEmpresaComFiliais = async (req, res) => {
     try {
@@ -149,9 +147,41 @@ module.exports.listarEmpresaComFiliais = async (req, res) => {
 
         res.status(200).json(empresa);
     } catch (error) {
-        console.error("Erro ao buscar empresa e filiais:", error); // Log detalhado
+        console.error("Erro ao buscar empresa e filiais:", error);
         res.status(400).json({ error: "Ocorreu um erro ao buscar a empresa e suas filiais" });
     }
 };
 
+module.exports.deletarFilial = async (req, res) => {
+    try {
+        const { id } = req.params;
 
+        const filial = await Filial.findByPk(id);
+        if (!filial) {
+            return res.status(404).json({ error: 'Filial não encontrada' });
+        }
+
+        
+        const usuarios = await Usuario.findAll({
+            where: {
+                u_filiais_ids: {
+                    [Sequelize.Op.contains]: [id]
+                }
+            }
+        });
+
+        
+        for (const usuario of usuarios) {
+            usuario.u_filiais_ids = usuario.u_filiais_ids.filter(filialId => filialId !== parseInt(id));
+            await usuario.save();
+        }
+
+        
+        await Filial.destroy({ where: { f_id: id } });
+
+        return res.status(200).json({ message: 'Filial deletada com sucesso' });
+    } catch (error) {
+        console.error('Erro ao deletar filial:', error);
+        return res.status(500).json({ error: 'Erro ao deletar filial' });
+    }
+};
