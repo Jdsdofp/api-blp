@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db'); // Assumindo que você já configurou a conexão no arquivo db.js
 
-const Condicionate = sequelize.define('Condicionate', {
+const Condicionate = sequelize.define('Condicionante', {
   c_id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -20,7 +20,7 @@ const Condicionate = sequelize.define('Condicionate', {
     defaultValue: DataTypes.NOW,
   },
 }, {
-  tableName: 'condicionates',
+  tableName: 'condicionantes',
   timestamps: false,
 });
 
