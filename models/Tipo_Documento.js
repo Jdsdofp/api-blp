@@ -42,4 +42,7 @@ const Tipo_documento = sequelize.define('Tipo_documento', {
     timestamps: false
 })
 
+
+
+
 module.exports = Tipo_documento;

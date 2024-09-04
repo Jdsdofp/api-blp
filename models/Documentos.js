@@ -77,6 +77,11 @@ const Documento = sequelize.define('Documento',{
             name: 'documentos_d_num_protocolo_key',
             msg: 'Protocolo ja existe cadastrado em outro Documento'
         }
+    },
+
+    d_situacao: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 },{
     tableName: 'documentos',
@@ -89,6 +94,9 @@ Documento.belongsTo(Tipo_documento, {foreignKey: 'd_tipo_doc_id'});
 
 Usuario.hasMany(Documento, {foreignKey: 'd_criador_id'});
 Documento.belongsTo(Usuario, {foreignKey: 'd_criador_id'});
+
+Filial.hasMany(Documento, {foreignKey: 'd_filial_id', as: 'documentos'})
+Documento.belongsTo(Filial, {foreignKey: 'd_filial_id', as: 'filiais'})
 
 
 module.exports = Documento;
