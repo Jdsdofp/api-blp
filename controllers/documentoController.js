@@ -54,6 +54,38 @@ module.exports.listarDocumentos = async (req, res) =>{
     }
 }
 
+
+module.exports.listarDocumentosStatusFilial = async (req, res) => {
+    try {
+      const { status, filialId } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
+  
+      // Busca os documentos da filial pelo status informado
+      const documentos = await Documento.findAll({
+        where: {
+          d_situacao: status, // Filtrar pelo status (ex: 'Vencido', 'Em processo', etc.)
+          d_filial_id: filialId // Filtrar pelo ID da filial
+        },
+        include: [
+          {
+            model: Filial, // Incluindo dados da filial relacionada
+            as: 'filiais',
+            attributes: ['f_nome', 'f_cidade', 'f_uf'] // Exemplo de campos que podem ser incluídos da filial
+          }
+        ]
+      });
+  
+      if (documentos.length === 0) {
+        return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+      }
+  
+      res.status(200).json(documentos); // Retorna os documentos encontrados
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
+    }
+  };
+  
+
 //listar documentos de acordo com permissão de filiais para usuarios...
 module.exports.listarDocumentosFilial = async (req, res) => {
     try {

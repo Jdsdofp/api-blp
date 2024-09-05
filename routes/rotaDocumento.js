@@ -1,5 +1,5 @@
 const express = require("express");
-const { registarDocumento, listarDocumentos, listarDocumentosFilial } = require("../controllers/documentoController");
+const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial } = require("../controllers/documentoController");
 const documentoRoute = express.Router();
 const authMiddleware = require("../config/authMiddleware");
 
@@ -8,6 +8,7 @@ const authMiddleware = require("../config/authMiddleware");
 documentoRoute.post('/registrar-documento', authMiddleware, registarDocumento);
 documentoRoute.get('/listar-documentos', authMiddleware, listarDocumentos);
 documentoRoute.get('/listar-documentos-filais', authMiddleware, listarDocumentosFilial);
+documentoRoute.get('/listar-documentos-status-filial', authMiddleware, listarDocumentosStatusFilial);
 
 
 module.exports = documentoRoute;
