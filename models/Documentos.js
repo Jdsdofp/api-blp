@@ -89,8 +89,8 @@ const Documento = sequelize.define('Documento',{
 })
 
 
-Tipo_documento.hasMany(Documento, {foreignKey: 'd_tipo_doc_id'});
-Documento.belongsTo(Tipo_documento, {foreignKey: 'd_tipo_doc_id'});
+Tipo_documento.hasMany(Documento, {foreignKey: 'd_tipo_doc_id', as: 'documentos'});
+Documento.belongsTo(Tipo_documento, {foreignKey: 'd_tipo_doc_id', as: 'tipo_documentos'});
 
 Usuario.hasMany(Documento, {foreignKey: 'd_criador_id'});
 Documento.belongsTo(Usuario, {foreignKey: 'd_criador_id'});

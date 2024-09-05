@@ -8,7 +8,8 @@ const authMiddleware = require("../config/authMiddleware");
 documentoRoute.post('/registrar-documento', authMiddleware, registarDocumento);
 documentoRoute.get('/listar-documentos', authMiddleware, listarDocumentos);
 documentoRoute.get('/listar-documentos-filais', authMiddleware, listarDocumentosFilial);
-documentoRoute.get('/listar-documentos-status-filial', authMiddleware, listarDocumentosStatusFilial);
+documentoRoute.get('/listar-documentos-status-filial/:status/:filialId', authMiddleware, listarDocumentosStatusFilial);
+
 
 
 module.exports = documentoRoute;

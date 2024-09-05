@@ -70,6 +70,12 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
             model: Filial, // Incluindo dados da filial relacionada
             as: 'filiais',
             attributes: ['f_nome', 'f_cidade', 'f_uf'] // Exemplo de campos que podem ser incluídos da filial
+          },
+
+          {
+            model: Tipo_documento,
+            as: 'tipo_documentos',
+            attributes: ['td_desc']
           }
         ]
       });
@@ -83,9 +89,8 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
       console.error(error);
       res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
     }
-  };
+};
   
-
 //listar documentos de acordo com permissão de filiais para usuarios...
 module.exports.listarDocumentosFilial = async (req, res) => {
     try {
