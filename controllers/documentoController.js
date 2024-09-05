@@ -59,6 +59,7 @@ module.exports.listarDocumentosFilial = async (req, res) => {
     try {
         const { id } = req.user;
 
+        // Encontrar o usuário pelo ID
         const usuario = await Usuario.findOne({
             where: { u_id: id },
             attributes: ['u_filiais_ids']
@@ -70,23 +71,27 @@ module.exports.listarDocumentosFilial = async (req, res) => {
 
         const { u_filiais_ids } = usuario;
 
-        const documentos = await Documento.findAll({
+        // Encontrar todas as filiais do usuário e incluir seus documentos
+        const filiais = await Filial.findAll({
             where: {
-                d_filial_id: {
+                f_id: {
                     [Op.in]: u_filiais_ids
                 }
             },
+            attributes: ['f_id', 'f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj'],
             include: [
-            {      
-                model: Filial,
-                as: 'filiais',
-                attributes: ['f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj']
-            }]
+                {
+                    model: Documento,
+                    as: 'documentos', // Usar o alias correto definido no model
+                    attributes: ['d_id', 'd_situacao']
+                }
+            ]
         });
 
-        res.status(200).json(documentos);
+        // Retornar as filiais e seus documentos
+        res.status(200).json(filiais);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Erro ao listar documentos' });
+        res.status(500).json({ error: 'Erro ao listar documentos das filiais' });
     }
 }

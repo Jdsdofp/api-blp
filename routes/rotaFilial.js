@@ -1,7 +1,7 @@
 const express = require("express");
 const { registrarFilial, listarFiliais, listarFilial, listarEmpresaComFiliais, deletarFilial } = require("../controllers/filialController");
 const fililRoute = express.Router();
-const authMiddleware = require("../config/authMiddleware")
+const authMiddleware = require("../config/authMiddleware");
 
 
 fililRoute.post('/registrar-filial', authMiddleware, registrarFilial);
