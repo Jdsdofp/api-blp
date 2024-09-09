@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db'); // Assumindo que você já configurou a conexão no arquivo db.js
 
-const Condicionate = sequelize.define('Condicionante', {
+const Condicionante = sequelize.define('Condicionante', {
   c_id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,10 +10,22 @@ const Condicionate = sequelize.define('Condicionante', {
   c_tipo: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notNull: {
+        msg: 'Tipo Obrigatorio'
+      }
+    },
+    unique: {
+      name: 'c_tipo',
+      msg: 'Já existe uma condição cadastrada com esse tipo'
+    }
   },
   c_condicao: {
     type: DataTypes.JSONB,
     allowNull: false,
+  },
+  c_obs: {
+    type: DataTypes.STRING
   },
   criado_em: {
     type: DataTypes.DATE,
@@ -24,4 +36,4 @@ const Condicionate = sequelize.define('Condicionante', {
   timestamps: false,
 });
 
-module.exports = Condicionate;
+module.exports = Condicionante;
