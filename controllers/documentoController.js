@@ -3,10 +3,10 @@ const Documento = require("../models/Documentos");
 const Usuario = require("../models/Usuario");
 const Filial = require("../models/Filial");
 const Tipo_documento = require("../models/Tipo_Documento");
+const Condicionante = require("../models/Condicionante");
 
 
-
-module.exports.registarDocumento = async (req, res)=>{
+module.exports.registarDocumento = async (req, res) => {
     try {
         const {
             d_filial_id,
@@ -18,29 +18,58 @@ module.exports.registarDocumento = async (req, res)=>{
             d_anexo,
             d_num_protocolo,
             d_situacao,
+            d_condicionante_id
         } = req.body;
 
-        const {id} = req.user;
+        const { id } = req.user;
         const d_criador_id = id;
 
-        const documento = await Documento.create({ 
-            d_filial_id: d_filial_id, 
-            d_data_pedido: d_data_pedido, 
-            d_data_emissao: d_data_emissao, 
-            d_data_vencimento: d_data_vencimento, 
-            d_tipo_doc_id: d_tipo_doc_id, 
-            d_orgao_exp: d_orgao_exp, 
-            d_anexo: d_anexo, 
-            d_num_protocolo: d_num_protocolo, 
-            d_criador_id: d_criador_id,
-            d_situacao: d_situacao 
-        })
+        const tipoDocumento = await Tipo_documento.findOne({ where: { td_id: d_tipo_doc_id } });
 
-        res.status(200).json(documento)
+        const dataPadrao = '1970-01-01';
+
+        let documento;
+
+        if (tipoDocumento.td_requer_condicao) {
+            
+            documento = await Documento.create({ 
+                d_filial_id: d_filial_id, 
+                d_data_pedido: dataPadrao,
+                d_data_emissao: dataPadrao, 
+                d_data_vencimento: dataPadrao, 
+                d_tipo_doc_id: d_tipo_doc_id, 
+                d_orgao_exp: d_orgao_exp, 
+                d_anexo: '', 
+                d_num_protocolo: '', 
+                d_criador_id: d_criador_id,
+                d_situacao: 'Não iniciado',
+                d_condicionante_id: d_condicionante_id
+            });
+        } else {
+            
+            documento = await Documento.create({
+                d_filial_id,
+                d_data_pedido: d_data_pedido || dataPadrao,
+                d_data_emissao: d_data_emissao || dataPadrao,
+                d_data_vencimento: d_data_vencimento || dataPadrao,
+                d_tipo_doc_id,
+                d_orgao_exp,
+                d_anexo,
+                d_num_protocolo,
+                d_criador_id,
+                d_situacao: d_situacao
+            });
+        }
+
+        res.status(200).json(documento);
     } catch (error) {
-        res.status(400).json(error)
+        console.error(error);
+        res.status(400).json(error);
     }
-}
+};
+
+
+
 
 
 module.exports.listarDocumentos = async (req, res) =>{

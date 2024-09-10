@@ -72,16 +72,16 @@ const Documento = sequelize.define('Documento',{
     },
     
     d_num_protocolo: {
-        type: DataTypes.STRING,
-        unique: {
-            name: 'documentos_d_num_protocolo_key',
-            msg: 'Protocolo ja existe cadastrado em outro Documento'
-        }
+        type: DataTypes.STRING
     },
 
     d_situacao: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+
+    d_condicionante_id: {
+        type: DataTypes.INTEGER
     }
 },{
     tableName: 'documentos',
