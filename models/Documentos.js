@@ -78,10 +78,6 @@ const Documento = sequelize.define('Documento',{
     d_situacao: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-
-    d_condicionante_id: {
-        type: DataTypes.INTEGER
     }
 },{
     tableName: 'documentos',
