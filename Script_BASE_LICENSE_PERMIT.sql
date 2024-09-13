@@ -46,38 +46,11 @@ create table usuario(
 	u_senha varchar not null,
 	criado_em TIMESTAMPTZ default now(),
 	u_ativo boolean default true,
-	u_empresas_ids INT[] DEFAULT '{}',
-	u_filiais_ids INT[] DEFAULT '{}'
+	u_resetSenhaToken varchar,
+	u_resetSenhaExpires varchar,
+	u_senhaTemporaria boolean default true
 );
 
-CREATE OR REPLACE FUNCTION verificar_acesso_empresa(usuario_id INT, empresa_id INT)
-RETURNS BOOLEAN AS $$
-DECLARE
-    tem_acesso BOOLEAN;
-BEGIN
-    SELECT empresa_id = ANY(empresas_ids)
-    INTO tem_acesso
-    FROM usuario
-    WHERE u_id = usuario_id;
-
-    RETURN tem_acesso;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION verificar_acesso_filial(usuario_id INT, filial_id INT)
-RETURNS BOOLEAN AS $$
-DECLARE
-    tem_acesso BOOLEAN;
-BEGIN
-    SELECT filial_id = ANY(filiais_ids)
-    INTO tem_acesso
-    FROM usuario
-    WHERE u_id = usuario_id;
-
-    RETURN tem_acesso;
-END;
-$$ LANGUAGE plpgsql;
 
 
 /*
@@ -96,9 +69,24 @@ add constraint unique_u_email UNIQUE(u_email);
 alter table usuario
 add column u_ativo boolean default true;
 
-ALTER TABLE usuario
-ADD COLUMN u_empresas_ids INT[] DEFAULT '{}',
-ADD COLUMN u_filiais_ids INT[] DEFAULT '{}';
+alter table usuario
+add column u_resetSenhaToken varchar;
+
+alter table usuario
+add column u_resetSenhaExpires varchar;
+
+alter table usuario
+add column u_senhaTemporaria boolean;
+
+alter table usuario 
+alter column u_senhaTemporaria set default true;
+
+alter table usuario
+add column u_refreshToken varchar;
+
+alter table usuario
+add column u_perfil varchar;
+
 */
 
 
@@ -106,6 +94,7 @@ ADD COLUMN u_filiais_ids INT[] DEFAULT '{}';
 
 create table filial(
 	f_id serial4 primary key not null,
+	f_codigo int,
 	f_nome varchar(255) not null,
 	f_cnpj char(20) not null,
 	f_cidade varchar(180) not null,
@@ -115,18 +104,9 @@ create table filial(
 	f_empresa_id int not null,
 	foreign key (f_empresa_id) references empresa(e_id),
 	f_ativo boolean default true,
-	f_endereco jsonb default '[]'
+	f_insc_municipal varchar,
+	f_insc_estadual varchar
 );
-
-
-
-/*Campos que adicionei
-alter table filial
-add column f_endereco jsonb default '[]';
-
-
-
-*/
 
 
 ---TRIGGER PARA FUNÇÃO atualiza_documentos_ativo()
@@ -149,6 +129,9 @@ $$ language plpgsql;
 
 
 
+---Instalei a extensão postgis para poder trabalhar com lat e lon das lojas
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 /*
 
 
@@ -164,6 +147,12 @@ alter column f_responsavel_id set not null;
 
 alter table filial
 add column f_ativo boolean default true;
+
+alter table filial
+add column f_codigo integer;
+
+ALTER TABLE filial
+ADD COLUMN f_location geography(Point, 4326);
 */
 
 
@@ -171,14 +160,12 @@ add column f_ativo boolean default true;
 /*
 Essa tabela trata de criar condições para emissão dos documentos
 */
-create table condicionates(
+create table condicionantes(
 	c_id serial4 primary key not null,
 	c_tipo varchar not null,
 	c_condicao JSONB,
 	criado_em TIMESTAMPTZ default now()
 );
-
-
 
 
 --CRIAÇÃO DA TABELA TIPO DOCUMENTOS
@@ -188,6 +175,7 @@ create table tipo_documento(
 	criado_em TIMESTAMPTZ default now()
 );
 
+
 /*
 alter table tipo_documento
 add column criado_em TIMESTAMPTZ;
@@ -195,8 +183,8 @@ add column criado_em TIMESTAMPTZ;
 alter table tipo_documento
 alter column criado_em set default now();
 
-alter table condicionates
-add constraint unique_c_tipo unique(c_tipo); 
+alter table tipo_documento
+add column td_ativo boolean default true; 
 */
 
 
@@ -217,7 +205,8 @@ create table documentos(
 	d_anexo varchar,
 	d_criador_id int,
 	d_comentarios JSONB default '[]',
-	d_ativo boolean default true
+	d_ativo boolean default true,
+	d_condicionante_id int
 );
 
 --FUNÇÃO PARA A TRIGGER PARA DESATIVAR DOCUMENTOS....
@@ -231,7 +220,7 @@ begin
 end;
 $$ language plpgsql;
 
-select * from filial;
+
 
 /*
 alter table documentos
@@ -257,6 +246,28 @@ alter column d_tipo_doc_id set not null;
 
 alter table documentos
 add column d_ativo boolean default true;
+
+alter table documentos
+add column d_condicionante_id int;
+
+alter table documentos
+add foreign key (d_condicionante_id) references documento_condicionante (dc_id);
+
+*/
+
+
+
+create table documento_condicionante (
+	dc_id serial4 primary key NOT NULL,
+	dc_documento_id int4 NOT NULL,
+	status varchar NULL,
+	dc_condicoes jsonb NOT NULL
+);
+
+
+/*
+alter table documento_condicionante
+add foreign key (dc_documento_id) references documentos(d_id);
 */
 
 
@@ -267,15 +278,10 @@ create table comentarios_documentos(
 	cd_autor_id integer not null,
 	foreign key (cd_autor_id) references usuario(u_id),
 	cd_msg text,
-	cd_resposta JSONB default '[]',
+	cd_resposta JSONB,
 	criado_em TIMESTAMPTZ default now()
 );
 
-
-/*
-alter table comentarios_documentos 
-alter column cd_resposta set default '[]';
- */
 
 --FUNÇÃO PARA TRATAR COMENTARIOS DOS DOCUMENTOS
 /* 
@@ -292,7 +298,7 @@ create or replace function atualiza_d_comentarios()
 returns trigger as $$
 begin 
 	update documentos
-	set d_documento = (
+	set d_comentarios = (
 	
 	select jsonb_agg(cd_id)
 		from comentarios_documentos
@@ -321,14 +327,14 @@ create or replace function delete_d_comentarios()
 returns trigger as $$
 begin 
 	update documentos
-	set d_documento = (
+	set d_comentarios = (
 		
 		select jsonb_agg(cd_id)
 			from comentarios_documentos
 		where cd_documento_id = old.cd_documento_id
 	)
 	
-	where d_id = old.cd_documentos_id;
+	where d_id = old.cd_documento_id;
 
 	return old;
 end;
@@ -340,25 +346,3 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
-
-
-
--- Inserindo principais condicionantes
-/*insert into condicionates (c_tipo, c_condicao) values 
-('Segurança', '{"descricao": "Instalação de sistema de segurança contra incêndio e pânico"}'),
-('Meio Ambiente', '{"descricao": "Apresentação de relatório de impacto ambiental"}'),
-('Saúde', '{"descricao": "Vistoria sanitária e emissão de laudo"}'),
-('Licença Operacional', '{"descricao": "Obtenção de licença de operação junto ao órgão regulador"}'),
-('Certificação', '{"descricao": "Certificação de cumprimento das normas técnicas"}');*/
-
-
--- CRIAÇÃO DA TABELA ALVARA_CONDICIONANTES
-create table alvara_condicionantes(
-        ac_id serial4 primary key not null,
-        ac_documento_id int not null,
-        ac_condicionante_id int not null,
-        ac_status varchar(50) not null check (ac_status in ('Cumprido', 'Pendente', 'Em Progresso', 'Aprovado', 'Rejeitado')),  -- Adicionando status possíveis
-        ac_data_cumprimento date,
-        foreign key (ac_documento_id) references documentos(d_id),
-        foreign key (ac_condicionante_id) references condicionates(c_id)
-);

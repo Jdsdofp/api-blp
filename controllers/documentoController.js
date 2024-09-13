@@ -23,18 +23,24 @@ module.exports.registarDocumento = async (req, res) => {
             d_condicoes
         } = req.body;
 
-        console.log(d_condicoes)
+        console.log('Condições recebidas:', d_condicoes);
         const { id } = req.user;
         const d_criador_id = id;
 
+        // Busca o tipo de documento
         const tipoDocumento = await Tipo_documento.findOne({ where: { td_id: d_tipo_doc_id } });
 
-        const dataPadrao = '1970-01-01';
+        if (!tipoDocumento) {
+            throw new Error('Tipo de documento não encontrado.');
+        }
 
+        const dataPadrao = '1970-01-01';
         let documento;
 
-        // Condição para documentos que requerem condicionante
+        // Verifica se o documento requer condicionante
         if (tipoDocumento.td_requer_condicao) {
+            console.log('Tipo de documento requer condicionante');
+            
             documento = await Documento.create({
                 d_filial_id: d_filial_id,
                 d_data_pedido: dataPadrao,
@@ -48,15 +54,19 @@ module.exports.registarDocumento = async (req, res) => {
                 d_situacao: 'Não iniciado',
             }, { transaction: t });
 
-            // Criando entrada na tabela DocumentoCondicionante
-            await DocumentoCondicionante.create({
-                dc_documento_id: documento.d_id, // Usa o ID do documento criado
-                status: 'Pendente', // Status inicial ou pode ser outro valor
+            // Cria a condicionante
+            const condicionante = await DocumentoCondicionante.create({
+                dc_documento_id: documento.d_id, // Relaciona com o documento criado
+                status: 'Pendente', // Status inicial
                 dc_condicoes: d_condicoes 
             }, { transaction: t });
 
+            // Atualiza o documento com o ID da condicionante
+            documento.d_condicionante_id = condicionante.dc_id;
+            await documento.save({ transaction: t });
+
         } else {
-            // Se o documento não requer condicionante
+            // Cria o documento normalmente se não requer condicionante
             documento = await Documento.create({
                 d_filial_id,
                 d_data_pedido: d_data_pedido || dataPadrao,
@@ -73,16 +83,17 @@ module.exports.registarDocumento = async (req, res) => {
 
         // Confirma a transação
         await t.commit();
-        res.status(200).json(documento);
+        res.status(200).json({ message: 'Documento registrado com sucesso', documento });
 
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao registrar documento:', error);
 
         // Reverte a transação em caso de erro
         await t.rollback();
-        res.status(400).json({ error: 'Erro ao registrar documento', detalhes: error });
+        res.status(400).json({ error: 'Erro ao registrar documento', detalhes: error.message });
     }
 };
+
 
 
 
