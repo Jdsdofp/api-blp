@@ -21,7 +21,7 @@ module.exports.registrarCondicionante = async (req, res) => {
   
 module.exports.listarCondicionantes = async (req, res)=>{
     try {
-        const condicionantes = await Condicionante.findAll()
+        const condicionantes = await Condicionante.findAll({order: [['c_id', 'ASC']]})
 
         res.status(200).json(condicionantes)
     } catch (error) {

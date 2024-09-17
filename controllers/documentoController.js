@@ -23,9 +23,16 @@ module.exports.registarDocumento = async (req, res) => {
             d_condicoes
         } = req.body;
 
-        console.log('Condições recebidas:', d_condicoes);
+        console.log('body request', req.body)
+        
         const { id } = req.user;
         const d_criador_id = id;
+
+        
+        const verifyFilial = await Filial.findOne({where: {f_id: d_filial_id}});
+        if(!verifyFilial.f_ativo) return res.status(404).json({message: 'Filial desativada não é possível registrar documento!'});
+
+        
 
         // Busca o tipo de documento
         const tipoDocumento = await Tipo_documento.findOne({ where: { td_id: d_tipo_doc_id } });
