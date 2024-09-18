@@ -20,19 +20,15 @@ module.exports.registarDocumento = async (req, res) => {
             d_anexo,
             d_num_protocolo,
             d_situacao,
-            d_condicoes
+            d_condicoes // Recebe o array de condições
         } = req.body;
 
-        console.log('body request', req.body)
-        
+        console.log('result conditions', d_condicoes)
         const { id } = req.user;
         const d_criador_id = id;
 
-        
-        const verifyFilial = await Filial.findOne({where: {f_id: d_filial_id}});
-        if(!verifyFilial.f_ativo) return res.status(404).json({message: 'Filial desativada não é possível registrar documento!'});
-
-        
+        const verifyFilial = await Filial.findOne({ where: { f_id: d_filial_id } });
+        if (!verifyFilial.f_ativo) return res.status(404).json({ message: 'Filial desativada não é possível registrar documento!' });
 
         // Busca o tipo de documento
         const tipoDocumento = await Tipo_documento.findOne({ where: { td_id: d_tipo_doc_id } });
@@ -47,7 +43,7 @@ module.exports.registarDocumento = async (req, res) => {
         // Verifica se o documento requer condicionante
         if (tipoDocumento.td_requer_condicao) {
             console.log('Tipo de documento requer condicionante');
-            
+
             documento = await Documento.create({
                 d_filial_id: d_filial_id,
                 d_data_pedido: dataPadrao,
@@ -61,11 +57,12 @@ module.exports.registarDocumento = async (req, res) => {
                 d_situacao: 'Não iniciado',
             }, { transaction: t });
 
+
             // Cria a condicionante
             const condicionante = await DocumentoCondicionante.create({
                 dc_documento_id: documento.d_id, // Relaciona com o documento criado
                 status: 'Pendente', // Status inicial
-                dc_condicoes: d_condicoes 
+                dc_condicoes: d_condicoes // Armazena o objeto de condições
             }, { transaction: t });
 
             // Atualiza o documento com o ID da condicionante
@@ -100,6 +97,7 @@ module.exports.registarDocumento = async (req, res) => {
         res.status(400).json({ error: 'Erro ao registrar documento', detalhes: error.message });
     }
 };
+
 
 
 
