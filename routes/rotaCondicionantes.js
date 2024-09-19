@@ -3,8 +3,8 @@ const { registrarCondicionante, listarCondicionantes } = require("../controllers
 const condicionanteRoute = express.Router();
 const authMiddleware = require("../config/authMiddleware");
 
-condicionanteRoute.post('/registrar-condicionante', authMiddleware, registrarCondicionante)
-condicionanteRoute.get('/listar-condicionantes', authMiddleware, listarCondicionantes)
+condicionanteRoute.post('/registrar-condicionante', authMiddleware, registrarCondicionante);
+condicionanteRoute.get('/listar-condicionantes', authMiddleware, listarCondicionantes);
 
 
 module.exports = condicionanteRoute;

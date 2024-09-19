@@ -11,6 +11,7 @@ const fililRoute = require("./routes/rotaFilial");
 const comentarioDocumentoRoute = require("./routes/rotaComentarioDocumento");
 const condicionanteRoute = require("./routes/rotaCondicionantes");
 const { Empresa, Filial, Usuario } = require('./config/actions');
+const documentoCondRoute = require("./routes/rotaDocumentoCondicionante");
 
 
 
@@ -42,6 +43,7 @@ app.use("/branch", fililRoute);
 app.use("/document", documentoRoute);
 app.use("/comment-document", comentarioDocumentoRoute);
 app.use("/condition", condicionanteRoute)
+app.use("/document-condition", documentoCondRoute)
 
 // SET DO SERVER
 const PORT = 8080 ||process.env;

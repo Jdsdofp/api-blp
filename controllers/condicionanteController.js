@@ -28,3 +28,15 @@ module.exports.listarCondicionantes = async (req, res)=>{
         res.status(400).json(error);
     }
 }
+
+module.exports.listarCondicionante = async (req, res)=>{
+  const {c_id} = req.params;
+
+  try {
+      const condicionante = await Condicionante.findAll({where: {c_id: c_id}})
+
+      res.status(200).json(condicionante)
+  } catch (error) {
+      res.status(400).json(error);
+  }
+}
