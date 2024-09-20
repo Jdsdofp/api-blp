@@ -130,7 +130,7 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
           {
             model: Filial, // Incluindo dados da filial relacionada
             as: 'filiais',
-            attributes: ['f_nome', 'f_cidade', 'f_uf'] // Exemplo de campos que podem ser incluídos da filial
+            attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
           },
 
           {
