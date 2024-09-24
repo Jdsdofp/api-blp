@@ -106,11 +106,25 @@ module.exports.registarDocumento = async (req, res) => {
 
 module.exports.listarDocumentos = async (req, res) =>{
     try {
-        const documento = await Documento.findAll()
+        const documento = await Documento.findAll({
+            include: [
+                {
+                  model: Filial, // Incluindo dados da filial relacionada
+                  as: 'filiais',
+                  attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
+                },
+      
+                {
+                  model: Tipo_documento,
+                  as: 'tipo_documentos',
+                  attributes: ['td_desc']
+                }
+              ]})
 
 
         res.status(200).json(documento)
     } catch (error) {
+        console.log(error)
         res.status(400).json(error)
     }
 }
