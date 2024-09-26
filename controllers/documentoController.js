@@ -23,7 +23,6 @@ module.exports.registarDocumento = async (req, res) => {
             d_condicoes // Recebe o array de condições
         } = req.body;
 
-        console.log('result conditions', d_condicoes)
         const { id } = req.user;
         const d_criador_id = id;
 

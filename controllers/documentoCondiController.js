@@ -54,3 +54,12 @@ module.exports.listarDocumentoCondicionante = async (req, res)=>{
         res.status(400).json(error);
     }
 }
+
+
+module.exports.fecharCondicionante = async (req, res)=>{
+    try {
+        
+    } catch (error) {
+        
+    }
+}
