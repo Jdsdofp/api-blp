@@ -40,9 +40,6 @@ module.exports.listarDocumentoCondicionanteFiliais = async (req, res) => {
     }
 };
 
-  
-  
-
 module.exports.listarDocumentoCondicionante = async (req, res)=>{
 
     const {dc_id} = req.params;
@@ -55,11 +52,13 @@ module.exports.listarDocumentoCondicionante = async (req, res)=>{
     }
 }
 
-
 module.exports.fecharCondicionante = async (req, res)=>{
     try {
-        
+        const {dc_id} = req.params;
+
+        console.log(dc_id)
+
     } catch (error) {
-        
+        console.error('Houve um erro aqui', error)
     }
 }
