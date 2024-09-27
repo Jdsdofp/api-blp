@@ -5,6 +5,6 @@ const authMiddleware = require("../config/authMiddleware");
 
 
 documentoCondRoute.get('/listar-documento-condicionantes', authMiddleware, listarDocumentoCondicionantes);
-documentoCondRoute.get('/listar-documento-condicionante/:dc_id', authMiddleware, listarDocumentoCondicionante);
+documentoCondRoute.get('/:dc_id/listar-documento-condicionante', authMiddleware, listarDocumentoCondicionante);
 
 module.exports = documentoCondRoute;
