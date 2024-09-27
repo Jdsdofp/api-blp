@@ -52,13 +52,44 @@ module.exports.listarDocumentoCondicionante = async (req, res)=>{
     }
 }
 
-module.exports.fecharCondicionante = async (req, res)=>{
+module.exports.fecharCondicionante = async (req, res) => {
     try {
-        const {dc_id} = req.params;
+        const { dc_id } = req.params;
+        const { dc_condicoes } = req.body;
 
-        console.log(dc_id)
+        // Obter a primeira chave do objeto dc_condicoes
+        const firstKey = Object.keys(dc_condicoes)[0];
 
+        // Buscar o documento com o dc_id
+        const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
+
+        if (!doc_cond) {
+            return res.status(404).json({ message: 'Documento não encontrado.' });
+        }
+
+        // Verifique se a primeira chave existe em dc_condicoes do banco de dados
+        const conditionExists = firstKey in doc_cond.dataValues.dc_condicoes;
+
+        if (conditionExists) {
+            console.log(`Condição '${firstKey}' existe no documento.`);
+
+            // Atualizar a condição no objeto dc_condicoes do documento encontrado
+            doc_cond.dataValues.dc_condicoes[firstKey] = dc_condicoes[firstKey];
+
+            // Persistir a alteração no banco de dados
+            await DocumentoCondicionante.update(
+                { dc_condicoes: doc_cond.dataValues.dc_condicoes },
+                { where: { dc_id: dc_id } }
+            );
+
+            return res.status(200).json({ message: `Condição '${firstKey}' atualizada com sucesso.` });
+        } else {
+            console.log(`Condição '${firstKey}' não existe no documento.`);
+            return res.status(404).json({ message: `Condição '${firstKey}' não encontrada no documento.` });
+        }
     } catch (error) {
-        console.error('Houve um erro aqui', error)
+        console.error('Houve um erro aqui', error);
+        return res.status(500).json({ message: 'Erro interno do servidor.' });
     }
-}
+};
+
