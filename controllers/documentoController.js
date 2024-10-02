@@ -152,6 +152,12 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
             model: Tipo_documento,
             as: 'tipo_documentos',
             attributes: ['td_desc']
+          },
+
+          {
+            model: Usuario,
+            as: 'usuario',
+            attributes: ['u_nome']
           }
         ]
       });

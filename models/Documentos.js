@@ -52,7 +52,9 @@ const Documento = sequelize.define('Documento',{
     d_anexo: {
         type: DataTypes.STRING
     },
-
+    criado_em: {
+        type: DataTypes.DATE,
+    },
     d_criador_id: {
         type: DataTypes.INTEGER,
         references: {
@@ -91,8 +93,8 @@ const Documento = sequelize.define('Documento',{
 Tipo_documento.hasMany(Documento, {foreignKey: 'd_tipo_doc_id', as: 'documentos'});
 Documento.belongsTo(Tipo_documento, {foreignKey: 'd_tipo_doc_id', as: 'tipo_documentos'});
 
-Usuario.hasMany(Documento, {foreignKey: 'd_criador_id'});
-Documento.belongsTo(Usuario, {foreignKey: 'd_criador_id'});
+Usuario.hasMany(Documento, {foreignKey: 'd_criador_id', as: 'documentos'});
+Documento.belongsTo(Usuario, {foreignKey: 'd_criador_id', as: 'usuario'});
 
 Filial.hasMany(Documento, {foreignKey: 'd_filial_id', as: 'documentos'})
 Documento.belongsTo(Filial, {foreignKey: 'd_filial_id', as: 'filiais'})
