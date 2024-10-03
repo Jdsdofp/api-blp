@@ -51,8 +51,8 @@ const Comentariosdocumentos = sequelize.define('Comentariosdocumentos', {
 Documento.hasMany(Comentariosdocumentos, {foreignKey: 'cd_documento_id'});
 Comentariosdocumentos.belongsTo(Documento, {foreignKey: 'cd_documento_id'});
 
-Usuario.hasMany(Comentariosdocumentos, {foreignKey: 'cd_autor_id'});
-Comentariosdocumentos.belongsTo(Usuario, {foreignKey: 'cd_autor_id'});
+Usuario.hasMany(Comentariosdocumentos, {foreignKey: 'cd_autor_id', as: 'comentarios'});
+Comentariosdocumentos.belongsTo(Usuario, {foreignKey: 'cd_autor_id', as: 'usuario'});
 
 
 module.exports = Comentariosdocumentos;

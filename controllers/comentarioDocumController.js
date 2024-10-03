@@ -1,4 +1,3 @@
-const { where, DataTypes, DATE } = require("sequelize");
 const Comentariosdocumentos = require("../models/Comentarios_documentos");
 const Usuario = require("../models/Usuario");
 const {obterDataAtualFormatada} = require("../settings_Server")
@@ -33,11 +32,20 @@ module.exports.registarComentarioDocumento = async (req, res)=>{
 module.exports.listarComentarios = async(req, res)=>{
     try {
         const {cd_documento_id} = req.params;
-        const comentarioDocumento = await Comentariosdocumentos.findAll({where: {cd_documento_id}})
-        //console.log(comentarioDocumento)
+        const comentarioDocumento = await Comentariosdocumentos.findAll({
+            where: {cd_documento_id},
+            include: {
+                model: Usuario,
+                as: 'usuario',
+                attributes: ['u_nome']
+            }
+        })
+        
+        console.log(comentarioDocumento)
+
         res.status(200).json(comentarioDocumento)
     } catch (error) {
-        
+        res.status(400).json(error)
     }
 }
 
