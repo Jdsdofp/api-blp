@@ -11,14 +11,16 @@ module.exports.registarComentarioDocumento = async (req, res)=>{
         const {id} = req.user;
         const cd_autor_id  = id;
         const { 
-            cd_msg
+            cd_msg,
+            cd_situacao_comentario,
          } = req.body;
 
 
         const comentarioDocumento = await Comentariosdocumentos.create({
             cd_documento_id: cd_documento_id, 
             cd_autor_id: cd_autor_id, 
-            cd_msg: cd_msg
+            cd_msg: cd_msg,
+            cd_situacao_comentario: cd_situacao_comentario
         })
         
         res.status(200).json(comentarioDocumento)

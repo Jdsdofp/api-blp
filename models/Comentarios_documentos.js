@@ -42,6 +42,10 @@ const Comentariosdocumentos = sequelize.define('Comentariosdocumentos', {
     criado_em: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
+    },
+
+    cd_situacao_comentario: {
+        type: DataTypes.TEXT
     }
 }, {
     tableName: 'comentarios_documentos',
