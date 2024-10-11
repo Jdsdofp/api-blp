@@ -40,7 +40,8 @@ module.exports.listarComentarios = async(req, res)=>{
                 model: Usuario,
                 as: 'usuario',
                 attributes: ['u_nome']
-            }
+            },
+            order: [['cd_id', 'DESC']]
         })
         
         console.log(comentarioDocumento)
