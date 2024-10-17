@@ -93,6 +93,51 @@ module.exports.fecharCondicionante = async (req, res) => {
     }
 };
 
+
+module.exports.fecharProcessoCondicionante = async (req, res) => {
+    try {
+        const { dc_id } = req.params;
+        const { dc_documento_id, d_num_protocolo, d_data_pedido } = req.body;
+
+        // Buscar a condicionante com o dc_id
+        const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
+        if (!doc_cond) return res.status(404).json({ message: 'Condicionante não encontrada' });
+
+        console.log('Condicionante Encontrada... \n', doc_cond);
+
+        const d_id = doc_cond.dc_documento_id;
+        const doc = await Documento.findOne({ where: { d_id: d_id } });
+
+        if (!doc) return res.status(404).json({ message: 'Documento não encontrado' });
+
+        console.log('Documento Encontrado... \n', doc);
+
+        // Atualizar o model Documento com os valores recebidos no body
+        await doc.update({
+            d_data_pedido: d_data_pedido || doc.d_data_pedido,
+            d_num_protocolo: d_num_protocolo || doc.d_num_protocolo,
+            d_situacao: 'Em processo' || doc.d_situacao
+        });
+
+        console.log('Documento Atualizado... \n', doc);
+
+        // Atualizar o status do model Condicionante para 'Em processo'
+        await doc_cond.update({
+            status: 'Em processo'
+        });
+
+        console.log('Condicionante Atualizada... \n', doc_cond);
+
+        return res.status(200).json({ message: 'Documento e Condicionante atualizados com sucesso' });
+
+    } catch (error) {
+        // Log de erro
+        console.warn(error);
+        return res.status(500).json({ message: 'Erro ao atualizar Documento e Condicionante' });
+    }
+};
+
+
 module.exports.atribuirUsuariosCondicao = async (req, res) => {
     try {
         const { dc_id } = req.params;
