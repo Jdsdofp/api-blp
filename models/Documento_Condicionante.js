@@ -1,7 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
-const Condicionate = require("./Condicionante");
-const Documento = require('./Documentos')
+const Documento = require('./Documentos');
 
 const DocumentoCondicionante = sequelize.define('documento_condicionante', {
     dc_id: {
@@ -14,7 +13,7 @@ const DocumentoCondicionante = sequelize.define('documento_condicionante', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'documentos',
+            model: Documento,
             key: 'd_id'
         }
     },
@@ -30,7 +29,10 @@ const DocumentoCondicionante = sequelize.define('documento_condicionante', {
 }, {
     tableName: 'documento_condicionante',
     timestamps: false
-})
+});
 
+// Corrigir alias para serem consistentes
+Documento.hasMany(DocumentoCondicionante, { foreignKey: 'dc_documento_id', as: 'condicionantes' });
+DocumentoCondicionante.belongsTo(Documento, { foreignKey: 'dc_documento_id', as: 'documento' });
 
 module.exports = DocumentoCondicionante;

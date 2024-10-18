@@ -23,7 +23,6 @@ module.exports.registarDocumento = async (req, res) => {
             d_condicoes // Recebe o array de condições
         } = req.body;
 
-        console.log('result conditions', d_condicoes)
         const { id } = req.user;
         const d_criador_id = id;
 
@@ -106,11 +105,25 @@ module.exports.registarDocumento = async (req, res) => {
 
 module.exports.listarDocumentos = async (req, res) =>{
     try {
-        const documento = await Documento.findAll()
+        const documento = await Documento.findAll({
+            include: [
+                {
+                  model: Filial, // Incluindo dados da filial relacionada
+                  as: 'filiais',
+                  attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
+                },
+      
+                {
+                  model: Tipo_documento,
+                  as: 'tipo_documentos',
+                  attributes: ['td_desc']
+                }
+              ]})
 
 
         res.status(200).json(documento)
     } catch (error) {
+        console.log(error)
         res.status(400).json(error)
     }
 }
@@ -130,7 +143,7 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
           {
             model: Filial, // Incluindo dados da filial relacionada
             as: 'filiais',
-            attributes: ['f_nome', 'f_cidade', 'f_uf'] // Exemplo de campos que podem ser incluídos da filial
+            attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
           },
 
           {
