@@ -236,5 +236,39 @@ module.exports.listarDocumentoCond = async (req, res) => {
 }
 
 
+module.exports.adicionarCondicoes = async (req, res) => {
+    try {
+        const { dc_id } = req.params; // ID do documento condicionante
+        const { novaCondicao, detalhesCondicao } = req.body; // novaCondicao é a chave e detalhesCondicao é o valor do novo item
+
+        // Buscar o documento com o dc_id
+        const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
+
+        if (!doc_cond) {
+            return res.status(404).json({ message: 'Documento não encontrado.' });
+        }
+
+        // Verificar se a condição já existe no objeto dc_condicoes
+        if (novaCondicao in doc_cond.dataValues.dc_condicoes) {
+            return res.status(409).json({ message: `A condição '${novaCondicao}' já existe no documento.` });
+        }
+
+        // Adicionar a nova condição ao objeto dc_condicoes do documento encontrado
+        doc_cond.dataValues.dc_condicoes[novaCondicao] = detalhesCondicao;
+
+        // Persistir a alteração no banco de dados
+        await DocumentoCondicionante.update(
+            { dc_condicoes: doc_cond.dataValues.dc_condicoes },
+            { where: { dc_id: dc_id } }
+        );
+
+        return res.status(201).json({ message: `Condição '${novaCondicao}' adicionada com sucesso.` });
+    } catch (error) {
+        console.error('Erro ao adicionar nova condição:', error);
+        return res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+};
+
+
 
 
