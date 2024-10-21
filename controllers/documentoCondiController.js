@@ -240,6 +240,8 @@ module.exports.adicionarCondicoes = async (req, res) => {
     try {
         const { dc_id } = req.params; // ID do documento condicionante
         const { novaCondicao, detalhesCondicao } = req.body; // novaCondicao é a chave e detalhesCondicao é o valor do novo item
+        
+        console.log(dc_id)
 
         // Buscar o documento com o dc_id
         const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
