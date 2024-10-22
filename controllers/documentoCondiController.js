@@ -40,6 +40,7 @@ module.exports.listarDocumentoCondicionanteFiliais = async (req, res) => {
     }
 };
 
+
 module.exports.listarDocumentoCondicionante = async (req, res)=>{
 
     const {dc_id} = req.params;
@@ -188,7 +189,6 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
 };
 
 
-
 module.exports.listarDocumentoCond = async (req, res) => {
     const { id } = req.user; // Obter o ID do usuário a partir do token
     const { dc_id } = req.params; // Obter o dc_id da requisição
@@ -272,5 +272,38 @@ module.exports.adicionarCondicoes = async (req, res) => {
 };
 
 
+module.exports.fecharProcesso = async (req, res) => {
+    try {
+        const {dc_id} = req.params;
+        const {d_data_emissao, d_data_vencimento } = req.body;
+        console.log('ID do parametro', dc_id)
 
+        const doc_cond = await DocumentoCondicionante.findOne({where: {dc_id: dc_id}})
+        
+        console.log('Condicionante encontrada: \n', doc_cond?.dataValues)
 
+        const d_id = doc_cond?.dataValues?.dc_documento_id;
+
+        const doc = await Documento.findOne({where: {d_id: d_id}})
+        if(!doc) return res.status(404).json({message: 'Documento atrelado na condicionante não encontrado!'})
+       
+
+        await doc.update({
+            d_data_emissao: d_data_emissao,
+            d_data_vencimento: d_data_vencimento,
+            d_situacao: 'Emitido'
+        })
+
+        console.log('Documento atualizado com sucesso: \n', doc?.dataValues)
+
+        await doc_cond.update({
+            status: 'Finalizada'
+        })
+
+        console.log('Condicionante atualizada com sucesso: \n', doc_cond?.dataValues)
+        return res.status(200).json({message: `Processo finalizado com sucesso` })
+
+    } catch (error) {
+        console.log('Log de erro: ', error)
+    }
+}

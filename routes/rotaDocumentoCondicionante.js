@@ -8,7 +8,8 @@ const {
     atribuirUsuariosCondicao, 
     listarDocumentoCond, 
     fecharProcessoCondicionante, 
-    adicionarCondicoes
+    adicionarCondicoes,
+    fecharProcesso
 } = require("../controllers/documentoCondiController");
 
 const documentoCondRoute = express.Router();
@@ -22,7 +23,8 @@ documentoCondRoute.get('/listar-condicionante/:dc_id', authMiddleware, listarDoc
 documentoCondRoute.put('/fechar-condicionante/:dc_id', authMiddleware, fecharCondicionante);
 documentoCondRoute.put('/fechar-processo-condicionante/:dc_id', authMiddleware, fecharProcessoCondicionante);
 documentoCondRoute.patch('/atribuir-usuarios-condicao/:dc_id', authMiddleware, atribuirUsuariosCondicao);
-documentoCondRoute.put('/adicionar-condicoes/:dc_id', authMiddleware, adicionarCondicoes)
+documentoCondRoute.put('/adicionar-condicoes/:dc_id', authMiddleware, adicionarCondicoes);
+documentoCondRoute.put('/fechar-processo/:dc_id', authMiddleware, fecharProcesso);
 
 
 module.exports = documentoCondRoute;

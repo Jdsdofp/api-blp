@@ -72,11 +72,12 @@ module.exports.registarDocumento = async (req, res) => {
 
         } else {
             // Cria o documento normalmente se não requer condicionante
+            if(!d_data_pedido || !d_data_emissao || !d_data_vencimento) return res.status(400).json({error: 'Não é possivel cadastrar o documento sem condicionante se não informar as datas requeridas'})
             documento = await Documento.create({
                 d_filial_id,
-                d_data_pedido: d_data_pedido || dataPadrao,
-                d_data_emissao: d_data_emissao || dataPadrao,
-                d_data_vencimento: d_data_vencimento || dataPadrao,
+                d_data_pedido: d_data_pedido,
+                d_data_emissao: d_data_emissao,
+                d_data_vencimento: d_data_vencimento,
                 d_tipo_doc_id,
                 d_orgao_exp,
                 d_anexo,
