@@ -35,4 +35,5 @@ const DocumentoCondicionante = sequelize.define('documento_condicionante', {
 Documento.hasMany(DocumentoCondicionante, { foreignKey: 'dc_documento_id', as: 'condicionantes' });
 DocumentoCondicionante.belongsTo(Documento, { foreignKey: 'dc_documento_id', as: 'documento' });
 
+
 module.exports = DocumentoCondicionante;

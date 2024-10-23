@@ -1,6 +1,7 @@
 const DocumentoCondicionante = require("../models/Documento_Condicionante");
 const Documento = require("../models/Documentos");
 const Filial = require("../models/Filial");
+const Usuario = require("../models/Usuario");
   
   
 module.exports.listarDocumentoCondicionantes = async (req, res)=>{
@@ -307,3 +308,40 @@ module.exports.fecharProcesso = async (req, res) => {
         console.log('Log de erro: ', error)
     }
 }
+
+
+module.exports.listarUsuariosPorCondicao = async (req, res) => {
+    const { dc_id } = req.params; // Recebe o id e o nome da condição
+    const { nome } = req.body;
+
+    try {
+        // Procura pela condição específica usando o id
+        const condicao = await DocumentoCondicionante.findOne({
+            where: { dc_id: dc_id }
+        });
+
+        if (!condicao) {
+            return res.status(404).json({ message: 'Condição não encontrada' });
+        }
+
+        // Extraindo os IDs dos usuários da condição
+        const usuariosAtribuidos = condicao.dc_condicoes[nome]?.users || [];
+
+        // Busca todos os usuários
+        const allUsers = await Usuario.findAll();
+
+        // Mapeia os usuários para incluir o campo 'u_atribuido'
+        const usersResponse = allUsers.map(user => {
+            return {
+                u_id: user.u_id,
+                u_nome: user.u_nome,
+                u_atribuido: usuariosAtribuidos.includes(user.u_id)
+            };
+        });
+
+        res.json(usersResponse);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar usuários por condição' });
+    }
+};
