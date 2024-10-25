@@ -259,3 +259,30 @@ module.exports.listarTodosDocumentosFilial = async (req, res) => {
       res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
     }
 };
+
+
+//Listar documentos por ID de filial para listagem geral de documentos da filial (Ativos)
+module.exports.listarStatusID = async (req, res) => {
+  try {
+    const { id } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
+
+
+    const cond = await DocumentoCondicionante.findByPk(id)
+    const d_id = cond?.dataValues.dc_documento_id;
+    // Busca os documentos da filial pelo status informado
+    const documentos = await Documento.findOne({
+      where: {
+        d_ativo: true,
+        d_id: d_id // Filtrar pelo ID da filial
+      }});
+
+    if (documentos.length === 0) {
+      return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+    }
+
+    res.status(200).json(documentos?.d_situacao); // Retorna os documentos encontrados
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
+  }
+};
