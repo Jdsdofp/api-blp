@@ -198,7 +198,7 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                     [Op.in]: u_filiais_ids
                 }
             },
-            attributes: ['f_id', 'f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj'],
+            attributes: ['f_id', 'f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj', 'f_location'],
             include: [
                 {
                     model: Documento,
