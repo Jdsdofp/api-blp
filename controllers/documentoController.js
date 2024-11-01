@@ -23,6 +23,8 @@ module.exports.registarDocumento = async (req, res) => {
             d_condicoes // Recebe o array de condições
         } = req.body;
 
+        console.log(req.body)
+
         const { id } = req.user;
         const d_criador_id = id;
 
@@ -150,6 +152,12 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
             model: Tipo_documento,
             as: 'tipo_documentos',
             attributes: ['td_desc']
+          },
+
+          {
+            model: Usuario,
+            as: 'usuario',
+            attributes: ['u_nome']
           }
         ]
       });

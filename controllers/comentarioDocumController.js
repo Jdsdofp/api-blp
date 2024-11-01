@@ -1,4 +1,3 @@
-const { where, DataTypes, DATE } = require("sequelize");
 const Comentariosdocumentos = require("../models/Comentarios_documentos");
 const Usuario = require("../models/Usuario");
 const {obterDataAtualFormatada} = require("../settings_Server")
@@ -12,14 +11,16 @@ module.exports.registarComentarioDocumento = async (req, res)=>{
         const {id} = req.user;
         const cd_autor_id  = id;
         const { 
-            cd_msg
+            cd_msg,
+            cd_situacao_comentario,
          } = req.body;
 
 
         const comentarioDocumento = await Comentariosdocumentos.create({
             cd_documento_id: cd_documento_id, 
             cd_autor_id: cd_autor_id, 
-            cd_msg: cd_msg
+            cd_msg: cd_msg,
+            cd_situacao_comentario: cd_situacao_comentario
         })
         
         res.status(200).json(comentarioDocumento)
@@ -33,11 +34,21 @@ module.exports.registarComentarioDocumento = async (req, res)=>{
 module.exports.listarComentarios = async(req, res)=>{
     try {
         const {cd_documento_id} = req.params;
-        const comentarioDocumento = await Comentariosdocumentos.findAll({where: {cd_documento_id}})
-        //console.log(comentarioDocumento)
+        const comentarioDocumento = await Comentariosdocumentos.findAll({
+            where: {cd_documento_id},
+            include: {
+                model: Usuario,
+                as: 'usuario',
+                attributes: ['u_nome']
+            },
+            order: [['cd_id', 'DESC']]
+        })
+        
+        console.log(comentarioDocumento)
+
         res.status(200).json(comentarioDocumento)
     } catch (error) {
-        
+        res.status(400).json(error)
     }
 }
 
