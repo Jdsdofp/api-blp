@@ -288,9 +288,23 @@ module.exports.fecharProcesso = async (req, res) => {
 
         if (!doc) return res.status(404).json({ message: 'Documento atrelado na condicionante não encontrado!' });
 
-        // Verifica se d_num_protocolo já existe no documento
-        if (doc.d_num_protocolo) {
-            // Atualiza apenas as datas e mantém d_num_protocolo inalterado
+        // Verifica se todos os campos estão preenchidos
+        if (d_num_protocolo && d_data_emissao && d_data_vencimento) {
+            // Atualiza todos os campos e define situação como "Emitido"
+            await doc.update({
+                d_data_emissao: d_data_emissao,
+                d_data_vencimento: d_data_vencimento,
+                d_num_protocolo: d_num_protocolo,
+                d_situacao: 'Emitido'
+            });
+            console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
+
+            await doc_cond.update({
+                status: 'Finalizada'
+            });
+            console.log('Condicionante atualizada para status "Finalizada": \n', doc_cond?.dataValues);
+        } else if (doc.d_num_protocolo) {
+            // Atualiza apenas as datas, mantém d_num_protocolo inalterado, e define situação como "Em processo"
             await doc.update({
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
@@ -314,20 +328,6 @@ module.exports.fecharProcesso = async (req, res) => {
                 status: 'Em processo'
             });
             console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
-        } else {
-            // Caso d_num_protocolo não exista e as datas estejam preenchidas, atualiza todos os campos
-            await doc.update({
-                d_data_emissao: d_data_emissao,
-                d_data_vencimento: d_data_vencimento,
-                d_num_protocolo: d_num_protocolo,
-                d_situacao: 'Emitido'
-            });
-            console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
-
-            await doc_cond.update({
-                status: 'Finalizada'
-            });
-            console.log('Condicionante atualizada para status "Finalizada": \n', doc_cond?.dataValues);
         }
 
         return res.status(200).json({ message: `Processo finalizado com sucesso` });
@@ -337,7 +337,6 @@ module.exports.fecharProcesso = async (req, res) => {
         res.status(500).json({ message: 'Erro ao finalizar o processo' });
     }
 };
-
 
 
 
