@@ -203,11 +203,17 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                 {
                     model: Documento,
                     as: 'documentos', // Usar o alias correto definido no model
-                    attributes: ['d_id', 'd_situacao']
+                    attributes: ['d_id', 'd_situacao'],
+                    include: [
+                      {
+                        model: Tipo_documento,
+                        as: 'tipo_documentos',
+                        attributes: ['td_desc']
+                      }
+                    ]
                 }
             ]
         });
-
         // Retornar as filiais e seus documentos
         res.status(200).json(filiais);
     } catch (error) {

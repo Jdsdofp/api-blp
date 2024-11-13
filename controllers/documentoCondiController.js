@@ -275,39 +275,70 @@ module.exports.adicionarCondicoes = async (req, res) => {
 
 module.exports.fecharProcesso = async (req, res) => {
     try {
-        const {dc_id} = req.params;
-        const {d_data_emissao, d_data_vencimento } = req.body;
-        console.log('ID do parametro', dc_id)
+        const { dc_id } = req.params;
+        const { d_data_emissao, d_data_vencimento, d_num_protocolo } = req.body;
 
-        const doc_cond = await DocumentoCondicionante.findOne({where: {dc_id: dc_id}})
-        
-        console.log('Condicionante encontrada: \n', doc_cond?.dataValues)
+        console.log('ID do parametro', dc_id);
+
+        const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
+        console.log('Condicionante encontrada: \n', doc_cond?.dataValues);
 
         const d_id = doc_cond?.dataValues?.dc_documento_id;
+        const doc = await Documento.findOne({ where: { d_id: d_id } });
 
-        const doc = await Documento.findOne({where: {d_id: d_id}})
-        if(!doc) return res.status(404).json({message: 'Documento atrelado na condicionante não encontrado!'})
-       
+        if (!doc) return res.status(404).json({ message: 'Documento atrelado na condicionante não encontrado!' });
 
-        await doc.update({
-            d_data_emissao: d_data_emissao,
-            d_data_vencimento: d_data_vencimento,
-            d_situacao: 'Emitido'
-        })
+        // Verifica se d_num_protocolo já existe no documento
+        if (doc.d_num_protocolo) {
+            // Atualiza apenas as datas e mantém d_num_protocolo inalterado
+            await doc.update({
+                d_data_emissao: d_data_emissao,
+                d_data_vencimento: d_data_vencimento,
+                d_situacao: 'Em processo'
+            });
+            console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
 
-        console.log('Documento atualizado com sucesso: \n', doc?.dataValues)
+            await doc_cond.update({
+                status: 'Em processo'
+            });
+            console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
+        } else if (!d_data_emissao && !d_data_vencimento) {
+            // Caso as datas estejam vazias, insere d_num_protocolo e define situação como "Em processo"
+            await doc.update({
+                d_num_protocolo: d_num_protocolo,
+                d_situacao: 'Em processo'
+            });
+            console.log('Documento atualizado com d_num_protocolo e situação "Em processo": \n', doc?.dataValues);
 
-        await doc_cond.update({
-            status: 'Finalizada'
-        })
+            await doc_cond.update({
+                status: 'Em processo'
+            });
+            console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
+        } else {
+            // Caso d_num_protocolo não exista e as datas estejam preenchidas, atualiza todos os campos
+            await doc.update({
+                d_data_emissao: d_data_emissao,
+                d_data_vencimento: d_data_vencimento,
+                d_num_protocolo: d_num_protocolo,
+                d_situacao: 'Emitido'
+            });
+            console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
 
-        console.log('Condicionante atualizada com sucesso: \n', doc_cond?.dataValues)
-        return res.status(200).json({message: `Processo finalizado com sucesso` })
+            await doc_cond.update({
+                status: 'Finalizada'
+            });
+            console.log('Condicionante atualizada para status "Finalizada": \n', doc_cond?.dataValues);
+        }
 
+        return res.status(200).json({ message: `Processo finalizado com sucesso` });
+        
     } catch (error) {
-        console.log('Log de erro: ', error)
+        console.log('Log de erro: ', error);
+        res.status(500).json({ message: 'Erro ao finalizar o processo' });
     }
-}
+};
+
+
 
 
 module.exports.listarUsuariosPorCondicao = async (req, res) => {
