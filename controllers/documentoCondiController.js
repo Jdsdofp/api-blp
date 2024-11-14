@@ -323,6 +323,7 @@ module.exports.fecharProcesso = async (req, res) => {
                 d_situacao: 'Em processo'
             });
             console.log('Documento atualizado com d_num_protocolo e situação "Em processo": \n', doc?.dataValues);
+            // res.status(200).json({ message: `Processo finalizado com sucesso 2`, doc})
 
             await doc_cond.update({
                 status: 'Em processo'
@@ -330,7 +331,7 @@ module.exports.fecharProcesso = async (req, res) => {
             console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
         }
 
-        return res.status(200).json({ message: `Processo finalizado com sucesso` });
+        return res.status(200).json({ message: `Processo finalizado com sucesso`, doc });
         
     } catch (error) {
         console.log('Log de erro: ', error);
