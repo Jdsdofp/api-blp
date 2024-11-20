@@ -308,12 +308,12 @@ module.exports.fecharProcesso = async (req, res) => {
             await doc.update({
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
-                d_situacao: 'Em processo'
+                d_situacao: 'Emitido'
             });
             console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
 
             await doc_cond.update({
-                status: 'Em processo'
+                status: 'Finalizada'
             });
             console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
         } else if (!d_data_emissao && !d_data_vencimento) {
