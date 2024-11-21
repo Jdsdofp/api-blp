@@ -1,6 +1,7 @@
 const DocumentoCondicionante = require("../models/Documento_Condicionante");
 const Documento = require("../models/Documentos");
 const Filial = require("../models/Filial");
+const Usuario = require("../models/Usuario");
   
   
 module.exports.listarDocumentoCondicionantes = async (req, res)=>{
@@ -39,6 +40,7 @@ module.exports.listarDocumentoCondicionanteFiliais = async (req, res) => {
         res.status(400).json(error);
     }
 };
+
 
 module.exports.listarDocumentoCondicionante = async (req, res)=>{
 
@@ -192,7 +194,6 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
 };
 
 
-
 module.exports.listarDocumentoCond = async (req, res) => {
     const { id } = req.user; // Obter o ID do usuário a partir do token
     const { dc_id } = req.params; // Obter o dc_id da requisição
@@ -240,5 +241,111 @@ module.exports.listarDocumentoCond = async (req, res) => {
 }
 
 
+module.exports.adicionarCondicoes = async (req, res) => {
+    try {
+        const { dc_id } = req.params; // ID do documento condicionante
+        const { novaCondicao, detalhesCondicao } = req.body; // novaCondicao é a chave e detalhesCondicao é o valor do novo item
+        
+        console.log(dc_id)
+
+        // Buscar o documento com o dc_id
+        const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
+
+        if (!doc_cond) {
+            return res.status(404).json({ message: 'Documento não encontrado.' });
+        }
+
+        // Verificar se a condição já existe no objeto dc_condicoes
+        if (novaCondicao in doc_cond.dataValues.dc_condicoes) {
+            return res.status(409).json({ message: `A condição '${novaCondicao}' já existe no documento.` });
+        }
+
+        // Adicionar a nova condição ao objeto dc_condicoes do documento encontrado
+        doc_cond.dataValues.dc_condicoes[novaCondicao] = detalhesCondicao;
+
+        // Persistir a alteração no banco de dados
+        await DocumentoCondicionante.update(
+            { dc_condicoes: doc_cond.dataValues.dc_condicoes },
+            { where: { dc_id: dc_id } }
+        );
+
+        return res.status(201).json({ message: `Condição '${novaCondicao}' adicionada com sucesso.` });
+    } catch (error) {
+        console.error('Erro ao adicionar nova condição:', error);
+        return res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+};
 
 
+module.exports.fecharProcesso = async (req, res) => {
+    try {
+        const {dc_id} = req.params;
+        const {d_data_emissao, d_data_vencimento } = req.body;
+        console.log('ID do parametro', dc_id)
+
+        const doc_cond = await DocumentoCondicionante.findOne({where: {dc_id: dc_id}})
+        
+        console.log('Condicionante encontrada: \n', doc_cond?.dataValues)
+
+        const d_id = doc_cond?.dataValues?.dc_documento_id;
+
+        const doc = await Documento.findOne({where: {d_id: d_id}})
+        if(!doc) return res.status(404).json({message: 'Documento atrelado na condicionante não encontrado!'})
+       
+
+        await doc.update({
+            d_data_emissao: d_data_emissao,
+            d_data_vencimento: d_data_vencimento,
+            d_situacao: 'Emitido'
+        })
+
+        console.log('Documento atualizado com sucesso: \n', doc?.dataValues)
+
+        await doc_cond.update({
+            status: 'Finalizada'
+        })
+
+        console.log('Condicionante atualizada com sucesso: \n', doc_cond?.dataValues)
+        return res.status(200).json({message: `Processo finalizado com sucesso` })
+
+    } catch (error) {
+        console.log('Log de erro: ', error)
+    }
+}
+
+
+module.exports.listarUsuariosPorCondicao = async (req, res) => {
+    const { dc_id } = req.params; // Recebe o id e o nome da condição
+    const { nome } = req.body;
+
+    try {
+        // Procura pela condição específica usando o id
+        const condicao = await DocumentoCondicionante.findOne({
+            where: { dc_id: dc_id }
+        });
+
+        if (!condicao) {
+            return res.status(404).json({ message: 'Condição não encontrada' });
+        }
+
+        // Extraindo os IDs dos usuários da condição
+        const usuariosAtribuidos = condicao.dc_condicoes[nome]?.users || [];
+
+        // Busca todos os usuários
+        const allUsers = await Usuario.findAll();
+
+        // Mapeia os usuários para incluir o campo 'u_atribuido'
+        const usersResponse = allUsers.map(user => {
+            return {
+                u_id: user.u_id,
+                u_nome: user.u_nome,
+                u_atribuido: usuariosAtribuidos.includes(user.u_id)
+            };
+        });
+
+        res.json(usersResponse);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar usuários por condição' });
+    }
+};

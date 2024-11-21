@@ -15,7 +15,7 @@ const documentoCondRoute = require("./routes/rotaDocumentoCondicionante");
 
 
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['http://localhost:5173', 'http://10.11.3.42:5173'];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -26,7 +26,8 @@ const corsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH','DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
+  credentials: true, // Necessário se o front-end utiliza cookies/sessões
 };
 
 app.use(cors(corsOptions));
@@ -47,7 +48,7 @@ app.use("/document-condition", documentoCondRoute)
 
 // SET DO SERVER
 const PORT = 8080 ||process.env;
-app.listen(PORT, ()=>{
+app.listen(PORT, '0.0.0.0', ()=>{
     console.table(
         settingsServer(packgeName, PORT)
     )

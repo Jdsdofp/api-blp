@@ -36,4 +36,6 @@ const Condicionante = sequelize.define('Condicionante', {
   timestamps: false,
 });
 
+
+
 module.exports = Condicionante;

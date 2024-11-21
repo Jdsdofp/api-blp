@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, literal } = require("sequelize");
 const sequelize  = require('../config/db'); 
 const Documento = require("../models/Documentos");
 const Usuario = require("../models/Usuario");
@@ -72,11 +72,12 @@ module.exports.registarDocumento = async (req, res) => {
 
         } else {
             // Cria o documento normalmente se não requer condicionante
+            if(!d_data_pedido || !d_data_emissao || !d_data_vencimento) return res.status(400).json({error: 'Não é possivel cadastrar o documento sem condicionante se não informar as datas requeridas'})
             documento = await Documento.create({
                 d_filial_id,
-                d_data_pedido: d_data_pedido || dataPadrao,
-                d_data_emissao: d_data_emissao || dataPadrao,
-                d_data_vencimento: d_data_vencimento || dataPadrao,
+                d_data_pedido: d_data_pedido,
+                d_data_emissao: d_data_emissao,
+                d_data_vencimento: d_data_vencimento,
                 d_tipo_doc_id,
                 d_orgao_exp,
                 d_anexo,
@@ -98,10 +99,6 @@ module.exports.registarDocumento = async (req, res) => {
         res.status(400).json({ error: 'Erro ao registrar documento', detalhes: error.message });
     }
 };
-
-
-
-
 
 
 
@@ -197,12 +194,12 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                     [Op.in]: u_filiais_ids
                 }
             },
-            attributes: ['f_id', 'f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj'],
+            attributes: ['f_id', 'f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj', 'f_location'],
             include: [
                 {
                     model: Documento,
                     as: 'documentos', // Usar o alias correto definido no model
-                    attributes: ['d_id', 'd_situacao']
+                    attributes: ['d_id', 'd_situacao'],                    
                 }
             ]
         });
@@ -214,3 +211,74 @@ module.exports.listarDocumentosFilial = async (req, res) => {
         res.status(500).json({ error: 'Erro ao listar documentos das filiais' });
     }
 }
+
+
+//Listar documentos por ID de filial para listagem geral de documentos da filial (Ativos)
+module.exports.listarTodosDocumentosFilial = async (req, res) => {
+    try {
+      const { filialId } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
+  
+      // Busca os documentos da filial pelo status informado
+      const documentos = await Documento.findAll({
+        where: {
+          d_ativo: true,
+          d_filial_id: filialId // Filtrar pelo ID da filial
+        },
+        include: [
+          {
+            model: Filial, // Incluindo dados da filial relacionada
+            as: 'filiais',
+            attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
+          },
+
+          {
+            model: Tipo_documento,
+            as: 'tipo_documentos',
+            attributes: ['td_desc']
+          },
+
+          {
+            model: Usuario,
+            as: 'usuario',
+            attributes: ['u_nome']
+          }
+        ]
+      });
+  
+      if (documentos.length === 0) {
+        return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+      }
+  
+      res.status(200).json(documentos); // Retorna os documentos encontrados
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
+    }
+};
+
+
+//Listar documentos por ID de filial para listagem geral de documentos da filial (Ativos)
+module.exports.listarStatusID = async (req, res) => {
+  try {
+    const { id } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
+
+
+    const cond = await DocumentoCondicionante.findByPk(id)
+    const d_id = cond?.dataValues.dc_documento_id;
+    // Busca os documentos da filial pelo status informado
+    const documentos = await Documento.findOne({
+      where: {
+        d_ativo: true,
+        d_id: d_id // Filtrar pelo ID da filial
+      }});
+
+    if (documentos.length === 0) {
+      return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+    }
+
+    res.status(200).json(documentos?.d_situacao); // Retorna os documentos encontrados
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
+  }
+};

@@ -4,6 +4,7 @@
   "description": "Api do sistema blp de controle de documentações licenças a alvarás de lojas",
   "main": "server.js",
   "scripts": {
+    "dev": "nodemon server.js",
     "test": "nodemon server.js",
     "start": "node server.js",
     "release": "standard-version"

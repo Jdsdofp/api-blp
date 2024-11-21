@@ -222,6 +222,25 @@ $$ language plpgsql;
 
 
 
+CREATE OR REPLACE FUNCTION atualizar_situacao_vencida()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.d_data_vencimento <= CURRENT_DATE THEN
+        NEW.d_situacao := 'Vencido';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trigger_atualizar_situacao
+BEFORE INSERT OR UPDATE ON public.documentos
+FOR EACH ROW
+EXECUTE FUNCTION atualizar_situacao_vencida();
+
+
+
+
 /*
 alter table documentos
 add column criado_em TIMESTAMPTZ;
@@ -265,6 +284,31 @@ create table documento_condicionante (
 );
 
 
+alter table documento_condicionante
+add column dc_criado_em TIMESTAMPTZ default now();
+
+
+-- Função que será chamada pela trigger
+CREATE OR REPLACE FUNCTION update_document_condicionante_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Atualiza o campo d_condicionante_id no documento correspondente
+    UPDATE documentos
+    SET d_condicionante_id = NULL  -- Aqui você pode escolher outro valor ou manter como NULL
+    WHERE d_condicionante_id = OLD.dc_id;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criação da trigger para a tabela documento_condicionante
+CREATE TRIGGER on_delete_documento_condicionante
+AFTER DELETE ON documento_condicionante
+FOR EACH ROW
+EXECUTE FUNCTION update_document_condicionante_id();
+
+
+
 /*
 alter table documento_condicionante
 add foreign key (dc_documento_id) references documentos(d_id);
@@ -279,8 +323,10 @@ create table comentarios_documentos(
 	foreign key (cd_autor_id) references usuario(u_id),
 	cd_msg text,
 	cd_resposta JSONB,
-	criado_em TIMESTAMPTZ default now()
+	criado_em TIMESTAMPTZ default now(),
+		 varchar
 );
+
 
 
 --FUNÇÃO PARA TRATAR COMENTARIOS DOS DOCUMENTOS
@@ -291,6 +337,10 @@ create table comentarios_documentos(
  +++toda vez que for criado um comentario referente ao um determinado documento
  no campo d_comentario sera adicionando o id do referido comentario
  e na tabela comentarios_documentos
+ 
+ 
+ alter table comentarios_documentos
+ add column cd_situacao_comentario varchar;
  
   */
 
@@ -346,3 +396,9 @@ create trigger comentarios_delete_trigger
 after delete on comentarios_documentos
 for each row 
 execute function delete_d_comentarios();
+
+
+
+
+
+
