@@ -125,7 +125,8 @@ module.exports.fecharProcessoCondicionante = async (req, res) => {
 
         // Atualizar o status do model Condicionante para 'Em processo'
         await doc_cond.update({
-            status: 'Em processo'
+            status: 'Em processo',
+            dc_status_doc_ref: 'Em processo'
         });
 
         console.log('Condicionante Atualizada... \n', doc_cond);
@@ -300,7 +301,8 @@ module.exports.fecharProcesso = async (req, res) => {
             console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
 
             await doc_cond.update({
-                status: 'Finalizada'
+                status: 'Finalizada',
+                dc_status_doc_ref: doc?.dataValues?.d_situacao
             });
             console.log('Condicionante atualizada para status "Finalizada": \n', doc_cond?.dataValues);
         } else if (doc.d_num_protocolo) {
@@ -313,7 +315,8 @@ module.exports.fecharProcesso = async (req, res) => {
             console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
 
             await doc_cond.update({
-                status: 'Finalizada'
+                status: 'Finalizada',
+                dc_status_doc_ref: 'Emitido'
             });
             console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
         } else if (!d_data_emissao && !d_data_vencimento) {
