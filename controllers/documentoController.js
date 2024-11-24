@@ -170,6 +170,53 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
     }
 };
   
+
+
+//listar documento individual para tratar no front o modal condition
+module.exports.listarDocumentoCondicaoId = async (req, res) => {
+  try {
+    const { conditionId } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
+    console.log('ID recebido', conditionId)
+    // Busca os documentos da filial pelo status informado
+    const documentos = await Documento.findOne({
+      where: {
+        d_condicionante_id: conditionId // Filtrar pelo ID da filial
+      },
+      include: [
+        {
+          model: Filial, // Incluindo dados da filial relacionada
+          as: 'filiais',
+          attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
+        },
+
+        {
+          model: Tipo_documento,
+          as: 'tipo_documentos',
+          attributes: ['td_desc']
+        },
+
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['u_nome']
+        }
+      ]
+    });
+
+    if (documentos.length === 0) {
+      return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+    }
+
+    res.status(200).json(documentos); // Retorna os documentos encontrados
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
+  }
+};
+
+
+
+
 //listar documentos de acordo com permissão de filiais para usuarios...
 module.exports.listarDocumentosFilial = async (req, res) => {
     try {
@@ -199,11 +246,17 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                 {
                     model: Documento,
                     as: 'documentos', // Usar o alias correto definido no model
-                    attributes: ['d_id', 'd_situacao'],                    
+                    attributes: ['d_id', 'd_situacao'],
+                    include: [
+                      {
+                        model: Tipo_documento,
+                        as: 'tipo_documentos',
+                        attributes: ['td_desc']
+                      }
+                    ]
                 }
             ]
         });
-
         // Retornar as filiais e seus documentos
         res.status(200).json(filiais);
     } catch (error) {
