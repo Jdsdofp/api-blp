@@ -48,6 +48,7 @@ module.exports.registrarCusto = async (req, res) =>{
 
     } catch (error) {
         console.log('Log de Erro ao registrar Documento', error)
+        res.status(404).json({message: 'Erro ao cadastrar custo!'})
     }
 }
 
@@ -56,7 +57,12 @@ module.exports.listarCustoDocumento = async (req, res) =>{
     try {
         const {d_id} = req.params;
 
-        const debitos = await Debito_Documentos.findAll({where: {dd_id_documento: d_id}})
+        console.info('Id recebido', d_id)
+        const doc = await Documento.findOne({where: {d_condicionante_id: d_id}})
+
+        console.log('Doc encontrato', doc?.dataValues?.d_id)
+
+        const debitos = await Debito_Documentos.findAll({where: {dd_id_documento: doc?.dataValues?.d_id}})
 
         res.status(200).json(debitos)
         

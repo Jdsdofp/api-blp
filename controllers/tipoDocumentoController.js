@@ -18,10 +18,32 @@ module.exports.registrarTipoDocumento = async (req, res)=>{
 
 module.exports.listarTipoDocumentos = async (req, res)=>{
     try {
-        const tipoDocumento = await Tipo_documento.findAll();
+        const tipoDocumento = await Tipo_documento.findAll({order: [['td_id', 'ASC']]});
 
         res.status(200).json(tipoDocumento)
     } catch (error) {
         res.status(400).json(error)
+    }
+}
+
+
+module.exports.editarDescricaoTipoDoc = async (req, res)=>{
+    try {
+        const {td_id} = req.params;
+        const {td_desc} = req.body;
+        
+        console.info('ID recebido:\n', td_id)
+        console.info('Desc recebida :\n', td_desc)
+
+
+        const tp_doc = await Tipo_documento.findByPk(td_id)
+        console.info('Tipo doc encontrado:\n', tp_doc)
+
+        await tp_doc.update({td_desc: td_desc})
+        return res.status(200).json({message: 'Tipo Documento atualizado com sucesso!', tp_doc})
+        
+
+    } catch (error) {
+        console.log('Log de erro', error)
     }
 }
