@@ -48,6 +48,10 @@ const Debito_Documentos = sequelize.define('Debito_Documentos', {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: true
+    },
+    d_num_ref: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'debitos_documentos', // Nome da tabela no banco de dados

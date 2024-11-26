@@ -25,6 +25,10 @@ const DocumentoCondicionante = sequelize.define('documento_condicionante', {
     dc_condicoes: {
         type: DataTypes.JSONB,
         allowNull: false
+    },
+
+    dc_status_doc_ref: {
+        type: DataTypes.STRING
     }
 }, {
     tableName: 'documento_condicionante',

@@ -63,6 +63,7 @@ module.exports.registarDocumento = async (req, res) => {
             const condicionante = await DocumentoCondicionante.create({
                 dc_documento_id: documento.d_id, // Relaciona com o documento criado
                 status: 'Pendente', // Status inicial
+                dc_status_doc_ref: documento?.d_situacao,
                 dc_condicoes: d_condicoes // Armazena o objeto de condições
             }, { transaction: t });
 
@@ -255,7 +256,8 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                       }
                     ]
                 }
-            ]
+            ],
+            order: [['f_id', 'ASC']]
         });
         // Retornar as filiais e seus documentos
         res.status(200).json(filiais);
@@ -335,3 +337,37 @@ module.exports.listarStatusID = async (req, res) => {
     res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
   }
 };
+
+
+
+//Mudar status para irregular da filial -> esse status ele torna a filial irregular atraces do status de um documento especifico
+module.exports.atualizaStatusIrregular = async (req, res) =>{
+  try {
+    const {d_id} = req.params;
+    const {d_situacao} = req.body;
+
+    const doc = await Documento.findByPk(d_id)
+
+    const cond = await DocumentoCondicionante.findByPk(doc?.dataValues?.d_condicionante_id)
+    
+
+    if(doc?.dataValues?.d_situacao == 'Irregular'){
+      doc.update({
+        d_situacao: cond?.dataValues?.dc_status_doc_ref
+      })
+    } else {
+      doc.update({
+        d_situacao: d_situacao
+      })
+    }
+
+    const docs = doc?.dataValues;
+    return res.status(200).json({message: "Status documento atualizado para 'Irregular'", docs})
+
+  } catch (error) {
+
+    console.log(error)
+
+  }
+
+}
