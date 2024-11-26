@@ -40,6 +40,11 @@ const Tipo_documento = sequelize.define('Tipo_documento', {
         td_requer_condicao: {
             type: DataTypes.BOOLEAN,
             defaultValue: true
+        },
+
+        td_em_uso: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
 
 }, {
