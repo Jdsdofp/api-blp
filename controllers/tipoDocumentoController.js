@@ -44,7 +44,7 @@ module.exports.editarDescricaoTipoDoc = async (req, res)=>{
         
 
     } catch (error) {
-        console.log('Log de erro', error)
+        return res.status(400).json({message: error?.errors[0]?.message})
     }
 }
 

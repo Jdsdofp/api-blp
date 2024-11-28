@@ -29,6 +29,10 @@ const DocumentoCondicionante = sequelize.define('documento_condicionante', {
 
     dc_status_doc_ref: {
         type: DataTypes.STRING
+    },
+
+    dc_criado_em: {
+        type: DataTypes.DATE
     }
 }, {
     tableName: 'documento_condicionante',

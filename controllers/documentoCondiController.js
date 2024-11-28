@@ -347,7 +347,6 @@ module.exports.fecharProcesso = async (req, res) => {
 };
 
 
-
 module.exports.listarUsuariosPorCondicao = async (req, res) => {
     const { dc_id } = req.params; // Recebe o id e o nome da condição
     const { nome } = req.body;
