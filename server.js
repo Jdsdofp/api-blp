@@ -13,6 +13,7 @@ const condicionanteRoute = require("./routes/rotaCondicionantes");
 const { Empresa, Filial, Usuario } = require('./config/actions');
 const documentoCondRoute = require("./routes/rotaDocumentoCondicionante");
 const debitosRoute = require("./routes/rotaDebitosDocumentos");
+const storageRoutes = require("./routes/storageRoutes");
 
 
 
@@ -47,6 +48,7 @@ app.use("/comment-document", comentarioDocumentoRoute);
 app.use("/condition", condicionanteRoute);
 app.use("/document-condition", documentoCondRoute);
 app.use("/debit", debitosRoute);
+app.use('/storage', storageRoutes);
 
 // SET DO SERVER
 const PORT = 8080 ||process.env;

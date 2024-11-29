@@ -2,7 +2,7 @@ const DocumentoCondicionante = require("../models/Documento_Condicionante");
 const Documento = require("../models/Documentos");
 const Filial = require("../models/Filial");
 const Usuario = require("../models/Usuario");
-  
+const fetch = require('node-fetch');
   
 module.exports.listarDocumentoCondicionantes = async (req, res)=>{
     try {
@@ -382,3 +382,6 @@ module.exports.listarUsuariosPorCondicao = async (req, res) => {
         res.status(500).json({ message: 'Erro ao buscar usuários por condição' });
     }
 };
+
+
+
