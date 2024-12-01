@@ -8,6 +8,7 @@ exports.uploadFile = async (req, res) => {
       const bucketName = 'blpdocs';
       const file = req.file;
       const { d_id } = req.body; // Recebe o ID do documento do corpo da requisição
+     
         
      console.log('ID', d_id)
 
@@ -16,7 +17,7 @@ exports.uploadFile = async (req, res) => {
       }
   
       // Nome único para o arquivo com codificação para URL
-      const filePath = `${Date.now()}${encodeURIComponent(file.originalname)}`;
+      const filePath = `${Date.now()}`;
 
 
       console.log('File path gerado:', filePath);
@@ -53,6 +54,10 @@ exports.uploadFile = async (req, res) => {
       }
   
       documento.d_anexo = fileUrl; // Atualiza o campo `d_anexo`
+      documento.d_anexo = {
+        arquivo: file.originalname,
+        url: publicUrlData.publicUrl
+      }
       await documento.save(); // Salva no banco de dados
   
       // Resposta com sucesso

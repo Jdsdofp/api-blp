@@ -50,7 +50,7 @@ const Documento = sequelize.define('Documento',{
     },
 
     d_anexo: {
-        type: DataTypes.STRING
+        type: DataTypes.JSONB,
     },
     criado_em: {
         type: DataTypes.DATE,
