@@ -51,7 +51,7 @@ app.use("/debit", debitosRoute);
 app.use('/storage', storageRoutes);
 
 // SET DO SERVER
-const PORT = 8080 ||process.env;
+const PORT = 8080 || process.env;
 app.listen(PORT, '0.0.0.0', ()=>{
     console.table(
         settingsServer(packgeName, PORT)
