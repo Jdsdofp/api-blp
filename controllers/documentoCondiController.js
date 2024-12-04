@@ -3,7 +3,10 @@ const Documento = require("../models/Documentos");
 const Filial = require("../models/Filial");
 const Usuario = require("../models/Usuario");
 const fetch = require('node-fetch');
-  
+const { format } = require('date-fns');
+const { ptBR } = require('date-fns/locale');  
+
+
 module.exports.listarDocumentoCondicionantes = async (req, res)=>{
     try {
         const documentoCondicionante = await DocumentoCondicionante.findAll({order: [['dc_id', 'ASC']]})
@@ -290,6 +293,25 @@ module.exports.fecharProcesso = async (req, res) => {
 
         const d_id = doc_cond?.dataValues?.dc_documento_id;
         const doc = await Documento.findOne({ where: { d_id: d_id } });
+
+       
+
+        if (doc?.dataValues.d_data_pedido > d_data_emissao) {
+    const dataEmissao = new Date(d_data_emissao);
+    const dataPedido = new Date(doc?.dataValues.d_data_pedido);
+
+    // Força o ajuste ao fuso horário local
+    const dataEmissaoFormatada = new Date(dataEmissao.getTime() + dataEmissao.getTimezoneOffset() * 60000)
+        .toLocaleDateString('pt-BR');
+    const dataPedidoFormatada = new Date(dataPedido.getTime() + dataPedido.getTimezoneOffset() * 60000)
+        .toLocaleDateString('pt-BR');
+
+    return res.status(401).json({
+        message: `CONFLITO DE DATA:\ndata de emissão ${dataEmissaoFormatada} não pode ser menor que a de protocolo ${dataPedidoFormatada}`
+    });
+}
+
+
 
         if (!doc) return res.status(404).json({ message: 'Documento atrelado na condicionante não encontrado!' });
 
