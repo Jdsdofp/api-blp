@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+const { fn, col } = Sequelize;
 const Empresa = require("../models/Empresa");
 const Filial = require("../models/Filial");
 const Usuario = require("../models/Usuario");
@@ -23,10 +25,13 @@ module.exports.registrarFilial = async(req, res)=>{
         
 
 
+
         
         const cnpj = f_cnpj.replace(/[^\d]/g, "")
-        if(f_uf.length <=1 ) return res.status(401).json({message: 'Campo (UF) não pode ser menor que 2 caracteres'})
-        if(cnpj.length < 14 ) return res.status(401).json({message: 'CNPJ invalido'})
+        
+        if(f_uf.length <=1 ) return res.status(401).json({message: 'Campo (UF) não pode ser menor que 2 caracteres'});
+        if(cnpj.length < 14 ) return res.status(401).json({message: 'CNPJ invalido'});
+        if(!f_codigo) return res.status(402).json({message: 'Informe o codigo da filial'});
         
             const filial = await Filial.create({
                 f_nome: f_nome, 
@@ -185,3 +190,64 @@ module.exports.deletarFilial = async (req, res) => {
         return res.status(500).json({ error: 'Erro ao deletar filial' });
     }
 };
+
+
+
+module.exports.editarFilial = async (req, res) => {
+    try {
+        const { f_id } = req.params;
+        //console.info('ID recebido: ', f_id);
+        //console.log('Dados recebidos: ', req.body);
+
+        const verifyCnpj = await Filial.findOne({where: { f_cnpj: req.body.f_cnpj}})
+        //console.log('CNPJ encontrado: ', verifyCnpj)
+
+        
+        const filial = await Filial.findByPk(f_id);
+        if (!filial) {
+            return res.status(404).json({ error: 'Filial não encontrada.' });
+        }
+        
+        
+
+        //console.log('Filial encontrada: ', filial?.dataValues);
+
+        function limparCNPJ(cnpj) {
+            return cnpj.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+        }
+
+        const f_cnpj = limparCNPJ(req.body?.f_cnpj || filial?.dataValues?.f_cnpj);
+
+        const newFilial = {
+            f_nome: req.body?.f_nome || filial?.f_nome,
+            f_cnpj: f_cnpj || filial?.f_cnpj,
+            f_cidade: req.body?.f_cidade || filial?.f_cidade,
+            f_uf: req.body?.f_uf || filial?.f_uf,
+            f_empresa_id: req.body?.f_empresa_id || filial?.f_empresa_id,
+            f_endereco: [
+                {
+                    f_endereco_bairro: req.body?.f_endereco_bairro || filial?.f_endereco[0]?.f_endereco_bairro,
+                    f_endereco_complemento: req.body?.f_endereco_complemento || filial?.f_endereco[0]?.f_endereco_complemento,
+                },
+            ],
+            f_codigo: req.body?.f_codigo || filial?.f_codigo,
+            f_insc_municipal: req.body?.f_insc_municipal || filial?.f_insc_municipal,
+            f_insc_estadual: req.body?.f_insc_estadual || filial?.f_insc_estadual,
+        };
+
+        // Adicione o campo de localização se as coordenadas forem fornecidas
+        if (req.body?.f_longitude && req.body?.f_latitude) {
+            newFilial.f_location = fn('ST_Point', req.body.f_longitude, req.body.f_latitude);
+        }
+
+        await filial.update(newFilial);
+
+        //console.log('Filial atualizada: ', newFilial);
+        return res.status(200).json({message: 'Dados da filial alterados com sucesso!'});
+
+    } catch (error) {
+        console.error('Erro ao editar filial: ', error || error.errors[0].message);
+        return res.status(500).json({ message: error.errors[0].message || 'Erro interno do servidor.'});
+    }
+};
+
