@@ -20,10 +20,13 @@ module.exports.registarDocumento = async (req, res) => {
             d_anexo,
             d_num_protocolo,
             d_situacao,
+            d_flag_stts,
             d_condicoes // Recebe o array de condições
         } = req.body;
 
-        console.log(req.body)
+        console.info('Flag recebida: ', d_flag_stts)
+
+        //console.log(req.body)
 
         const { id } = req.user;
         const d_criador_id = id;
@@ -55,7 +58,7 @@ module.exports.registarDocumento = async (req, res) => {
                 d_anexo: '',
                 d_num_protocolo: '',
                 d_criador_id: d_criador_id,
-                d_situacao: 'Não iniciado',
+                d_situacao: d_flag_stts || 'Não iniciado',
             }, { transaction: t });
 
 
@@ -346,12 +349,14 @@ module.exports.atualizaStatusIrregular = async (req, res) =>{
     const {d_id} = req.params;
     const {d_situacao} = req.body;
 
+    console.log('Situacao recebida: ', d_situacao)
+
     const doc = await Documento.findByPk(d_id)
 
     const cond = await DocumentoCondicionante.findByPk(doc?.dataValues?.d_condicionante_id)
     
 
-    if(doc?.dataValues?.d_situacao == 'Irregular'){
+    if(doc?.dataValues?.d_situacao == d_situacao){
       doc.update({
         d_situacao: cond?.dataValues?.dc_status_doc_ref
       })

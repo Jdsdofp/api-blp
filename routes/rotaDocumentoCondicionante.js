@@ -1,3 +1,5 @@
+const multer = require('multer');
+const upload = multer(); // Configuração básica de buffer
 const express = require("express");
 
 const { 
