@@ -136,10 +136,6 @@ module.exports.fecharProcessoCondicionante = async (req, res) => {
 
         return res.status(200).json({ message: 'Documento e Condicionante atualizados com sucesso' });
 
-        // Aqui você pode continuar com a lógica de atualização do documento
-        // ...
-
-        res.status(200).send({ message: "Condição fechada com sucesso." });
     } catch (error) {
         // Log de erro
         console.warn(error);
@@ -297,19 +293,19 @@ module.exports.fecharProcesso = async (req, res) => {
        
 
         if (doc?.dataValues.d_data_pedido > d_data_emissao) {
-    const dataEmissao = new Date(d_data_emissao);
-    const dataPedido = new Date(doc?.dataValues.d_data_pedido);
+            const dataEmissao = new Date(d_data_emissao);
+            const dataPedido = new Date(doc?.dataValues.d_data_pedido);
 
-    // Força o ajuste ao fuso horário local
-    const dataEmissaoFormatada = new Date(dataEmissao.getTime() + dataEmissao.getTimezoneOffset() * 60000)
-        .toLocaleDateString('pt-BR');
-    const dataPedidoFormatada = new Date(dataPedido.getTime() + dataPedido.getTimezoneOffset() * 60000)
-        .toLocaleDateString('pt-BR');
+            // Força o ajuste ao fuso horário local
+            const dataEmissaoFormatada = new Date(dataEmissao.getTime() + dataEmissao.getTimezoneOffset() * 60000)
+                .toLocaleDateString('pt-BR');
+            const dataPedidoFormatada = new Date(dataPedido.getTime() + dataPedido.getTimezoneOffset() * 60000)
+                .toLocaleDateString('pt-BR');
 
-    return res.status(401).json({
-        message: `CONFLITO DE DATA:\ndata de emissão ${dataEmissaoFormatada} não pode ser menor que a de protocolo ${dataPedidoFormatada}`
-    });
-}
+            return res.status(401).json({
+                message: `CONFLITO DE DATA:\ndata de emissão ${dataEmissaoFormatada} não pode ser menor que a de protocolo ${dataPedidoFormatada}`
+            });
+        }
 
 
 
