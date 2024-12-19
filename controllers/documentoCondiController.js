@@ -5,6 +5,7 @@ const Usuario = require("../models/Usuario");
 const fetch = require('node-fetch');
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');  
+const Notificacao = require("../models/Notifica");
 
 
 module.exports.listarDocumentoCondicionantes = async (req, res)=>{
@@ -145,44 +146,66 @@ module.exports.fecharProcessoCondicionante = async (req, res) => {
 
 
 module.exports.atribuirUsuariosCondicao = async (req, res) => {
+    
     try {
+        const io = req.app.get('io'); // Acesse a instância do io
         const { dc_id } = req.params;
-        const { dc_condicoes, userIds } = req.body;
+        let { dc_condicoes, userIds } = req.body;
 
-        // Log para verificar os dados recebidos
         console.log('Payload recebido:', req.body);
 
-        // Verificar se dc_condicoes e userIds estão definidos
         if (!dc_condicoes || !userIds) {
             return res.status(400).json({ message: 'Dados incompletos. As condições ou IDs de usuários estão ausentes.' });
         }
 
-        // Obter a primeira chave do objeto dc_condicoes
+
+        const userAtribuetor = await Usuario.findByPk(req.user.id)
+        console.log('user log: ', userAtribuetor?.dataValues?.u_nome)
+
+        // Garantir que userIds seja um array
+        if (!Array.isArray(userIds)) {
+            userIds = [userIds]; // Converte para array se for um único ID
+        }
+
         const firstKey = Object.keys(dc_condicoes)[0];
 
-        // Buscar o documento com o dc_id
         const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
 
         if (!doc_cond) {
             return res.status(404).json({ message: 'Documento não encontrado.' });
         }
 
-        // Verifique se a primeira chave existe em dc_condicoes do banco de dados
         const conditionExists = firstKey in doc_cond.dataValues.dc_condicoes;
 
         if (conditionExists) {
             console.log(`Condição '${firstKey}' existe no documento.`);
 
-            // Atualizar a condição no objeto dc_condicoes do documento encontrado
+            // Atualizar os usuários atribuídos à condição (mantém todos os IDs, inclusive o do usuário logado)
             doc_cond.dataValues.dc_condicoes[firstKey].users = userIds;
 
-            // Persistir a alteração no banco de dados
             await DocumentoCondicionante.update(
                 { dc_condicoes: doc_cond.dataValues.dc_condicoes },
                 { where: { dc_id: dc_id } }
             );
 
-            return res.status(200).json({ message: `Usuários atribuídos à condição '${firstKey}' com sucesso.` });
+            // Criar notificações para os usuários atribuídos (exclui o ID do usuário logado)
+            const userIdsToNotify = userIds.filter(userId => userId !== req.user.id);
+
+            for (const userId of userIdsToNotify) {
+                const notification = await Notificacao.create({
+                  n_user_id: userId,
+                  n_mensagem: `${userAtribuetor?.dataValues?.u_nome} atribuiu à condição '${firstKey}' para você.`,
+                });
+              
+                
+                // Emitir a notificação via Socket.IO
+                io.to(`user_${userId}`).emit('nova_notificacao', {
+                  mensagem: `${userAtribuetor?.dataValues?.u_nome} atribuiu à condição '${firstKey}' para você.`,
+                  condicao: firstKey,
+                });
+              }
+
+            return res.status(200).json({ message: `Usuários atribuídos à condição '${firstKey}' com sucesso e notificados.` });
         } else {
             console.log(`Condição '${firstKey}' não existe no documento.`);
             return res.status(404).json({ message: `Condição '${firstKey}' não encontrada no documento.` });
@@ -192,6 +215,8 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
         return res.status(500).json({ message: 'Erro interno do servidor.' });
     }
 };
+
+
 
 
 module.exports.listarDocumentoCond = async (req, res) => {
