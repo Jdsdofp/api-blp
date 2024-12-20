@@ -196,12 +196,16 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
                   n_user_id: userId,
                   n_mensagem: `${userAtribuetor?.dataValues?.u_nome} atribuiu à condição '${firstKey}' para você.`,
                 });
-              
+                
+                const notsUser = await Notificacao.findAll({where: {n_user_id: userId}})
+                const countNots = Object.entries(notsUser || {}).filter(([key, value]) => value?.n_lida === false).length
+
                 
                 // Emitir a notificação via Socket.IO
                 io.to(`user_${userId}`).emit('nova_notificacao', {
                   mensagem: `${userAtribuetor?.dataValues?.u_nome} atribuiu à condição '${firstKey}' para você.`,
                   condicao: firstKey,
+                  count: countNots
                 });
               }
 
