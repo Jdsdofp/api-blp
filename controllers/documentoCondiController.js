@@ -52,11 +52,54 @@ module.exports.listarDocumentoCondicionante = async (req, res)=>{
     try {
         const documentoCondicionante = await DocumentoCondicionante.findOne({where: {dc_id: dc_id}})
 
+        console.log('Condicionantes do documento: \n', documentoCondicionante?.dataValues)
         res.status(200).json(documentoCondicionante)
     } catch (error) {
         res.status(400).json(error);
     }
 }
+
+
+//rota condicionante por usuario::::
+module.exports.listarDocumentoCondicionanteUsuario = async (req, res) => {
+    const { dc_id } = req.params;
+
+    try {
+        const documentoCondicionante = await DocumentoCondicionante.findOne({ where: { dc_id } });
+
+        if (!documentoCondicionante) {
+            return res.status(404).json({ message: "Documento condicionante não encontrado." });
+        }
+
+        const condicoes = documentoCondicionante.dataValues.dc_condicoes;
+
+        // Iterar sobre cada condição e buscar os nomes dos usuários
+        for (const condicao in condicoes) {
+            const userIds = condicoes[condicao].users;
+
+            // Buscar os usuários pelo ID
+            const usuarios = await Usuario.findAll({
+                where: { u_id: userIds },
+                attributes: ['u_id', 'u_nome'], // Ajuste os nomes dos campos conforme seu modelo
+            });
+
+            // Adicionar os nomes dos usuários ao retorno
+            condicoes[condicao].users = usuarios.map(user => ({
+                id: user.u_id,
+                nome: user.u_nome,
+            }));
+        }
+
+        console.log('Condicionantes do documento com usuários: \n', documentoCondicionante.dataValues);
+        res.status(200).json(documentoCondicionante);
+    } catch (error) {
+        console.error('Erro ao listar documento condicionante:', error);
+        res.status(400).json({ error: "Erro ao listar documento condicionante.", details: error.message });
+    }
+};
+
+
+
 
 module.exports.fecharCondicionante = async (req, res) => {
     try {
