@@ -45,11 +45,11 @@ module.exports.editarDescCondicionante = async (req, res) => {
   try {
     const { c_id } = req.params;
     const {c_tipo} = req.body;
-    console.log('ID recebido:\n', c_id)
-    console.log('Valor recebido do front:\n', c_tipo)
+    //console.log('ID recebido:\n', c_id)
+    //console.log('Valor recebido do front:\n', c_tipo)
 
     const cond = await Condicionante.findByPk(c_id)
-    console.info('Condicionante encontrada:\n', cond?.dataValues)
+    //console.info('Condicionante encontrada:\n', cond?.dataValues)
 
     if(!cond?.dataValues) return res.status(300).json({message: 'Condicionante não encontrada!'})
     
@@ -69,10 +69,10 @@ module.exports.editarDescCondicionante = async (req, res) => {
 module.exports.deletaCondicionante = async (req, res) =>{
   try {
     const {c_id} = req.params;
-    console.log('ID recebido da condicionante:\n', c_id);
+    //console.log('ID recebido da condicionante:\n', c_id);
 
     const cond = await Condicionante.findByPk(c_id)
-    console.log('Condicionante encontrada:\n', cond?.dataValues);
+    //console.log('Condicionante encontrada:\n', cond?.dataValues);
     if(!cond?.dataValues) return res.status(400).json({message: 'Condicionante não encontrada!'})
 
     await cond.destroy()
@@ -88,23 +88,23 @@ module.exports.editarCondicao = async (req, res) => {
     try {
       const { c_id } = req.params;
       const {c_condicao_atualizada, c_condicao_atual} = req.body;
-      console.info('Condição atual: ', c_condicao_atual)
-      console.info('Condição atualizada: ', c_condicao_atualizada)
+      //console.info('Condição atual: ', c_condicao_atual)
+      //console.info('Condição atualizada: ', c_condicao_atualizada)
 
       const cond = await Condicionante.findOne({where: {c_id: c_id}})
-      console.info('Condicionante encontrada: ', cond?.dataValues, '\n')
+      //console.info('Condicionante encontrada: ', cond?.dataValues, '\n')
 
       const condicoes = cond?.dataValues?.c_condicao;
-      console.info('Condições encontradas: ', condicoes, '\n')
+      //console.info('Condições encontradas: ', condicoes, '\n')
 
       const index = condicoes.indexOf(c_condicao_atual)
-      console.info('Index da condição atual: ', index, '\n\n')
+      //console.info('Index da condição atual: ', index, '\n\n')
 
 
-      console.info('Condição encontrada via Index: ', condicoes[index])
+      //console.info('Condição encontrada via Index: ', condicoes[index])
       condicoes[index] = c_condicao_atualizada;
 
-      console.log('\nCond', condicoes)
+      //console.log('\nCond', condicoes)
 
       // Salvar a alteração no banco de dados
     await Condicionante.update(
@@ -133,23 +133,23 @@ module.exports.deletarCondicao = async (req, res) => {
       return res.status(404).json({ message: 'Condicionante não encontrada.' });
     }
 
-    console.info('Condicionante encontrada: ', cond.dataValues);
+    //console.info('Condicionante encontrada: ', cond.dataValues);
 
     // Obter o array de condições
     const condicoes = cond.dataValues.c_condicao;
 
-    console.info('Condições encontradas: ', condicoes);
+    //console.info('Condições encontradas: ', condicoes);
 
     // Encontrar o índice da condição a ser deletada
     const index = condicoes.indexOf(c_condicao);
 
 
-    console.info('Índice da condição a ser deletada: ', index);
+    //console.info('Índice da condição a ser deletada: ', index);
 
     // Remover a condição do array
     condicoes.splice(index, 1);
 
-    console.log('Condições após remoção: ', condicoes);
+    //console.log('Condições após remoção: ', condicoes);
 
     // Atualizar o registro no banco de dados
     await Condicionante.update(
@@ -169,14 +169,14 @@ module.exports.adicionarCondicoes = async (req, res) =>{
   try {
     const {c_id} = req.params;
     const {c_condicao} = req.body;
-    console.info('Id recebido: ', c_id)
-    console.info('Condição: ', c_condicao)
+    //console.info('Id recebido: ', c_id)
+    //console.info('Condição: ', c_condicao)
 
     const cond = await Condicionante.findByPk(c_id)
-    console.info('Condicionante encontrada: ', cond?.dataValues, '\n')
+    //console.info('Condicionante encontrada: ', cond?.dataValues, '\n')
 
     const novasCondicoes = [...cond?.dataValues.c_condicao, ...c_condicao]
-    console.info('Novas condições: ', novasCondicoes)
+    //console.info('Novas condições: ', novasCondicoes)
 
     await cond.update({
       c_condicao: novasCondicoes

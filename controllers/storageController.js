@@ -10,7 +10,7 @@ exports.uploadFile = async (req, res) => {
       const { d_id } = req.body; // Recebe o ID do documento do corpo da requisição
      
         
-     console.log('ID d', d_id)
+     //console.log('ID d', d_id)
 
       if (!d_id) {
         return res.status(400).json({ error: 'ID do documento (d_id) é obrigatório' });
@@ -20,7 +20,7 @@ exports.uploadFile = async (req, res) => {
       const filePath = `${Date.now()}`;
 
 
-      console.log('File path gerado:', filePath);
+      //console.log('File path gerado:', filePath);
   
       // Upload do arquivo
       const { data: uploadData, error: uploadError } = await supabase.storage

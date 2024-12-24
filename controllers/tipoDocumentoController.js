@@ -32,12 +32,12 @@ module.exports.editarDescricaoTipoDoc = async (req, res)=>{
         const {td_id} = req.params;
         const {td_desc} = req.body;
         
-        console.info('ID recebido:\n', td_id)
-        console.info('Desc recebida :\n', td_desc)
+        //console.info('ID recebido:\n', td_id)
+        //console.info('Desc recebida :\n', td_desc)
 
 
         const tp_doc = await Tipo_documento.findByPk(td_id)
-        console.info('Tipo doc encontrado:\n', tp_doc)
+        //console.info('Tipo doc encontrado:\n', tp_doc)
 
         await tp_doc.update({td_desc: td_desc})
         return res.status(200).json({message: 'Tipo Documento atualizado com sucesso!', tp_doc})
@@ -54,17 +54,17 @@ module.exports.editarReqCondicionanteTipoDoc = async (req, res)=>{
         const {td_id} = req.params;
         const {state} = req.body;
 
-        console.info('\nID recebido:', td_id)
-        console.info('State recebido:', state)
+        //console.info('\nID recebido:', td_id)
+        //console.info('State recebido:', state)
 
         const tp_doc = await Tipo_documento.findByPk(td_id);
-        console.log('Tipo documento encontrado:\n', tp_doc?.dataValues, '\n')
+        //console.log('Tipo documento encontrado:\n', tp_doc?.dataValues, '\n')
 
         await tp_doc.update({
             td_requer_condicao: state
         })
 
-        console.log('Tipo documento alterado:\n', tp_doc?.dataValues)
+        //console.log('Tipo documento alterado:\n', tp_doc?.dataValues)
         return res.status(200).json({message: 'Alterada com suscesso!', tp_doc})
 
     } catch (error) {
@@ -76,10 +76,10 @@ module.exports.editarReqCondicionanteTipoDoc = async (req, res)=>{
 module.exports.deletarTipoDocumento = async (req, res)=>{
     try {
         const {td_id} = req.params;
-        console.info('\nID recebido:', td_id)
+        //console.info('\nID recebido:', td_id)
 
         const tp_doc = await Tipo_documento.findByPk(td_id)
-        console.log('Tipo documento encontrado:\n', tp_doc?.dataValues, '\n')
+        //console.log('Tipo documento encontrado:\n', tp_doc?.dataValues, '\n')
         if(tp_doc?.dataValues?.td_em_uso) return res.status(400).json({message: `Não é possível deletar ${tp_doc?.dataValues?.td_desc} porque já existem documentos vinculados a este tipo de documento.`})
     
         await tp_doc.destroy()

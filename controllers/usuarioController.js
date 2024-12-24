@@ -10,7 +10,7 @@ const { format } = require("date-fns");
 module.exports.registrarUsuario = async (req, res) => {
     try {
         const { u_nome, u_email, u_senha, u_empresas_ids, u_filiais_ids, u_senhatemporaria } = req.body;
-        console.log("req: ", req.body)
+        //console.log("req: ", req.body)
         // Validação de Empresas
         if (u_empresas_ids && u_empresas_ids.length > 0) {
             const empresas = await Empresa.findAll({ where: { e_id: { [Sequelize.Op.in]: u_empresas_ids } } });

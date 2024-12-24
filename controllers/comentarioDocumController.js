@@ -44,7 +44,7 @@ module.exports.listarComentarios = async(req, res)=>{
             order: [['cd_id', 'DESC']]
         })
         
-        console.log(comentarioDocumento)
+        //console.log(comentarioDocumento)
 
         res.status(200).json(comentarioDocumento)
     } catch (error) {

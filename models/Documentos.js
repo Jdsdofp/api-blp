@@ -83,6 +83,10 @@ const Documento = sequelize.define('Documento',{
     },
     d_condicionante_id: {
         type: DataTypes.INTEGER
+    },
+    d_flag_vitalicio: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 },{
     tableName: 'documentos',

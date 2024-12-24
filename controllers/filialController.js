@@ -252,18 +252,18 @@ module.exports.statusFilial = async (req, res) =>{
     try {
         const {f_id} = req.params;
         const {state} = req.body;
-        console.log('ID recebido: ', f_id)
-        console.log('State recebido: ', state)
+        //console.log('ID recebido: ', f_id)
+        //console.log('State recebido: ', state)
 
         const filial = await Filial.findByPk(f_id)
-        console.info('Filial encontrada: ', filial?.dataValues)
+        //console.info('Filial encontrada: ', filial?.dataValues)
         if(!filial) return res.status(400).json({message: 'Filial não encontrada'})
         
         filial.update({
             f_ativo: state
         })
 
-        console.log('State of branch: ', filial?.dataValues?.f_ativo)
+        //console.log('State of branch: ', filial?.dataValues?.f_ativo)
 
         res.status(200).json({message: `Status atualizado ${filial?.dataValues?.f_ativo ? 'ATIVADA' : 'BAIXADA'}`})
 

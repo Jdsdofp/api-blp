@@ -7,13 +7,13 @@ const Usuario = require("../models/Usuario");
 module.exports.registrarCusto = async (req, res) =>{
     try {
         const {d_id} = req.params;
-        console.log('ID doc recebido', d_id);
+        //console.log('ID doc recebido', d_id);
 
         const {id} = req.user;
         const usuario = await Usuario.findByPk(id)
 
         //pegando o usuario no banco
-        console.log('Usuario que esta cadastrando o custo', usuario?.dataValues?.u_nome)
+        //console.log('Usuario que esta cadastrando o custo', usuario?.dataValues?.u_nome)
 
         //Dados recebido do body
         const {
@@ -30,7 +30,7 @@ module.exports.registrarCusto = async (req, res) =>{
         //Verifica se o documento citado realmente existe
         const doc = await Documento.findByPk(d_id);
         if(!doc?.dataValues) return res.status(300).json({message: 'Documento não encontrado'})
-        console.log('Doc encontrado', doc?.dataValues);
+        //console.log('Doc encontrado', doc?.dataValues);
         
         //Cadastrar o debito e atrelar ao documento citado
         const debitos_documentos = await Debito_Documentos.create({
@@ -57,13 +57,13 @@ module.exports.listarCustoDocumento = async (req, res) =>{
     try {
         const {d_id} = req.params;
 
-        console.info('Id recebido', d_id)
+        //console.info('Id recebido', d_id)
         const doc = await Documento.findOne({where: {d_condicionante_id: d_id}})
 
-        console.log('Doc encontrato', doc?.dataValues?.d_id)
+        //console.log('Doc encontrato', doc?.dataValues?.d_id)
 
         const debitos = await Debito_Documentos.findAll({where: {dd_id_documento: doc?.dataValues?.d_id}})
-        console.info(debitos)
+        //console.info(debitos)
         res.status(200).json(debitos)
         
     } catch (error) {

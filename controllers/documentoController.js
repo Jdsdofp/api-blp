@@ -24,7 +24,7 @@ module.exports.registarDocumento = async (req, res) => {
             d_condicoes // Recebe o array de condições
         } = req.body;
 
-        console.info('Flag recebida: ', d_flag_stts)
+        //console.info('Flag recebida: ', d_flag_stts)
 
         //console.log(req.body)
 
@@ -46,7 +46,7 @@ module.exports.registarDocumento = async (req, res) => {
 
         // Verifica se o documento requer condicionante
         if (tipoDocumento.td_requer_condicao) {
-            console.log('Tipo de documento requer condicionante');
+            //console.log('Tipo de documento requer condicionante');
 
             documento = await Documento.create({
                 d_filial_id: d_filial_id,
@@ -180,7 +180,7 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
 module.exports.listarDocumentoCondicaoId = async (req, res) => {
   try {
     const { conditionId } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
-    console.log('ID recebido', conditionId)
+    //console.log('ID recebido', conditionId)
     // Busca os documentos da filial pelo status informado
     const documentos = await Documento.findOne({
       where: {
@@ -349,14 +349,14 @@ module.exports.atualizaStatusIrregular = async (req, res) =>{
     const {d_id} = req.params;
     const {d_situacao} = req.body;
 
-    console.log('d_id recebido: ', d_id)
-    console.log('Situacao recebida: ', d_situacao)
+    //console.log('d_id recebido: ', d_id)
+    //console.log('Situacao recebida: ', d_situacao)
 
     const doc = await Documento.findByPk(d_id)
-    console.log('Doc enconttado: ', doc?.dataValues)
+    //console.log('Doc enconttado: ', doc?.dataValues)
 
     const cond = await DocumentoCondicionante.findByPk(doc?.dataValues?.d_condicionante_id)
-    console.log('Cond encontrada: ', cond?.dataValues)
+    //console.log('Cond encontrada: ', cond?.dataValues)
 
     if(doc?.dataValues?.d_situacao == d_situacao){
       doc.update({
@@ -380,9 +380,9 @@ module.exports.atualizaStatusIrregular = async (req, res) =>{
 
     const docs = doc?.dataValues;
     const conds = cond?.dataValues;
-    console.info('Doc atualizado: ', docs)
+    //console.info('Doc atualizado: ', docs)
 
-    console.info('Cond atualizada: ', conds)
+    //console.info('Cond atualizada: ', conds)
 
     return res.status(200).json({message: "Status documento atualizado para 'Irregular'", docs})
 

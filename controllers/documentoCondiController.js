@@ -52,7 +52,7 @@ module.exports.listarDocumentoCondicionante = async (req, res)=>{
     try {
         const documentoCondicionante = await DocumentoCondicionante.findOne({where: {dc_id: dc_id}})
 
-        console.log('Condicionantes do documento: \n', documentoCondicionante?.dataValues)
+        //console.log('Condicionantes do documento: \n', documentoCondicionante?.dataValues)
         res.status(200).json(documentoCondicionante)
     } catch (error) {
         res.status(400).json(error);
@@ -90,7 +90,7 @@ module.exports.listarDocumentoCondicionanteUsuario = async (req, res) => {
             }));
         }
 
-        console.log('Condicionantes do documento com usuários: \n', documentoCondicionante.dataValues);
+        //console.log('Condicionantes do documento com usuários: \n', documentoCondicionante.dataValues);
         res.status(200).json(documentoCondicionante);
     } catch (error) {
         console.error('Erro ao listar documento condicionante:', error);
@@ -120,7 +120,7 @@ module.exports.fecharCondicionante = async (req, res) => {
         const conditionExists = firstKey in doc_cond.dataValues.dc_condicoes;
 
         if (conditionExists) {
-            console.log(`Condição '${firstKey}' existe no documento.`);
+            //console.log(`Condição '${firstKey}' existe no documento.`);
 
             // Atualizar a condição no objeto dc_condicoes do documento encontrado
             doc_cond.dataValues.dc_condicoes[firstKey] = dc_condicoes[firstKey];
@@ -133,7 +133,7 @@ module.exports.fecharCondicionante = async (req, res) => {
 
             return res.status(200).json({ message: `Condição '${firstKey}' atualizada com sucesso.` });
         } else {
-            console.log(`Condição '${firstKey}' não existe no documento.`);
+            //console.log(`Condição '${firstKey}' não existe no documento.`);
             return res.status(404).json({ message: `Condição '${firstKey}' não encontrada no documento.` });
         }
     } catch (error) {
@@ -354,10 +354,10 @@ module.exports.fecharProcesso = async (req, res) => {
         const { dc_id } = req.params;
         const { d_data_emissao, d_data_vencimento, d_num_protocolo } = req.body;
 
-        console.log('ID do parametro', dc_id);
+        //console.log('ID do parametro', dc_id);
 
         const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
-        console.log('Condicionante encontrada: \n', doc_cond?.dataValues);
+        //console.log('Condicionante encontrada: \n', doc_cond?.dataValues);
 
         const d_id = doc_cond?.dataValues?.dc_documento_id;
         const doc = await Documento.findOne({ where: { d_id: d_id } });
@@ -392,13 +392,13 @@ module.exports.fecharProcesso = async (req, res) => {
                 d_num_protocolo: d_num_protocolo,
                 d_situacao: 'Emitido'
             });
-            console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
+            //console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
 
             await doc_cond.update({
                 status: 'Finalizada',
                 dc_status_doc_ref: doc?.dataValues?.d_situacao
             });
-            console.log('Condicionante atualizada para status "Finalizada": \n', doc_cond?.dataValues);
+            //console.log('Condicionante atualizada para status "Finalizada": \n', doc_cond?.dataValues);
         } else if (doc.d_num_protocolo) {
             // Atualiza apenas as datas, mantém d_num_protocolo inalterado, e define situação como "Em processo"
             await doc.update({
@@ -406,26 +406,26 @@ module.exports.fecharProcesso = async (req, res) => {
                 d_data_vencimento: d_data_vencimento,
                 d_situacao: 'Emitido'
             });
-            console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
+            //console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
 
             await doc_cond.update({
                 status: 'Finalizada',
                 dc_status_doc_ref: 'Emitido'
             });
-            console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
+            //console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
         } else if (!d_data_emissao && !d_data_vencimento) {
             // Caso as datas estejam vazias, insere d_num_protocolo e define situação como "Em processo"
             await doc.update({
                 d_num_protocolo: d_num_protocolo,
                 d_situacao: 'Em processo'
             });
-            console.log('Documento atualizado com d_num_protocolo e situação "Em processo": \n', doc?.dataValues);
+            //console.log('Documento atualizado com d_num_protocolo e situação "Em processo": \n', doc?.dataValues);
             // res.status(200).json({ message: `Processo finalizado com sucesso 2`, doc})
 
             await doc_cond.update({
                 status: 'Em processo'
             });
-            console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
+            //console.log('Condicionante atualizada para status "Em processo": \n', doc_cond?.dataValues);
         }
 
         return res.status(200).json({ message: `Processo finalizado com sucesso`, doc });
@@ -435,6 +435,7 @@ module.exports.fecharProcesso = async (req, res) => {
         res.status(500).json({ message: 'Erro ao finalizar o processo' });
     }
 };
+
 
 
 module.exports.listarUsuariosPorCondicao = async (req, res) => {
