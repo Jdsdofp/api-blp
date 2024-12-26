@@ -352,7 +352,8 @@ module.exports.adicionarCondicoes = async (req, res) => {
 module.exports.fecharProcesso = async (req, res) => {
     try {
         const { dc_id } = req.params;
-        const { d_data_emissao, d_data_vencimento, d_num_protocolo } = req.body;
+        const { d_data_emissao, d_data_vencimento, d_num_protocolo, d_flag_vitalicio } = req.body;
+        //console.log(`Valor recebido da FLAG: `, d_flag_vitalicio)
 
         //console.log('ID do parametro', dc_id);
 
@@ -384,12 +385,13 @@ module.exports.fecharProcesso = async (req, res) => {
         if (!doc) return res.status(404).json({ message: 'Documento atrelado na condicionante não encontrado!' });
 
         // Verifica se todos os campos estão preenchidos
-        if (d_num_protocolo && d_data_emissao && d_data_vencimento) {
+        if (d_num_protocolo && d_data_emissao && d_data_vencimento && d_flag_vitalicio) {
             // Atualiza todos os campos e define situação como "Emitido"
             await doc.update({
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
                 d_num_protocolo: d_num_protocolo,
+                d_flag_vitalicio: d_flag_vitalicio || false,
                 d_situacao: 'Emitido'
             });
             //console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
