@@ -3,11 +3,13 @@ const Tipo_documento = require("../models/Tipo_Documento");
 
 module.exports.registrarTipoDocumento = async (req, res)=>{
     try {
-        const {td_desc, td_requer_condicao} = req.body;
+        const {td_desc, td_requer_condicao, td_dia_alert} = req.body;
+        console.log('Dia: ', td_dia_alert)
+
 
         if(typeof(td_desc) == typeof(Number())) return res.status(404).json({message: 'Tipo de dado invalido, a descrição da liçenca/alvara não pode ser descrita somente com numeros'})
 
-        const tipo_documento = await Tipo_documento.create({td_desc: td_desc, td_requer_condicao: td_requer_condicao})
+        const tipo_documento = await Tipo_documento.create({td_desc: td_desc, td_requer_condicao: td_requer_condicao, td_dia_alert: td_dia_alert})
 
         res.status(200).json({message: `Tipo de Documento ${tipo_documento.td_id} cadastrado com sucesso!`, tipo_documento})
     } catch (error) {

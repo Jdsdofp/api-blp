@@ -45,6 +45,9 @@ const Tipo_documento = sequelize.define('Tipo_documento', {
         td_em_uso: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
+        },
+        td_dia_alert: {
+            type: DataTypes.INTEGER
         }
 
 }, {

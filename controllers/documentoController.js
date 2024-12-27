@@ -119,7 +119,7 @@ module.exports.listarDocumentos = async (req, res) =>{
                 {
                   model: Tipo_documento,
                   as: 'tipo_documentos',
-                  attributes: ['td_desc']
+                  attributes: ['td_desc', 'td_dia_alert']
                 }
               ]})
 
@@ -255,7 +255,7 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                       {
                         model: Tipo_documento,
                         as: 'tipo_documentos',
-                        attributes: ['td_desc']
+                        attributes: ['td_desc', 'td_dia_alert']
                       }
                     ]
                 }

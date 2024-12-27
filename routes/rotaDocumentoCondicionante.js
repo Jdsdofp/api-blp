@@ -14,12 +14,15 @@ const {
     fecharProcesso,
     listarUsuariosPorCondicao,
     listarDocumentoCondicionanteUsuario,
+    listarTarefasUsuario,
 } = require("../controllers/documentoCondiController");
 
 const documentoCondRoute = express.Router();
 const authMiddleware = require("../config/authMiddleware");
 
 
+documentoCondRoute.post('/listar-documento-condicionante-usuario/:dc_id', authMiddleware, listarDocumentoCondicionanteUsuario);
+documentoCondRoute.get('/listar-tarefas-usuario', authMiddleware, listarTarefasUsuario);
 documentoCondRoute.get('/listar-documento-condicionantes', authMiddleware, listarDocumentoCondicionantes);
 documentoCondRoute.get('/listar-documento-condicionantes-filiais', listarDocumentoCondicionanteFiliais);
 documentoCondRoute.get('/listar-documento-condicionante/:dc_id', authMiddleware, listarDocumentoCondicionante);
@@ -30,6 +33,5 @@ documentoCondRoute.patch('/atribuir-usuarios-condicao/:dc_id', authMiddleware, a
 documentoCondRoute.put('/adicionar-condicoes/:dc_id', authMiddleware, adicionarCondicoes);
 documentoCondRoute.put('/fechar-processo/:dc_id', authMiddleware, fecharProcesso);
 documentoCondRoute.post('/listar-usuarios-atribuidos-condicao/:dc_id', authMiddleware, listarUsuariosPorCondicao);
-documentoCondRoute.post('/listar-documento-condicionante-usuario/:dc_id', authMiddleware, listarDocumentoCondicionanteUsuario);
 
 module.exports = documentoCondRoute;

@@ -6,6 +6,8 @@ const fetch = require('node-fetch');
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');  
 const Notificacao = require("../models/Notifica");
+const { Op } = require("sequelize");
+const Tipo_documento = require("../models/Tipo_Documento");
 
 
 module.exports.listarDocumentoCondicionantes = async (req, res)=>{
@@ -476,5 +478,69 @@ module.exports.listarUsuariosPorCondicao = async (req, res) => {
     }
 };
 
+
+
+module.exports.listarTarefasUsuario = async (req, res) => {
+    try {
+        const { id } = req.user; // ID do usuário logado
+        
+        // Consulta todos os registros
+        const condicoes = await DocumentoCondicionante.findAll({
+            where: {
+                status: {
+                    [Op.ne]: 'Finalizada'
+                }
+            },
+            include: [
+                {
+                    model: Documento,
+                    as: 'documento',
+                    attributes: ['d_filial_id'],
+                    include: [
+                        {
+                            model: Tipo_documento,
+                            as: 'tipo_documento',
+                            attributes: ['td_desc'],
+                        },
+                        {
+                            model: Filial,
+                            as: 'filiais',
+                            attributes: ['f_nome', 'f_cnpj', 'f_cidade', 'f_uf'],
+                        },
+                    ],
+                },
+            ],
+            order: [['dc_id', 'DESC']]
+         });
+
+        // Filtra registros que contenham condições atribuídas ao usuário logado
+        const resultadoFiltrado = condicoes
+            .map((condicao) => {
+                // Filtra as condições específicas do usuário logado
+                const dc_condicoes_filtradas = Object.entries(condicao.dc_condicoes).reduce((acc, [key, value]) => {
+                    if (value.users.includes(id)) {
+                        acc[key] = value;
+                    }
+                    return acc;
+                }, {});
+
+                // Retorna apenas registros com condições atribuídas ao usuário logado
+                if (Object.keys(dc_condicoes_filtradas).length > 0) {
+                    return {
+                        ...condicao.toJSON(),
+                        dc_condicoes: dc_condicoes_filtradas,
+                    };
+                }
+                return null;
+            })
+            .filter((condicao) => condicao !== null); // Remove registros sem condições atribuídas
+
+        // Retorna o resultado
+        res.status(200).json(resultadoFiltrado);
+    } catch (error) {
+        console.error(`[Log de erro.: \n \n ${error}]`);
+        res.status(500).json({ error: "Erro ao listar tarefas do usuário." });
+    }
+};
 
 
