@@ -107,6 +107,7 @@ module.exports.fecharCondicionante = async (req, res) => {
     try {
         const { dc_id } = req.params;
         const { dc_condicoes } = req.body;
+        console.log(dc_condicoes)
 
         // Obter a primeira chave do objeto dc_condicoes
         const firstKey = Object.keys(dc_condicoes)[0];
