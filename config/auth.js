@@ -19,7 +19,7 @@ module.exports = {
             id: user.u_id,
             empresas_ids: user.u_empresas_ids,
             filiais_ids: user.u_filiais_ids
-        }, secret, { expiresIn: '24h' });
+        }, secret, { expiresIn: '7d' });
     },
 
     verifyToken: (token) => {
