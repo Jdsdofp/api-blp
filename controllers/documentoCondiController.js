@@ -545,3 +545,60 @@ module.exports.listarTarefasUsuario = async (req, res) => {
 };
 
 
+module.exports.reportListarDocCond = async (req, res) =>{
+    try {
+        const {id} = req.params;
+
+        const doc = await Documento.findOne({where: {
+                d_id: id
+            },
+            attributes: {exclude: ['d_anexo', 'd_filial_id', 'd_tipo_doc_id', 'd_criador_id']},
+            include: [
+                {
+                    model: Filial,
+                    as: 'filiais',
+                    attributes: ['f_nome', 'f_cidade', 'f_uf']
+                },
+                {
+                    model: Usuario,
+                    as: 'usuario',
+                    attributes: ['u_nome']
+                },
+                {
+                    model: Tipo_documento,
+                    as: 'tipo_documento',
+                    attributes: ['td_desc']
+                }
+            ]
+        });
+        
+        
+        const doc_cond = await DocumentoCondicionante.findByPk(doc?.dataValues?.d_condicionante_id)
+        // console.log('Teste: ', doc_cond?.dataValues?.dc_condicoes)
+        const condicoes = doc_cond?.dataValues?.dc_condicoes;
+        for(const condicao in condicoes){
+            const userIds = condicoes[condicao].users;
+            // console.log('Test UNit: ', userIds)
+            const usuarios = await Usuario.findAll({
+                where: {u_id: userIds}
+            })
+            // console.log('Test UNIt: ', usuarios)
+            condicoes[condicao].users = usuarios.map(user=>({
+                id: user.u_id,
+                nome: user.u_nome
+            }))
+        }
+
+
+        //Model personalizados etc e tal...
+        const dados = {
+            ...doc?.dataValues,
+            ...doc_cond?.dataValues
+        }
+
+        res.status(200).json(dados)
+        
+    } catch (error) {
+        res.status(400).json(err)
+    }
+}
