@@ -17,6 +17,8 @@ const documentoCondRoute = require("./routes/rotaDocumentoCondicionante");
 const debitosRoute = require("./routes/rotaDebitosDocumentos");
 const storageRoutes = require("./routes/storageRoutes");
 const notificaoRoute = require("./routes/rotaNotificacoes");
+//iniciando o protocolo protobuf e seja oq Jah quiser
+const protobuf = require("protobufjs");
 
 const allowedOrigins = ['http://localhost:5173', 'http://10.11.3.42:5173'];
 
@@ -50,6 +52,28 @@ app.use("/document-condition", documentoCondRoute);
 app.use("/debit", debitosRoute);
 app.use('/storage', storageRoutes);
 app.use('/notifications', notificaoRoute);
+
+
+
+
+let Company = null;
+
+const loadProtobuf = async () => {
+  try {
+    const root = await protobuf.load("modelsProtoBufs/company.proto");
+    Company = root.lookupType("Company");
+    console.log("Protobuf carregado com sucesso");
+  } catch (err) {
+    console.error("Erro ao carregar Protobuf:", err);
+  }
+};
+
+loadProtobuf();
+
+module.exports = { Company };
+
+
+
 
 // Configuração do servidor e Socket.IO
 const PORT = 8080 || process.env.PORT;

@@ -2,7 +2,8 @@ const { ValidationError } = require("sequelize");
 const Empresa = require("../models/Empresa");
 const { msgErrosUnico } = require("../settings_Server");
 const Usuario = require("../models/Usuario");
-
+const { Company } = require("../server");
+const protobuf = require("protobufjs");
 
 
 module.exports.listarEmpresas = async (req, res) => {
@@ -83,3 +84,43 @@ module.exports.editarEmpresa = async (req, res)=>{
         //console.log("erro aqui ..", erros)
     }
 }
+
+module.exports.listCompanyDecoded = async (req, res) => {
+    try {
+        
+        const empresas = await Empresa.findAll(); 
+        
+        
+        const root = await protobuf.load("modelsProtoBufs/company.proto");
+        const Company = root.lookupType("Company");
+
+        
+        const encodedCompanies = empresas.map(empresa => {
+            const payload = {
+                id: empresa?.dataValues?.e_id,
+                nome: empresa?.dataValues?.e_nome,
+                razao: empresa?.dataValues?.e_razao,
+                cnpj: empresa?.dataValues?.e_cnpj,
+                cidade: empresa?.dataValues?.e_cidade,
+                uf: empresa?.dataValues?.e_uf,
+                criado_em: empresa?.dataValues?.criado_em ? empresa?.dataValues?.criado_em.toString() : "data_default", // Converte para string
+                ativo: empresa?.dataValues?.e_ativo,
+                criador_id: empresa?.dataValues?.e_criador_id
+            };
+
+            const errMsg = Company.verify(payload);
+            if (errMsg) throw new Error(errMsg);
+
+            
+            const encodedCompany = Company.encode(payload).finish();
+            return encodedCompany.toString("base64");
+        });
+
+        
+        return res.json({ data: encodedCompanies });
+    } catch (err) {
+        console.error("Erro ao processar a requisição:", err);
+        return res.status(500).json({ error: "Erro ao processar a requisição." });
+    }
+};
+
