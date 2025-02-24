@@ -393,3 +393,37 @@ module.exports.atualizaStatusIrregular = async (req, res) =>{
   }
 
 }
+
+//Deletar documento..
+module.exports.deletarDocumento = async (req, res) => {
+  try {
+    const { d_id } = req.params;
+    console.log('ID recebido: ', d_id);
+
+    const doc = await Documento.findByPk(d_id);
+    if (!doc) {
+      return res.status(404).json({ message: 'Documento não encontrado' });
+    }
+    console.log('Documento encontrado: ', doc?.dataValues);
+
+    const cond = await DocumentoCondicionante.findByPk(doc.d_condicionante_id);
+    if (!cond) {
+      return res.status(404).json({ message: 'Condicionante associada não encontrada' });
+    }
+    console.log('Condicionante encontrada: ', cond?.dataValues);
+
+    // Excluir a condicionante primeiro
+    await cond.destroy();
+    console.log('Condicionante excluída com sucesso');
+
+    // Excluir o documento
+    await doc.destroy();
+    console.log('Documento excluído com sucesso');
+
+    return res.status(200).json({ message: 'Documento e condicionante excluídos com sucesso' });
+
+  } catch (error) {
+    console.error('Erro ao deletar documento: ', error);
+    return res.status(500).json({ message: 'Erro interno ao deletar documento' });
+  }
+};
