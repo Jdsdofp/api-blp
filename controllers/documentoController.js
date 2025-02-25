@@ -427,3 +427,39 @@ module.exports.deletarDocumento = async (req, res) => {
     return res.status(500).json({ message: 'Erro interno ao deletar documento' });
   }
 };
+
+//Editar documento..
+module.exports.editarDocumento = async (req, res)=>{
+  try {
+    const {d_id} = req.params;
+    const {
+      d_data_pedido, 
+      d_data_emissao, 
+      d_data_vencimento, 
+      d_num_protocolo
+    } = req.body;
+
+    console.log('ID recebido: ', d_id)
+
+    const doc = await Documento.findByPk(d_id);
+    console.log('Documento encontrado: ', doc?.dataValues);
+
+    const model = {
+      d_data_pedido: d_data_pedido === '' ? doc?.dataValues?.d_data_pedido : d_data_pedido,
+      d_data_emissao: d_data_emissao === '' ? doc?.dataValues?.d_data_emissao : d_data_emissao,
+      d_data_vencimento: d_data_vencimento === '' ? doc?.dataValues?.d_data_vencimento : d_data_vencimento,
+      d_num_protocolo: d_num_protocolo === '' ? doc?.dataValues?.d_num_protocolo : d_num_protocolo,
+    }
+
+    //conferindo o estado dos dados...
+    console.warn('MODEL: ', model)
+
+    await doc.update(model)
+
+    return res.status(200).json({message: 'Documento atualizado com sucessso! ✔'})
+
+
+  } catch (error) {
+    console.error('Erro aqui: ', error)
+  }
+}

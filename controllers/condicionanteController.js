@@ -69,7 +69,7 @@ module.exports.editarDescCondicionante = async (req, res) => {
 module.exports.deletaCondicionante = async (req, res) =>{
   try {
     const {c_id} = req.params;
-    //console.log('ID recebido da condicionante:\n', c_id);
+    console.log('ID recebido da condicionante:\n', c_id);
 
     const cond = await Condicionante.findByPk(c_id)
     //console.log('Condicionante encontrada:\n', cond?.dataValues);

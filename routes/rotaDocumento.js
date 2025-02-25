@@ -1,5 +1,5 @@
 const express = require("express");
-const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial, listarTodosDocumentosFilial, listarStatusID, listarDocumentoCondicaoId, atualizaStatusIrregular, deletarDocumento } = require("../controllers/documentoController");
+const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial, listarTodosDocumentosFilial, listarStatusID, listarDocumentoCondicaoId, atualizaStatusIrregular, deletarDocumento, editarDocumento } = require("../controllers/documentoController");
 const documentoRoute = express.Router();
 const authMiddleware = require("../config/authMiddleware");
 
@@ -16,7 +16,8 @@ documentoRoute.get('/listar-todos-documentos-filial/:filialId', authMiddleware, 
 documentoRoute.get('/listar-status-id/:id', authMiddleware, listarStatusID);
 //atualizar status documento para irregular.... ROTAS DE PERIGO
 documentoRoute.put('/atualiza-status-irregular/:d_id', atualizaStatusIrregular);
-documentoRoute.delete('/deletar-documento/:d_id', deletarDocumento);
-
+//ações coordenadas documentos..
+documentoRoute.delete('/deletar-documento/:d_id', authMiddleware, deletarDocumento);
+documentoRoute.put('/editar-documento/:d_id', authMiddleware, editarDocumento);
 
 module.exports = documentoRoute;
