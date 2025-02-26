@@ -70,3 +70,13 @@ module.exports.listarCustoDocumento = async (req, res) =>{
         console.log('Log de erro ao buscar documento', error)
     }
 }
+
+module.exports.listarCustos = async (req, res) =>{
+    try {
+        const custos = await Debito_Documentos.findAll();
+
+        res.status(200).json({custos})
+    } catch (error) {
+        res.status(400).json({error: error})
+    }
+}

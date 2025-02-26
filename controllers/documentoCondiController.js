@@ -356,7 +356,7 @@ module.exports.fecharProcesso = async (req, res) => {
     try {
         const { dc_id } = req.params;
         const { d_data_emissao, d_data_vencimento, d_num_protocolo, d_flag_vitalicio } = req.body;
-        //console.log(`Valor recebido da FLAG: `, d_flag_vitalicio)
+        console.log(`Valor recebido da FLAG: `, d_flag_vitalicio)
 
         //console.log('ID do parametro', dc_id);
 

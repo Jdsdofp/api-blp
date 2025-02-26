@@ -87,20 +87,27 @@ const io = new Server(server, {  // Configura o Socket.IO com o servidor HTTP
   }
 });
 
+const onlineUsers = new Map(); // Usa um Map para associar socket.id ao nome do usuário
+
 io.on("connection", (socket) => {
-  console.log('Usuário conectado: ', socket.id);
+  console.log("Usuário conectado:", socket.id);
 
-    // Adicionar o usuário a uma sala específica
-    socket.on("join", (userId) => {
-      const room = `user_${userId}`;
-      socket.join(room);
-      console.log(`Usuário ${userId} entrou na sala: ${room}`);
-    });
+  // Quando um usuário se conecta
+  socket.on("user_connected", (userName) => {
+    onlineUsers.set(socket.id, userName); // Associa o socket.id ao userName
+    io.emit("update_online_users", Array.from(onlineUsers.values())); // Envia a lista atualizada
+  });
 
+  // Quando um usuário se desconecta
   socket.on("disconnect", () => {
-    console.log(`Usuário desconectado: ${socket.id}`);
+    if (onlineUsers.has(socket.id)) {
+      onlineUsers.delete(socket.id); // Remove o usuário pelo socket.id
+      io.emit("update_online_users", Array.from(onlineUsers.values())); // Envia a lista atualizada
+    }
+    console.log("Usuário desconectado:", socket.id);
   });
 });
+
 
 app.set("io", io);  // Salva o objeto io para uso posterior, se necessário
 
