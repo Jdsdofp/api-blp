@@ -1,5 +1,5 @@
 const express = require("express");
-const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial, listarTodosDocumentosFilial, listarStatusID, listarDocumentoCondicaoId, atualizaStatusIrregular, deletarDocumento, editarDocumento } = require("../controllers/documentoController");
+const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial, listarTodosDocumentosFilial, listarStatusID, listarDocumentoCondicaoId, atualizaStatusIrregular, deletarDocumento, editarDocumento, listarDocumentosTESTE, listarDocumentosFilialTESTE } = require("../controllers/documentoController");
 const documentoRoute = express.Router();
 const authMiddleware = require("../config/authMiddleware");
 
@@ -19,5 +19,12 @@ documentoRoute.put('/atualiza-status-irregular/:d_id', atualizaStatusIrregular);
 //ações coordenadas documentos..
 documentoRoute.delete('/deletar-documento/:d_id', authMiddleware, deletarDocumento);
 documentoRoute.put('/editar-documento/:d_id', authMiddleware, editarDocumento);
+
+
+
+
+
+//ROTA TESTE
+documentoRoute.get('/list-test', authMiddleware, listarDocumentosFilialTESTE);
 
 module.exports = documentoRoute;

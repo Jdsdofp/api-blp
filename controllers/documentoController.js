@@ -5,6 +5,7 @@ const Usuario = require("../models/Usuario");
 const Filial = require("../models/Filial");
 const Tipo_documento = require("../models/Tipo_Documento");
 const DocumentoCondicionante = require("../models/Documento_Condicionante");
+const { stringify } = require('flatted');
 
 
 module.exports.registarDocumento = async (req, res) => {
@@ -130,6 +131,64 @@ module.exports.listarDocumentos = async (req, res) =>{
         res.status(400).json(error)
     }
 }
+
+
+
+
+//rota teste com implantação do MK
+module.exports.listarDocumentosFilialTESTE = async (req, res) => {
+  try {
+      const { id } = req.user;
+
+      // Encontrar o usuário pelo ID
+      const usuario = await Usuario.findOne({
+          where: { u_id: id },
+          attributes: ['u_filiais_ids']
+      });
+
+      if (!usuario) {
+          return res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+
+      const { u_filiais_ids } = usuario;
+
+      // Encontrar todas as filiais do usuário e incluir seus documentos
+      const filiais = await Filial.findAll({
+          where: {
+              f_id: {
+                  [Op.in]: u_filiais_ids
+              }
+          },
+          attributes: ['f_id', 'f_codigo', 'f_nome', 'f_cidade', 'f_uf', 'f_ativo', 'f_cnpj', 'f_location'],
+          include: [
+              {
+                  model: Documento,
+                  as: 'documentos', // Usar o alias correto definido no model
+                  attributes: ['d_id', 'd_situacao'],
+                  include: [
+                    {
+                      model: Tipo_documento,
+                      as: 'tipo_documentos',
+                      attributes: ['td_desc', 'td_dia_alert'],
+                      required: false   
+                    }
+                  ]
+              }
+          ],
+          order: [['f_id', 'ASC']]
+      });
+      // Retornar as filiais e seus documentos
+      // res.status(200).json(filiais);
+      const serializedData = JSON.parse(JSON.stringify(filiais))
+      return res.status(200).msgpack(serializedData);
+
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Erro ao listar documentos das filiais' });
+  }
+}
+
 
 
 module.exports.listarDocumentosStatusFilial = async (req, res) => {

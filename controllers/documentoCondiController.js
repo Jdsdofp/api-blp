@@ -155,14 +155,14 @@ module.exports.fecharProcessoCondicionante = async (req, res) => {
         const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
         if (!doc_cond) return res.status(404).json({ message: 'Condicionante não encontrada' });
 
-        console.log('Condicionante Encontrada... \n', doc_cond);
+        //console.log('Condicionante Encontrada... \n', doc_cond);
 
         const d_id = doc_cond.dc_documento_id;
         const doc = await Documento.findOne({ where: { d_id: d_id } });
 
         if (!doc) return res.status(404).json({ message: 'Documento não encontrado' });
 
-        console.log('Documento Encontrado... \n', doc);
+        //console.log('Documento Encontrado... \n', doc);
 
         // Atualizar o model Documento com os valores recebidos no body
         await doc.update({
@@ -171,7 +171,7 @@ module.exports.fecharProcessoCondicionante = async (req, res) => {
             d_situacao: 'Em processo' || doc.d_situacao
         });
 
-        console.log('Documento Atualizado... \n', doc);
+        //console.log('Documento Atualizado... \n', doc);
 
         // Atualizar o status do model Condicionante para 'Em processo'
         await doc_cond.update({
@@ -179,7 +179,7 @@ module.exports.fecharProcessoCondicionante = async (req, res) => {
             dc_status_doc_ref: 'Em processo'
         });
 
-        console.log('Condicionante Atualizada... \n', doc_cond);
+        //console.log('Condicionante Atualizada... \n', doc_cond);
 
         return res.status(200).json({ message: 'Documento e Condicionante atualizados com sucesso' });
 
@@ -394,7 +394,6 @@ module.exports.fecharProcesso = async (req, res) => {
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
                 d_num_protocolo: d_num_protocolo,
-                d_flag_vitalicio: d_flag_vitalicio || false,
                 d_situacao: 'Emitido'
             });
             //console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
@@ -409,6 +408,7 @@ module.exports.fecharProcesso = async (req, res) => {
             await doc.update({
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
+                d_flag_vitalicio: d_flag_vitalicio || false,
                 d_situacao: 'Emitido'
             });
             //console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
