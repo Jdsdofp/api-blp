@@ -321,8 +321,11 @@ module.exports.listarDocumentosFilial = async (req, res) => {
             ],
             order: [['f_id', 'ASC']]
         });
-        // Retornar as filiais e seus documentos
+       
+
+        // Retornar as filiais com os documentos ordenados
         res.status(200).json(filiais);
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao listar documentos das filiais' });

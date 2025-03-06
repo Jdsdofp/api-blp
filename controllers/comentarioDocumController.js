@@ -31,6 +31,30 @@ module.exports.registarComentarioDocumento = async (req, res)=>{
     }
 }
 
+
+module.exports.deletarComentario = async (req, res)=>{
+    try {
+
+        const {cd_id} = req.params;
+        const {id} = req.user;
+        
+        const comment = await Comentariosdocumentos.findByPk(cd_id);
+        console.log('Comentario encontrado: ', comment?.dataValues);
+
+        if(id !== comment?.dataValues?.cd_autor_id) return res.status(300).json({message: 'usuario não tem permissão para exclusão!'})
+        
+        if(!comment?.dataValues) return res.status(300).json({message: 'Comentario não encontrado'})
+        
+        await comment.destroy()
+        console.log('Comentario deletado com sucesso')
+        res.status(200).json({message: 'Comentario deletado com sucesso!'})
+
+    } catch (error) {
+        console.log('Erro na comment delete: ', error);
+    }
+}
+
+
 module.exports.listarComentarios = async(req, res)=>{
     try {
         const {cd_documento_id} = req.params;

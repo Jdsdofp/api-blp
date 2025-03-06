@@ -394,6 +394,7 @@ module.exports.fecharProcesso = async (req, res) => {
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
                 d_num_protocolo: d_num_protocolo,
+                d_flag_vitalicio: d_flag_vitalicio,
                 d_situacao: 'Emitido'
             });
             //console.log('Documento atualizado com sucesso: \n', doc?.dataValues);
@@ -408,7 +409,7 @@ module.exports.fecharProcesso = async (req, res) => {
             await doc.update({
                 d_data_emissao: d_data_emissao,
                 d_data_vencimento: d_data_vencimento,
-                d_flag_vitalicio: d_flag_vitalicio || false,
+                d_flag_vitalicio: d_flag_vitalicio,
                 d_situacao: 'Emitido'
             });
             //console.log('Documento atualizado com novas datas e situação "Em processo": \n', doc?.dataValues);
