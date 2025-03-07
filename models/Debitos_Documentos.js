@@ -58,4 +58,8 @@ const Debito_Documentos = sequelize.define('Debito_Documentos', {
     timestamps: false, // desativa `createdAt` e `updatedAt` automáticos do Sequelize
 });
 
+
+
+  
+
 module.exports = Debito_Documentos;

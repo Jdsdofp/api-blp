@@ -6,6 +6,7 @@ const Filial = require("../models/Filial");
 const Tipo_documento = require("../models/Tipo_Documento");
 const DocumentoCondicionante = require("../models/Documento_Condicionante");
 const { stringify } = require('flatted');
+const Debito_Documentos = require("../models/Debitos_Documentos");
 
 
 module.exports.registarDocumento = async (req, res) => {
@@ -192,45 +193,66 @@ module.exports.listarDocumentosFilialTESTE = async (req, res) => {
 
 
 module.exports.listarDocumentosStatusFilial = async (req, res) => {
-    try {
+  try {
       const { status, filialId } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
-  
+
       // Busca os documentos da filial pelo status informado
       const documentos = await Documento.findAll({
-        where: {
-          d_situacao: status, // Filtrar pelo status (ex: 'Vencido', 'Em processo', etc.)
-          d_filial_id: filialId // Filtrar pelo ID da filial
-        },
-        include: [
-          {
-            model: Filial, // Incluindo dados da filial relacionada
-            as: 'filiais',
-            attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] // Exemplo de campos que podem ser incluídos da filial
+          where: {
+              d_situacao: status, // Filtrar pelo status (ex: 'Vencido', 'Em processo', etc.)
+              d_filial_id: filialId // Filtrar pelo ID da filial
           },
-
-          {
-            model: Tipo_documento,
-            as: 'tipo_documentos',
-            attributes: ['td_desc']
-          },
-
-          {
-            model: Usuario,
-            as: 'usuario',
-            attributes: ['u_nome']
-          }
-        ]
+          include: [
+              {
+                  model: Filial, // Incluindo dados da filial relacionada
+                  as: 'filiais',
+                  attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo']
+              },
+              {
+                  model: Tipo_documento,
+                  as: 'tipo_documentos',
+                  attributes: ['td_desc']
+              },
+              {
+                  model: Usuario,
+                  as: 'usuario',
+                  attributes: ['u_nome']
+              }
+          ]
       });
-  
+
       if (documentos.length === 0) {
-        return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+          return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
       }
-  
-      res.status(200).json(documentos); // Retorna os documentos encontrados
-    } catch (error) {
+
+      // Extrair os IDs dos documentos encontrados
+      const documentoIds = documentos.map(doc => doc.dataValues.d_id);
+
+      // Buscar débitos relacionados aos documentos encontrados
+      const debitos = await Debito_Documentos.findAll({
+          where: {
+              dd_id_documento: {
+                  [Op.in]: documentoIds
+              }
+          }
+      });
+
+      // Anexar os débitos aos documentos
+      const documentosComDebitos = documentos.map(doc => ({
+        ...doc.toJSON(),
+        debitos: debitos
+          .filter(debito => debito.dd_id_documento === doc.d_id)
+          .map(d => d?.dataValues?.dd_valor)
+          .reduce((total, valor) => total + parseFloat(valor || 0), 0) // Soma dos valores de débito
+      }));
+      
+
+
+      res.status(200).json(documentosComDebitos); // Retorna os documentos com seus débitos
+  } catch (error) {
       console.error(error);
       res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
-    }
+  }
 };
   
 

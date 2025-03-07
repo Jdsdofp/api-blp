@@ -104,4 +104,5 @@ Filial.hasMany(Documento, {foreignKey: 'd_filial_id', as: 'documentos'})
 Documento.belongsTo(Filial, {foreignKey: 'd_filial_id', as: 'filiais'})
 
 
+
 module.exports = Documento;
