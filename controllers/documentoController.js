@@ -257,6 +257,39 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
   
 
 
+//model para listar documentos por filial para filtros:
+module.exports.listarDocumentosModel = async (req, res) =>{
+  try {
+
+    const {filialId} = req.params;
+
+      const documento = await Documento.findAll({
+          where: {
+            d_filial_id: filialId
+          },
+          include: [
+              {
+                model: Tipo_documento,
+                as: 'tipo_documentos',
+                attributes: ['td_desc', 'td_dia_alert']
+              }
+            ]})
+
+      //debug
+      //console.log('Debug: ', documento.map((k, v)=>k?.dataValues?.d_situacao).filter((v, i, s)=>s.indexOf(v)=== i))
+
+
+      fillDoc = documento.map((k, v)=>k?.dataValues?.d_situacao).filter((v, i, s)=>s.indexOf(v)=== i)
+      res.status(200).json(fillDoc)
+  } catch (error) {
+      console.log(error)
+      res.status(400).json(error)
+  }
+}
+
+
+
+
 //listar documento individual para tratar no front o modal condition
 module.exports.listarDocumentoCondicaoId = async (req, res) => {
   try {

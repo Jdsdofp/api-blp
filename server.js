@@ -80,8 +80,8 @@ const PORT = process.env.PORT || 8080;
 const server = http.createServer(app); // Cria o servidor HTTP
 const io = new Server(server, {  // Configura o Socket.IO com o servidor HTTP
   cors: {
-    origin: 'http://10.11.3.42:5173', // Adapte para o seu front-end
-    credentials: true, // Permite cookies/sessões
+    origin: '*', // Adapte para o seu front-end
+    credentials: false, // Permite cookies/sessões
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
   }

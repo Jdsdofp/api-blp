@@ -1,5 +1,5 @@
 const express = require("express");
-const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial, listarTodosDocumentosFilial, listarStatusID, listarDocumentoCondicaoId, atualizaStatusIrregular, deletarDocumento, editarDocumento, listarDocumentosTESTE, listarDocumentosFilialTESTE } = require("../controllers/documentoController");
+const { registarDocumento, listarDocumentos, listarDocumentosFilial, listarDocumentosStatusFilial, listarTodosDocumentosFilial, listarStatusID, listarDocumentoCondicaoId, atualizaStatusIrregular, deletarDocumento, editarDocumento, listarDocumentosTESTE, listarDocumentosFilialTESTE, listarDocumentosModel } = require("../controllers/documentoController");
 const documentoRoute = express.Router();
 const authMiddleware = require("../config/authMiddleware");
 
@@ -11,6 +11,7 @@ documentoRoute.post('/registrar-documento', authMiddleware, registarDocumento);
 documentoRoute.get('/listar-documentos', authMiddleware, listarDocumentos);
 documentoRoute.get('/listar-documentos-filais', authMiddleware, listarDocumentosFilial);
 documentoRoute.get('/listar-documentos-status-filial/:status/:filialId', authMiddleware, listarDocumentosStatusFilial);
+documentoRoute.get('/listar-documentos-model/:filialId', listarDocumentosModel);
 documentoRoute.get('/listar-documentos-conditionId/:conditionId', authMiddleware, listarDocumentoCondicaoId);
 documentoRoute.get('/listar-todos-documentos-filial/:filialId', authMiddleware, listarTodosDocumentosFilial);
 documentoRoute.get('/listar-status-id/:id', authMiddleware, listarStatusID);
