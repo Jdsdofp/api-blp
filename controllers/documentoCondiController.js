@@ -198,7 +198,7 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
         const { dc_id } = req.params;
         let { dc_condicoes, userIds } = req.body;
 
-        console.log('Payload recebido:', req.body);
+        //console.log('Payload recebido:', req.body);
 
         if (!dc_condicoes || !userIds) {
             return res.status(400).json({ message: 'Dados incompletos. As condições ou IDs de usuários estão ausentes.' });
