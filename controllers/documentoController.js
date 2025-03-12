@@ -237,13 +237,21 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
           }
       });
 
+      const id_cond = documentos.map(d=>d?.dataValues?.d_condicionante_id)[0]
+      
+      const cond = await DocumentoCondicionante.findOne({where: {dc_id: id_cond}})
+
+      const tagStatusConds = Object.entries(cond?.dataValues?.dc_condicoes).map(([k, v])=>v?.status).filter((c)=>c == false).includes(false) ? 'Pendente' : '';
+
+      // console.log('tagStatusConds: ', tagStatusConds)
       // Anexar os débitos aos documentos
       const documentosComDebitos = documentos.map(doc => ({
         ...doc.toJSON(),
         debitos: debitos
           .filter(debito => debito.dd_id_documento === doc.d_id)
           .map(d => d?.dataValues?.dd_valor)
-          .reduce((total, valor) => total + parseFloat(valor || 0), 0) // Soma dos valores de débito
+          .reduce((total, valor) => total + parseFloat(valor || 0), 0), // Soma dos valores de débito
+          tagStatusConds: tagStatusConds
       }));
       
 

@@ -76,41 +76,31 @@ app.use('/notifications', notificaoRoute);
 
 
 // Configuração do servidor e Socket.IO
-const PORT = process.env.PORT || 8080;
+const PORT = 8080 || process.env.PORT;
 const server = http.createServer(app); // Cria o servidor HTTP
 const io = new Server(server, {  // Configura o Socket.IO com o servidor HTTP
   cors: {
-    origin: '*', // Adapte para o seu front-end
-    credentials: false, // Permite cookies/sessões
+    origin: 'http://10.11.3.42:5173', // Adapte para o seu front-end
+    credentials: true, // Permite cookies/sessões
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
   }
 });
 
-const onlineUsers = new Map(); // Fora do escopo do `io.on("connection", (socket) => { ... })`
-
-
 io.on("connection", (socket) => {
-  console.log("Usuário conectado:", socket.id);
+  console.log('Usuário conectado: ', socket.id);
 
-  // Quando um usuário se conecta
-  socket.on("user_connected", (userName) => {
-    onlineUsers.set(socket.id, userName); // Associa o socket.id ao userName
-    console.log("Usuários online atualmente:", Array.from(onlineUsers.values())); // Debug
-    io.emit("update_online_users", Array.from(onlineUsers.values())); // Envia a lista atualizada
-  });
+    // Adicionar o usuário a uma sala específica
+    socket.on("join", (userId) => {
+      const room = `user_${userId}`;
+      socket.join(room);
+      console.log(`Usuário ${userId} entrou na sala: ${room}`);
+    });
 
-  // Quando um usuário se desconecta
   socket.on("disconnect", () => {
-    if (onlineUsers.has(socket.id)) {
-      console.log("Usuário removido, nova lista:", Array.from(onlineUsers.values()));
-      onlineUsers.delete(socket.id); // Remove o usuário pelo socket.id
-      io.emit("update_online_users", Array.from(onlineUsers.values())); // Envia a lista atualizada
-    }
-    console.log("Usuário desconectado:", socket.id);
+    console.log(`Usuário desconectado: ${socket.id}`);
   });
 });
-
 
 app.set("io", io);  // Salva o objeto io para uso posterior, se necessário
 
