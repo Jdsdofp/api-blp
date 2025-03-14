@@ -107,7 +107,7 @@ module.exports.fecharCondicionante = async (req, res) => {
     try {
         const { dc_id } = req.params;
         const { dc_condicoes } = req.body;
-        console.log(dc_condicoes)
+        //console.log(dc_condicoes)
 
         // Obter a primeira chave do objeto dc_condicoes
         const firstKey = Object.keys(dc_condicoes)[0];
@@ -206,7 +206,7 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
 
 
         const userAtribuetor = await Usuario.findByPk(req.user.id)
-        console.log('user log: ', userAtribuetor?.dataValues?.u_nome)
+        //console.log('user log: ', userAtribuetor?.dataValues?.u_nome)
 
         // Garantir que userIds seja um array
         if (!Array.isArray(userIds)) {
@@ -224,7 +224,7 @@ module.exports.atribuirUsuariosCondicao = async (req, res) => {
         const conditionExists = firstKey in doc_cond.dataValues.dc_condicoes;
 
         if (conditionExists) {
-            console.log(`Condição '${firstKey}' existe no documento.`);
+            //console.log(`Condição '${firstKey}' existe no documento.`);
 
             // Atualizar os usuários atribuídos à condição (mantém todos os IDs, inclusive o do usuário logado)
             doc_cond.dataValues.dc_condicoes[firstKey].users = userIds;
@@ -292,7 +292,7 @@ module.exports.listarDocumentoCond = async (req, res) => {
         // Percorre cada condição e verifica se o usuário está na lista
         for (const [key, condicao] of Object.entries(dc_condicoes)) {
             // Se o usuário está na lista de usuários, adiciona a condição ao objeto filtrado
-            console.log(`Verificando condição: ${key}`, condicao);
+            //console.log(`Verificando condição: ${key}`, condicao);
             if (condicao.users.includes(id)) {
                 condicoesFiltradas[key] = condicao; // Adiciona a condição ao objeto filtrado
             }
@@ -321,7 +321,7 @@ module.exports.adicionarCondicoes = async (req, res) => {
         const { dc_id } = req.params; // ID do documento condicionante
         const { novaCondicao, detalhesCondicao } = req.body; // novaCondicao é a chave e detalhesCondicao é o valor do novo item
         
-        console.log(dc_id)
+        //console.log(dc_id)
 
         // Buscar o documento com o dc_id
         const doc_cond = await DocumentoCondicionante.findOne({ where: { dc_id: dc_id } });
@@ -356,7 +356,7 @@ module.exports.fecharProcesso = async (req, res) => {
     try {
         const { dc_id } = req.params;
         const { d_data_emissao, d_data_vencimento, d_num_protocolo, d_flag_vitalicio } = req.body;
-        console.log(`Valor recebido da FLAG: `, d_flag_vitalicio)
+        //console.log(`Valor recebido da FLAG: `, d_flag_vitalicio)
 
         //console.log('ID do parametro', dc_id);
 

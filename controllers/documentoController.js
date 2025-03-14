@@ -194,72 +194,60 @@ module.exports.listarDocumentosFilialTESTE = async (req, res) => {
 
 module.exports.listarDocumentosStatusFilial = async (req, res) => {
   try {
-      const { status, filialId } = req.params; // Pegando o status e o ID da filial dos parâmetros da URL
+    const { status, filialId } = req.params;
 
-      // Busca os documentos da filial pelo status informado
-      const documentos = await Documento.findAll({
-          where: {
-              d_situacao: status, // Filtrar pelo status (ex: 'Vencido', 'Em processo', etc.)
-              d_filial_id: filialId // Filtrar pelo ID da filial
-          },
-          include: [
-              {
-                  model: Filial, // Incluindo dados da filial relacionada
-                  as: 'filiais',
-                  attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo']
-              },
-              {
-                  model: Tipo_documento,
-                  as: 'tipo_documentos',
-                  attributes: ['td_desc']
-              },
-              {
-                  model: Usuario,
-                  as: 'usuario',
-                  attributes: ['u_nome']
-              }
-          ]
-      });
+    // Buscar documentos da filial com o status informado
+    const documentos = await Documento.findAll({
+      where: { d_situacao: status, d_filial_id: filialId },
+      include: [
+        { model: Filial, as: 'filiais', attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] },
+        { model: Tipo_documento, as: 'tipo_documentos', attributes: ['td_desc'] },
+        { model: Usuario, as: 'usuario', attributes: ['u_nome'] }
+      ]
+    });
 
-      if (documentos.length === 0) {
-          return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
-      }
+    if (!documentos.length) {
+      return res.status(404).json({ message: 'Nenhum documento encontrado para essa filial com o status especificado' });
+    }
 
-      // Extrair os IDs dos documentos encontrados
-      const documentoIds = documentos.map(doc => doc.dataValues.d_id);
+    // Buscar IDs dos documentos e condicionantes
+    const documentoIds = documentos.map(doc => doc.d_id);
+    const condicionanteIds = documentos.map(doc => doc.d_condicionante_id).filter(Boolean); // Remove null/undefined
 
-      // Buscar débitos relacionados aos documentos encontrados
-      const debitos = await Debito_Documentos.findAll({
-          where: {
-              dd_id_documento: {
-                  [Op.in]: documentoIds
-              }
-          }
-      });
+    // Buscar débitos relacionados
+    const debitos = await Debito_Documentos.findAll({
+      where: { dd_id_documento: { [Op.in]: documentoIds } }
+    });
 
-      const id_cond = documentos.map(d=>d?.dataValues?.d_condicionante_id)[0]
-      
-      const cond = await DocumentoCondicionante.findOne({where: {dc_id: id_cond}})
+    // Buscar condicionantes relacionadas
+    const condicionantes = await DocumentoCondicionante.findAll({
+      where: { dc_id: { [Op.in]: condicionanteIds } }
+    });
 
-      const tagStatusConds = Object.entries(cond?.dataValues?.dc_condicoes).map(([k, v])=>v?.status).filter((c)=>c == false).includes(false) ? 'Pendente' : '';
+    // Criar um mapa de condicionantes para acesso rápido
+    const condicionanteMap = condicionantes.reduce((acc, cond) => {
+      acc[cond.dc_id] = cond.dc_condicoes;
+      return acc;
+    }, {});
 
-      // console.log('tagStatusConds: ', tagStatusConds)
-      // Anexar os débitos aos documentos
-      const documentosComDebitos = documentos.map(doc => ({
+    // Processar documentos com seus débitos e status de condicionantes
+    const documentosComDebitos = documentos.map(doc => {
+      const condicoes = condicionanteMap[doc.d_condicionante_id] || {};
+      const tagStatusConds = Object.values(condicoes).some(cond => cond?.status === false) ? 'Pendente' : (doc?.dataValues?.d_data_emissao == '1970-01-01' && doc?.dataValues?.d_data_vencimento == '1970-01-01') ? 'Em análise' : "";
+
+      return {
         ...doc.toJSON(),
         debitos: debitos
           .filter(debito => debito.dd_id_documento === doc.d_id)
-          .map(d => d?.dataValues?.dd_valor)
-          .reduce((total, valor) => total + parseFloat(valor || 0), 0), // Soma dos valores de débito
-          tagStatusConds: tagStatusConds
-      }));
-      
+          .reduce((total, debito) => total + parseFloat(debito?.dd_valor || 0), 0), // Soma dos valores de débito
+        tagStatusConds
+      };
+    });
 
-
-      res.status(200).json(documentosComDebitos); // Retorna os documentos com seus débitos
+    res.status(200).json(documentosComDebitos);
   } catch (error) {
-      console.error(error);
-      res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
+    console.error(error);
+    res.status(400).json({ error: 'Erro ao listar documentos por status e filial' });
   }
 };
   
@@ -523,7 +511,7 @@ module.exports.atualizaStatusIrregular = async (req, res) =>{
 module.exports.deletarDocumento = async (req, res) => {
   try {
     const { d_id } = req.params;
-    console.log('ID recebido: ', d_id);
+    //console.log('ID recebido: ', d_id);
 
     const doc = await Documento.findByPk(d_id);
     if (!doc) {
@@ -564,7 +552,7 @@ module.exports.editarDocumento = async (req, res)=>{
       d_num_protocolo
     } = req.body;
 
-    console.log('ID recebido: ', d_id)
+    //console.log('ID recebido: ', d_id)
 
     const doc = await Documento.findByPk(d_id);
     console.log('Documento encontrado: ', doc?.dataValues);
