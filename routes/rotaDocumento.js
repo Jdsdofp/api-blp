@@ -9,7 +9,11 @@ const authMiddleware = require("../config/authMiddleware");
 //ROTA PARA CRIAR DOCUMENTO
 documentoRoute.post('/registrar-documento', authMiddleware, registarDocumento);
 documentoRoute.get('/listar-documentos', authMiddleware, listarDocumentos);
+
+//Lista...
 documentoRoute.get('/listar-documentos-filais', authMiddleware, listarDocumentosFilial);
+//Lista...
+
 documentoRoute.get('/listar-documentos-status-filial/:status/:filialId', authMiddleware, listarDocumentosStatusFilial);
 documentoRoute.get('/listar-documentos-model/:filialId', listarDocumentosModel);
 documentoRoute.get('/listar-documentos-conditionId/:conditionId', authMiddleware, listarDocumentoCondicaoId);

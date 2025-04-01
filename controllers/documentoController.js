@@ -198,7 +198,7 @@ module.exports.listarDocumentosStatusFilial = async (req, res) => {
 
     // Buscar documentos da filial com o status informado
     const documentos = await Documento.findAll({
-      where: { d_situacao: status, d_filial_id: filialId },
+      where: { d_situacao: status, d_filial_id: filialId, d_ativo: true },
       include: [
         { model: Filial, as: 'filiais', attributes: ['f_nome', 'f_cidade', 'f_uf', 'f_codigo'] },
         { model: Tipo_documento, as: 'tipo_documentos', attributes: ['td_desc'] },
@@ -360,6 +360,7 @@ module.exports.listarDocumentosFilial = async (req, res) => {
                 {
                     model: Documento,
                     as: 'documentos', // Usar o alias correto definido no model
+                    where: { d_ativo: true },
                     attributes: ['d_id', 'd_situacao'],
                     include: [
                       {

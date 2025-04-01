@@ -48,18 +48,36 @@ module.exports.listarDocumentoCondicionanteFiliais = async (req, res) => {
 };
 
 
-module.exports.listarDocumentoCondicionante = async (req, res)=>{
+module.exports.listarDocumentoCondicionante = async (req, res) => {
+    const { dc_id } = req.params;
 
-    const {dc_id} = req.params;
     try {
-        const documentoCondicionante = await DocumentoCondicionante.findOne({where: {dc_id: dc_id}})
+        const documentoCondicionante = await DocumentoCondicionante.findOne({
+            where: { dc_id: dc_id }
+        });
 
-        //console.log('Condicionantes do documento: \n', documentoCondicionante?.dataValues)
-        res.status(200).json(documentoCondicionante)
+        if (!documentoCondicionante) {
+            return res.status(404).json({ message: 'Documento não encontrado' });
+        }
+
+        // Ordena as chaves do objeto dc_condicoes antes de enviar a resposta
+        let condicoesOrdenadas = {};
+        if (documentoCondicionante.dataValues.dc_condicoes) {
+            condicoesOrdenadas = Object.fromEntries(
+                Object.entries(documentoCondicionante.dataValues.dc_condicoes).sort(([a], [b]) => a.localeCompare(b))
+            );
+        }
+
+        res.status(200).json({
+            ...documentoCondicionante.dataValues,
+            dc_condicoes: condicoesOrdenadas
+        });
+
     } catch (error) {
         res.status(400).json(error);
     }
-}
+};
+
 
 
 //rota condicionante por usuario::::
@@ -441,6 +459,73 @@ module.exports.fecharProcesso = async (req, res) => {
         res.status(500).json({ message: 'Erro ao finalizar o processo' });
     }
 };
+
+
+module.exports.editarCondicoesProcesso = async (req, res)=>{
+    try {
+        const { dc_id } = req.params;
+        const { dc_condicao_atual, dc_condicao_atualizada } = req.body;
+
+
+        //console.log('Valores recebidos: ', dc_condicao_atual, dc_condicao_atualizada)
+
+        const cond = await DocumentoCondicionante.findOne({ where: { dc_id } });
+
+        if (!cond) {
+            return res.status(404).json({ message: 'Condicionante não encontrada' });
+        }
+
+        const condicoes = { ...cond.dataValues.dc_condicoes };
+
+        //console.info('Condições encontradas: ', condicoes, '\n');
+
+        if (condicoes.hasOwnProperty(dc_condicao_atual)) {
+            condicoes[dc_condicao_atualizada] = condicoes[dc_condicao_atual];
+
+            delete condicoes[dc_condicao_atual];
+
+            //console.info('Nova estrutura de condições: ', condicoes, '\n');
+
+
+            await DocumentoCondicionante.update(
+                { dc_condicoes: condicoes },
+                { where: { dc_id } }
+            );
+
+            return res.json({
+                message: 'Condição renomeada com sucesso',
+                dc_condicao_atualizada,
+            });
+        } else {
+            return res.status(400).json({ message: 'Condição não encontrada' });
+        }
+
+        
+  
+      } catch (error) {
+        console.log(error)
+      }
+}
+
+
+module.exports.deletarCondicoesProcesso = async (req, res)=>{
+    try {
+        const { id } = req.params;
+        const { dc_condicao_atual } = req.body;
+
+        const cond = await DocumentoCondicionante.findOne({ where: { dc_id: id } });
+
+        console.log('Return: ', cond?.dataValues)
+
+        if (!cond) {
+            return res.status(404).json({ message: 'Condicionante não encontrada' });
+        }
+
+
+    } catch (error) {
+        
+    }
+}
 
 
 
