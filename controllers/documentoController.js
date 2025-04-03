@@ -348,7 +348,9 @@ module.exports.listarDocumentosFilial = async (req, res) => {
 
         const { u_filiais_ids } = usuario;
 
-        // Encontrar todas as filiais do usuário e incluir seus documentos
+        
+
+        
         const filiais = await Filial.findAll({
             where: {
                 f_id: {
@@ -359,7 +361,8 @@ module.exports.listarDocumentosFilial = async (req, res) => {
             include: [
                 {
                     model: Documento,
-                    as: 'documentos', // Usar o alias correto definido no model
+                    as: 'documentos', 
+                    required: false, 
                     where: { d_ativo: true },
                     attributes: ['d_id', 'd_situacao'],
                     include: [
@@ -374,6 +377,7 @@ module.exports.listarDocumentosFilial = async (req, res) => {
             order: [['f_id', 'ASC']]
         });
        
+
 
         // Retornar as filiais com os documentos ordenados
         res.status(200).json(filiais);
