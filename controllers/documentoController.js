@@ -512,6 +512,58 @@ module.exports.atualizaStatusIrregular = async (req, res) =>{
 
 }
 
+
+//Mudar status para Não aplicavel da filial -> esse status ele torna o documnto não aplicavel
+module.exports.atualizaStatusNAplicavel = async (req, res) =>{
+  try {
+    const {d_id} = req.params;
+    const {d_situacao} = req.body;
+
+    //console.log('d_id recebido: ', d_id)
+    //console.log('Situacao recebida: ', d_situacao)
+
+    const doc = await Documento.findByPk(d_id)
+    //console.log('Doc enconttado: ', doc?.dataValues)
+
+    const cond = await DocumentoCondicionante.findByPk(doc?.dataValues?.d_condicionante_id)
+    //console.log('Cond encontrada: ', cond?.dataValues)
+
+    if(doc?.dataValues?.d_situacao == d_situacao){
+      doc.update({
+        d_situacao: cond?.dataValues?.dc_status_doc_ref
+      })
+      
+      cond.update({
+        dc_status_doc_ref: d_situacao
+      })
+
+    } else {
+      doc.update({
+        d_situacao: d_situacao
+      })
+
+      cond.update({
+        dc_status_doc_ref: d_situacao
+      })
+      
+    }
+
+    const docs = doc?.dataValues;
+    const conds = cond?.dataValues;
+    //console.info('Doc atualizado: ', docs)
+
+    //console.info('Cond atualizada: ', conds)
+
+    return res.status(200).json({message: "Status documento atualizado para 'Não Aplicavel'", docs})
+
+  } catch (error) {
+
+    console.log(error)
+
+  }
+
+}
+
 //Deletar documento..
 module.exports.deletarDocumento = async (req, res) => {
   try {

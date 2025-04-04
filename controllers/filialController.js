@@ -82,7 +82,7 @@ module.exports.listarFiliais = async (req, res) => {
                         attributes: ['u_nome']
                     }
                 ],
-                order: [['f_id', 'ASC']]
+                order: [['f_codigo', 'ASC']]
             });
             return res.status(200).json(todasFiliais);
         }

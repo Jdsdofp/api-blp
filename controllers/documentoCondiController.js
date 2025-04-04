@@ -507,27 +507,40 @@ module.exports.editarCondicoesProcesso = async (req, res)=>{
       }
 }
 
-
-module.exports.deletarCondicoesProcesso = async (req, res)=>{
+module.exports.deletarCondicoesProcesso = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { dc_condicao_atual } = req.body;
-
-        const cond = await DocumentoCondicionante.findOne({ where: { dc_id: id } });
-
-        console.log('Return: ', cond?.dataValues)
-
-        if (!cond) {
-            return res.status(404).json({ message: 'Condicionante não encontrada' });
-        }
-
-
+      const { id } = req.params;
+      const { dc_condicao_atual } = req.body;
+  
+      const cond = await DocumentoCondicionante.findByPk(id);
+  
+      if (!cond) {
+        return res.status(404).json({ message: 'Condicionante não encontrada' });
+      }
+  
+      const condicoes = { ...cond.dataValues.dc_condicoes };
+  
+      if (condicoes.hasOwnProperty(dc_condicao_atual)) {
+        delete condicoes[dc_condicao_atual]; // Apaga a condição
+  
+        await DocumentoCondicionante.update(
+          { dc_condicoes: condicoes },
+          { where: { dc_id: id } }
+        );
+  
+        return res.json({
+          message: 'Condição deletada com sucesso',
+          condicoesRestantes: condicoes,
+        });
+      } else {
+        return res.status(400).json({ message: 'Condição não encontrada' });
+      }
     } catch (error) {
-        
+      console.error(error);
+      return res.status(500).json({ message: 'Erro ao deletar condição' });
     }
-}
-
-
+  };
+  
 
 module.exports.listarUsuariosPorCondicao = async (req, res) => {
     const { dc_id } = req.params; // Recebe o id e o nome da condição
