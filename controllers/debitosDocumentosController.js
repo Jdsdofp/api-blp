@@ -80,3 +80,21 @@ module.exports.listarCustos = async (req, res) =>{
         res.status(400).json({error: error})
     }
 }
+
+module.exports.deletarDebito = async (req, res)=>{
+    try {
+        const {id} = req.params;
+        // console.log('Id do debito: ', id)
+
+        const debito = await Debito_Documentos.findByPk(id)
+        // console.log('Debito encontrado: ', debito)
+
+        await debito.destroy()
+
+        res.status(200).json({message: 'Registro deletado com sucesso!'})
+
+    } catch (error) {
+        console.error('Log de error: ', error)
+        res.status(404).json({error: error})
+    }
+}
