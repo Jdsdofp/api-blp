@@ -81,6 +81,21 @@ module.exports.listarCustos = async (req, res) =>{
     }
 }
 
+module.exports.listarCusto = async (req, res)=>{
+    try {
+        const {id} = req.params;
+        console.log('Parametro ID: ', id);
+
+        const debit = await Debito_Documentos.findByPk(id);
+        console.log('List: ', debit?.dataValues);
+
+        res.status(200).json(debit?.dataValues);
+        
+    } catch (error) {
+        res.status(400).json('Log de error: ', error)
+    }
+}
+
 module.exports.deletarDebito = async (req, res)=>{
     try {
         const {id} = req.params;
@@ -92,6 +107,36 @@ module.exports.deletarDebito = async (req, res)=>{
         await debito.destroy()
 
         res.status(200).json({message: 'Registro deletado com sucesso!'})
+
+    } catch (error) {
+        console.error('Log de error: ', error)
+        res.status(404).json({error: error})
+    }
+}
+
+//EDITAR O CUSTO
+module.exports.editarDebito = async (req, res)=>{
+    try {
+        const {id} = req.params;
+        console.log('Id do debito: ', id,  '\n')
+
+        const {dd_tipo, dd_descricao, dd_valor, dd_data_entrada, dd_data_vencimento, d_num_ref} = req.body;
+        // console.log('Dados recebidos: ', d_tipo_doc_id, dd_descricao, dd_valor, dd_data_entrada, dd_data_vencimento,  '\n')
+
+
+        const debito = await Debito_Documentos.findByPk(id)
+        // console.log('Debito encontrado: ', debito?.dataValues)
+
+        await debito.update({
+            dd_descricao: dd_descricao,
+            dd_valor: dd_valor,
+            dd_data_entrada: dd_data_entrada,
+            dd_data_vencimento: dd_data_vencimento,
+            dd_tipo: dd_tipo,
+            d_num_ref: d_num_ref
+        })
+
+        res.status(200).json({message: "Alteração realizada com sucesso!"})
 
     } catch (error) {
         console.error('Log de error: ', error)
